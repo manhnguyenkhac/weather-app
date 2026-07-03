@@ -91,4 +91,57 @@ public class OpenMeteoClientTests
 
         Assert.Null(result);
     }
+
+    [Fact]
+    public async Task GetForecast_FormatLatLonDauCham_KhiCultureViVN()
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = new CultureInfo("vi-VN");
+        try
+        {
+            var handler = new FakeHttpMessageHandler(HttpStatusCode.OK, "{}");
+            var client = TestOpenMeteo.CreateClient(handler);
+
+            await client.GetForecastAsync(21.0278, 105.8342, 7);
+
+            var url = handler.LastRequestUri!.AbsoluteUri;
+            Assert.StartsWith(TestOpenMeteo.ForecastUrl, url);
+            // vi-VN format double bằng dấu phẩy (21,0278) — InvariantCulture phải giữ dấu chấm
+            Assert.Contains("latitude=21.0278", url);
+            Assert.Contains("longitude=105.8342", url);
+            Assert.Contains("forecast_days=7", url);
+            Assert.Contains("timezone=auto", url);
+            Assert.DoesNotContain("21,0278", url);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
+    }
+
+    [Fact]
+    public async Task GetForecast_ParseDuocSnakeCase_KhiUpstreamTraJsonHopLe()
+    {
+        const string body = """
+            {
+              "current": { "temperature_2m": 27.4, "wind_speed_10m": 11.2, "weather_code": 3 },
+              "daily": {
+                "time": ["2026-07-03"],
+                "temperature_2m_max": [33.1],
+                "temperature_2m_min": [25.6],
+                "weather_code": [80]
+              }
+            }
+            """;
+        var client = TestOpenMeteo.CreateClient(HttpStatusCode.OK, body);
+
+        var result = await client.GetForecastAsync(21.0278, 105.8342, 1);
+
+        Assert.NotNull(result);
+        Assert.Equal(27.4, result!.Current!.Temperature);
+        Assert.Equal(11.2, result.Current.WindSpeed);
+        Assert.Equal(3, result.Current.WeatherCode);
+        Assert.Equal("2026-07-03", Assert.Single(result.Daily!.Time!));
+        Assert.Equal(33.1, Assert.Single(result.Daily.TempMax!));
+    }
 }

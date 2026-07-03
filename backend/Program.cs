@@ -18,6 +18,7 @@ var app = builder.Build();
 
 app.MapHealthEndpoints();
 app.MapGeocodeEndpoints();
+app.MapWeatherEndpoints();
 
 app.Run();
 

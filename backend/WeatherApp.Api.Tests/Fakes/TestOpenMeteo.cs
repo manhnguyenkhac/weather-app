@@ -10,6 +10,7 @@ namespace WeatherApp.Api.Tests.Fakes;
 public static class TestOpenMeteo
 {
     public const string GeocodingUrl = "https://geo.test/v1/search";
+    public const string ForecastUrl = "https://forecast.test/v1/forecast";
 
     public static OpenMeteoClient CreateClient(FakeHttpMessageHandler handler)
     {
@@ -17,6 +18,7 @@ public static class TestOpenMeteo
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 ["OpenMeteo:GeocodingUrl"] = GeocodingUrl,
+                ["OpenMeteo:ForecastUrl"] = ForecastUrl,
             })
             .Build();
 

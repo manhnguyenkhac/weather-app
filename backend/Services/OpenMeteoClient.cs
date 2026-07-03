@@ -18,6 +18,18 @@ public class OpenMeteoClient(HttpClient http, IConfiguration config)
         return GetJsonOrNullAsync<OpenMeteoGeocodeResponse>(url, ct);
     }
 
+    public Task<OpenMeteoForecastResponseDto?> GetForecastAsync(double lat, double lon, int days, CancellationToken ct = default)
+    {
+        // InvariantCulture bắt buộc: lat/lon là double, culture vi-VN sẽ sinh dấu phẩy thập phân làm hỏng URL
+        var url = string.Create(CultureInfo.InvariantCulture,
+            $"{config["OpenMeteo:ForecastUrl"]}?latitude={lat}&longitude={lon}" +
+            $"&current=temperature_2m,wind_speed_10m,weather_code" +
+            $"&daily=temperature_2m_max,temperature_2m_min,weather_code" +
+            $"&forecast_days={days}&timezone=auto");
+
+        return GetJsonOrNullAsync<OpenMeteoForecastResponseDto>(url, ct);
+    }
+
     // Chính sách chung "upstream lỗi => null" cho MỌI lời gọi Open-Meteo (geocode, forecast...):
     // non-2xx, timeout, body không phải JSON hoặc Content-Type lạ đều là upstream lỗi — một nguồn duy nhất.
     private async Task<T?> GetJsonOrNullAsync<T>(string url, CancellationToken ct) where T : class
