@@ -1,39 +1,23 @@
 using System.Globalization;
 using System.Net;
-using Microsoft.Extensions.Configuration;
-using WeatherApp.Api.Services;
 using WeatherApp.Api.Tests.Fakes;
 
 namespace WeatherApp.Api.Tests.Services;
 
 public class OpenMeteoClientTests
 {
-    private const string GeocodingUrl = "https://geo.test/v1/search";
-
-    private static OpenMeteoClient CreateClient(FakeHttpMessageHandler handler)
-    {
-        var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["OpenMeteo:GeocodingUrl"] = GeocodingUrl,
-            })
-            .Build();
-
-        return new OpenMeteoClient(new HttpClient(handler), config);
-    }
-
     [Fact]
     public async Task SearchLocations_GhepUrlDungThamSo_VaEscapeQuery()
     {
         var handler = new FakeHttpMessageHandler(HttpStatusCode.OK, """{"results":[]}""");
-        var client = CreateClient(handler);
+        var client = TestOpenMeteo.CreateClient(handler);
 
         await client.SearchLocationsAsync("Hà Nội", 5);
 
         Assert.NotNull(handler.LastRequestUri);
         // AbsoluteUri giữ nguyên percent-encoding (ToString() sẽ un-escape để hiển thị)
         var url = handler.LastRequestUri!.AbsoluteUri;
-        Assert.StartsWith(GeocodingUrl, url);
+        Assert.StartsWith(TestOpenMeteo.GeocodingUrl, url);
         Assert.Contains("name=H%C3%A0%20N%E1%BB%99i", url);
         Assert.Contains("count=5", url);
     }
@@ -46,7 +30,7 @@ public class OpenMeteoClientTests
         try
         {
             var handler = new FakeHttpMessageHandler(HttpStatusCode.OK, """{"results":[]}""");
-            var client = CreateClient(handler);
+            var client = TestOpenMeteo.CreateClient(handler);
 
             await client.SearchLocationsAsync("Hanoi", 10);
 
@@ -65,7 +49,7 @@ public class OpenMeteoClientTests
         const string body = """
             {"results":[{"name":"Hanoi","country":"Vietnam","latitude":21.0245,"longitude":105.8412}]}
             """;
-        var client = CreateClient(new FakeHttpMessageHandler(HttpStatusCode.OK, body));
+        var client = TestOpenMeteo.CreateClient(HttpStatusCode.OK, body);
 
         var result = await client.SearchLocationsAsync("Hanoi", 5);
 
@@ -80,7 +64,7 @@ public class OpenMeteoClientTests
     [Fact]
     public async Task SearchLocations_TraNull_KhiUpstreamNon2xx()
     {
-        var client = CreateClient(new FakeHttpMessageHandler(HttpStatusCode.InternalServerError, "boom"));
+        var client = TestOpenMeteo.CreateClient(HttpStatusCode.InternalServerError, "boom");
 
         var result = await client.SearchLocationsAsync("Hanoi", 5);
 
@@ -90,7 +74,18 @@ public class OpenMeteoClientTests
     [Fact]
     public async Task SearchLocations_TraNull_KhiBodyKhongPhaiJson()
     {
-        var client = CreateClient(new FakeHttpMessageHandler(HttpStatusCode.OK, "<html>not json</html>"));
+        var client = TestOpenMeteo.CreateClient(HttpStatusCode.OK, "<html>not json</html>");
+
+        var result = await client.SearchLocationsAsync("Hanoi", 5);
+
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task SearchLocations_TraNull_Khi200NhungContentTypeKhongPhaiJson()
+    {
+        // Proxy/CDN chết có thể trả 200 kèm trang HTML — ReadFromJsonAsync ném NotSupportedException
+        var client = TestOpenMeteo.CreateClient(HttpStatusCode.OK, "<html>error page</html>", "text/html");
 
         var result = await client.SearchLocationsAsync("Hanoi", 5);
 

@@ -5,6 +5,6 @@ public record GeocodeResultDto(string Name, string Country, double Latitude, dou
 
 // Shape JSON từ Open-Meteo Geocoding API (chỉ khai báo các field cần dùng).
 // Open-Meteo bỏ hẳn key "results" khi không có kết quả nào.
-public record OpenMeteoGeocodeResponse(IReadOnlyList<OpenMeteoGeocodeResult>? Results);
+public record OpenMeteoGeocodeResponse(IReadOnlyList<OpenMeteoGeocodeResultDto>? Results);
 
-public record OpenMeteoGeocodeResult(string Name, string? Country, double Latitude, double Longitude);
+public record OpenMeteoGeocodeResultDto(string Name, string? Country, double Latitude, double Longitude);

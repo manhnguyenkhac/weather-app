@@ -1,7 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.Extensions.Configuration;
 using WeatherApp.Api.Endpoints;
 using WeatherApp.Api.Models;
 using WeatherApp.Api.Services;
@@ -11,20 +10,8 @@ namespace WeatherApp.Api.Tests.Endpoints;
 
 public class GeocodeEndpointsTests
 {
-    private static OpenMeteoClient CreateClient(HttpStatusCode statusCode, string body)
-    {
-        var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["OpenMeteo:GeocodingUrl"] = "https://geo.test/v1/search",
-            })
-            .Build();
-
-        return new OpenMeteoClient(new HttpClient(new FakeHttpMessageHandler(statusCode, body)), config);
-    }
-
     private static OpenMeteoClient CreateHealthyClient() =>
-        CreateClient(HttpStatusCode.OK, """{"results":[]}""");
+        TestOpenMeteo.CreateClient(HttpStatusCode.OK, """{"results":[]}""");
 
     [Theory]
     [InlineData(null)]
@@ -53,7 +40,7 @@ public class GeocodeEndpointsTests
     [Fact]
     public async Task Geocode_Tra502_KhiUpstreamLoi()
     {
-        var client = CreateClient(HttpStatusCode.ServiceUnavailable, "unavailable");
+        var client = TestOpenMeteo.CreateClient(HttpStatusCode.ServiceUnavailable, "unavailable");
 
         var result = await GeocodeEndpoints.HandleAsync("Hanoi", count: null, client, CancellationToken.None);
 
@@ -70,7 +57,7 @@ public class GeocodeEndpointsTests
               {"name":"Ha Noi","latitude":21.0333,"longitude":105.85}
             ]}
             """;
-        var client = CreateClient(HttpStatusCode.OK, body);
+        var client = TestOpenMeteo.CreateClient(HttpStatusCode.OK, body);
 
         var result = await GeocodeEndpoints.HandleAsync("Hanoi", count: 2, client, CancellationToken.None);
 
@@ -85,7 +72,7 @@ public class GeocodeEndpointsTests
     public async Task Geocode_Tra200MangRong_KhiOpenMeteoKhongCoKetQua()
     {
         // Open-Meteo bỏ hẳn key "results" khi không tìm thấy gì
-        var client = CreateClient(HttpStatusCode.OK, "{}");
+        var client = TestOpenMeteo.CreateClient(HttpStatusCode.OK, "{}");
 
         var result = await GeocodeEndpoints.HandleAsync("xyzabc123", count: null, client, CancellationToken.None);
 

@@ -5,16 +5,23 @@ using WeatherApp.Api.Models;
 namespace WeatherApp.Api.Services;
 
 /// <summary>
-/// Typed client gọi Open-Meteo. URL đọc từ appsettings.json (section OpenMeteo).
+/// Typed client gọi Open-Meteo. URL đọc từ appsettings.json (section OpenMeteo, đã validate lúc boot).
 /// Trả null khi upstream lỗi (non-2xx, timeout, body không parse được) — endpoint map thành 502.
 /// </summary>
 public class OpenMeteoClient(HttpClient http, IConfiguration config)
 {
-    public async Task<OpenMeteoGeocodeResponse?> SearchLocationsAsync(string query, int count, CancellationToken ct = default)
+    public Task<OpenMeteoGeocodeResponse?> SearchLocationsAsync(string query, int count, CancellationToken ct = default)
     {
         var url = string.Create(CultureInfo.InvariantCulture,
             $"{config["OpenMeteo:GeocodingUrl"]}?name={Uri.EscapeDataString(query)}&count={count}&language=en&format=json");
 
+        return GetJsonOrNullAsync<OpenMeteoGeocodeResponse>(url, ct);
+    }
+
+    // Chính sách chung "upstream lỗi => null" cho MỌI lời gọi Open-Meteo (geocode, forecast...):
+    // non-2xx, timeout, body không phải JSON hoặc Content-Type lạ đều là upstream lỗi — một nguồn duy nhất.
+    private async Task<T?> GetJsonOrNullAsync<T>(string url, CancellationToken ct) where T : class
+    {
         try
         {
             using var resp = await http.GetAsync(url, ct);
@@ -23,7 +30,7 @@ public class OpenMeteoClient(HttpClient http, IConfiguration config)
                 return null;
             }
 
-            return await resp.Content.ReadFromJsonAsync<OpenMeteoGeocodeResponse>(ct);
+            return await resp.Content.ReadFromJsonAsync<T>(ct);
         }
         catch (HttpRequestException)
         {
@@ -31,6 +38,11 @@ public class OpenMeteoClient(HttpClient http, IConfiguration config)
         }
         catch (JsonException)
         {
+            return null;
+        }
+        catch (NotSupportedException)
+        {
+            // 200 nhưng Content-Type không phải JSON (vd trang lỗi HTML từ proxy/CDN)
             return null;
         }
         catch (TaskCanceledException) when (!ct.IsCancellationRequested)

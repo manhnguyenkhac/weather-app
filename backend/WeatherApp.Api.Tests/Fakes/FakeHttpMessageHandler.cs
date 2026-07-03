@@ -6,7 +6,7 @@ namespace WeatherApp.Api.Tests.Fakes;
 /// <summary>
 /// HttpMessageHandler giả cho unit test: trả response cấu hình sẵn và ghi lại URL đã được gọi.
 /// </summary>
-public sealed class FakeHttpMessageHandler(HttpStatusCode statusCode, string body) : HttpMessageHandler
+public sealed class FakeHttpMessageHandler(HttpStatusCode statusCode, string body, string contentType = "application/json") : HttpMessageHandler
 {
     public Uri? LastRequestUri { get; private set; }
 
@@ -16,7 +16,7 @@ public sealed class FakeHttpMessageHandler(HttpStatusCode statusCode, string bod
 
         var response = new HttpResponseMessage(statusCode)
         {
-            Content = new StringContent(body, Encoding.UTF8, "application/json"),
+            Content = new StringContent(body, Encoding.UTF8, contentType),
         };
         return Task.FromResult(response);
     }
