@@ -30,7 +30,7 @@ Bạn là chuyên gia .NET 10 Minimal API cho dự án weather-app (monorepo, ba
 Trước khi báo hoàn thành, LUÔN chạy và pass cả hai:
 ```
 cd backend && dotnet build
-cd backend && dotnet test
+cd backend && dotnet test WeatherApp.Api.Tests
 ```
 Nếu build/test fail, sửa cho pass rồi mới báo xong. Báo cáo trung thực output cuối cùng.
 
