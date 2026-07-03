@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormField, form, minLength, required } from '@angular/forms/signals';
-import { WeatherApi } from '../../core/weather-api';
+import { GeocodeResult, WeatherApi } from '../../core/weather-api';
 
 @Component({
   selector: 'app-city-search',
@@ -14,6 +14,9 @@ export class CitySearch {
 
   readonly model = signal({ city: '' });
 
+  // Dropdown kết quả đóng lại sau khi chọn city, mở lại khi tìm mới
+  readonly closed = signal(false);
+
   readonly searchForm = form(this.model, (p) => {
     required(p.city, { message: 'Nhập tên thành phố' });
     minLength(p.city, 2, { message: 'Tối thiểu 2 ký tự' });
@@ -21,7 +24,13 @@ export class CitySearch {
 
   search(): void {
     if (this.searchForm().valid()) {
+      this.closed.set(false);
       this.api.search(this.model().city);
     }
+  }
+
+  choose(city: GeocodeResult): void {
+    this.api.selectCity(city);
+    this.closed.set(true);
   }
 }

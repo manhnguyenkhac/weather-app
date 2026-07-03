@@ -1,61 +1,91 @@
+.search-box {
+  position: relative;
+  width: 100%;
+}
+
 form {
   display: flex;
+  align-items: center;
   gap: 0.5rem;
+  background: #fff;
+  border-radius: 999px;
+  padding: 0.25rem 0.35rem 0.25rem 0.9rem;
+}
+
+.icon {
+  font-size: 0.95rem;
 }
 
 input {
   flex: 1;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  padding: 0.4rem 0;
+  background: transparent;
+  color: #26272b;
 }
 
 button[type='submit'] {
-  padding: 0.5rem 1.25rem;
+  padding: 0.4rem 1.1rem;
   border: none;
-  border-radius: 6px;
-  background: #1976d2;
+  border-radius: 999px;
+  background: #f05514;
   color: #fff;
-  font-size: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
 }
 
 button[type='submit']:disabled {
-  background: #b0bec5;
+  background: #c8ccd4;
   cursor: not-allowed;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.18);
+  padding: 0.4rem;
 }
 
 .results {
   list-style: none;
+  margin: 0;
   padding: 0;
-  margin: 0.75rem 0 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
 }
 
 .results button {
-  padding: 0.4rem 0.9rem;
-  border: 1px solid #1976d2;
-  border-radius: 999px;
-  background: #fff;
-  color: #1976d2;
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.55rem 0.75rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #26272b;
+  font-size: 0.95rem;
   cursor: pointer;
 }
 
-.results button.selected,
 .results button:hover {
-  background: #1976d2;
-  color: #fff;
+  background: #f2f4f7;
+  color: #f05514;
 }
 
 .hint {
-  color: #607d8b;
-  margin-top: 0.75rem;
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  color: #5b616e;
 }
 
 .error {
+  margin: 0;
+  padding: 0.55rem 0.75rem;
   color: #c62828;
-  margin-top: 0.75rem;
 }

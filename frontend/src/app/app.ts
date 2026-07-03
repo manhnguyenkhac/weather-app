@@ -3,11 +3,12 @@ import { WeatherApi } from './core/weather-api';
 import { UnitPreference } from './core/unit-preference';
 import { CitySearch } from './features/weather/city-search';
 import { WeatherCard } from './features/weather/weather-card';
+import { HourlyStrip } from './features/weather/hourly-strip';
 import { ForecastList } from './features/weather/forecast-list';
 
 @Component({
   selector: 'app-root',
-  imports: [CitySearch, WeatherCard, ForecastList],
+  imports: [CitySearch, WeatherCard, HourlyStrip, ForecastList],
   templateUrl: './app.html',
   styleUrl: './app.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

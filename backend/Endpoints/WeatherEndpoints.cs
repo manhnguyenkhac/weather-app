@@ -40,29 +40,42 @@ public static class WeatherEndpoints
 
         var upstream = await openMeteo.GetForecastAsync(lat.Value, lon.Value, forecastDays, ct);
 
-        // Thiếu hẳn block current/daily trong body 200 cũng là upstream lỗi — không thể dựng response đúng contract
-        if (upstream?.Current is null || upstream.Daily?.Time is null
-            || upstream.Daily.TempMax is null || upstream.Daily.TempMin is null || upstream.Daily.WeatherCode is null)
+        // Thiếu hẳn block current/hourly/daily trong body 200 cũng là upstream lỗi — không dựng được response đúng contract
+        if (upstream?.Current is null
+            || upstream.Hourly?.Time is null || upstream.Hourly.Temperature is null || upstream.Hourly.WeatherCode is null
+            || upstream.Daily?.Time is null || upstream.Daily.TempMax is null || upstream.Daily.TempMin is null || upstream.Daily.WeatherCode is null)
         {
             return Results.Problem(
                 detail: "Open-Meteo không phản hồi hoặc trả về lỗi.",
                 statusCode: StatusCodes.Status502BadGateway);
         }
 
-        var daily = upstream.Daily;
+        var hourly = upstream.Hourly;
         // Zip theo độ dài NGẮN NHẤT để mảng cột lệch nhau (upstream bất thường) không gây IndexOutOfRange
+        var hourCount = Math.Min(hourly.Time.Count, Math.Min(hourly.Temperature.Count, hourly.WeatherCode.Count));
+        var hours = new List<HourlyForecastDto>(hourCount);
+        for (var i = 0; i < hourCount; i++)
+        {
+            hours.Add(new HourlyForecastDto(hourly.Time[i], hourly.Temperature[i], hourly.WeatherCode[i]));
+        }
+
+        var daily = upstream.Daily;
         var dayCount = Math.Min(
             Math.Min(daily.Time.Count, daily.TempMax.Count),
             Math.Min(daily.TempMin.Count, daily.WeatherCode.Count));
-
         var forecast = new List<DailyForecastDto>(dayCount);
         for (var i = 0; i < dayCount; i++)
         {
             forecast.Add(new DailyForecastDto(daily.Time[i], daily.TempMax[i], daily.TempMin[i], daily.WeatherCode[i]));
         }
 
-        var current = new CurrentWeatherDto(upstream.Current.Temperature, upstream.Current.WindSpeed, upstream.Current.WeatherCode);
+        var current = new CurrentWeatherDto(
+            upstream.Current.Temperature,
+            upstream.Current.ApparentTemperature,
+            upstream.Current.Humidity,
+            upstream.Current.WindSpeed,
+            upstream.Current.WeatherCode);
 
-        return Results.Ok(new WeatherResponseDto(current, forecast));
+        return Results.Ok(new WeatherResponseDto(current, hours, forecast));
     }
 }

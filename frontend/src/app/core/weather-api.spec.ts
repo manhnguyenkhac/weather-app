@@ -1,7 +1,17 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { WeatherApi, geocodeUrl, weatherUrl, weatherCodeLabel, GeocodeResult } from './weather-api';
+import {
+  WeatherApi,
+  GeocodeResult,
+  geocodeUrl,
+  weatherUrl,
+  weatherCodeLabel,
+  weatherCodeEmoji,
+  weatherCodeText,
+  hourLabel,
+  weekdayLabel,
+} from './weather-api';
 
 describe('URL helpers', () => {
   it('geocodeUrl encode query và count mặc định 5', () => {
@@ -24,6 +34,24 @@ describe('weatherCodeLabel', () => {
     expect(weatherCodeLabel(75)).toContain('Tuyết');
     expect(weatherCodeLabel(81)).toContain('Mưa rào');
     expect(weatherCodeLabel(96)).toContain('Dông');
+  });
+});
+
+describe('label helpers', () => {
+  it('tách emoji và chữ từ weatherCodeLabel', () => {
+    expect(weatherCodeEmoji(96)).toBe('⛈️');
+    expect(weatherCodeText(96)).toBe('Dông');
+    expect(weatherCodeText(3)).toBe('Có mây');
+  });
+
+  it('hourLabel rút gọn ISO time thành giờ', () => {
+    expect(hourLabel('2026-07-03T14:00')).toBe('14h');
+    expect(hourLabel('2026-07-03T05:00')).toBe('5h');
+  });
+
+  it('weekdayLabel đổi ISO date thành thứ trong tuần', () => {
+    expect(weekdayLabel('2026-07-03')).toBe('T6'); // thứ Sáu
+    expect(weekdayLabel('2026-07-05')).toBe('CN'); // Chủ nhật
   });
 });
 

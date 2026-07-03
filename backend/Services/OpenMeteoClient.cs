@@ -29,7 +29,8 @@ public class OpenMeteoClient(HttpClient http, IConfiguration config, IMemoryCach
         // InvariantCulture bắt buộc: lat/lon là double, culture vi-VN sẽ sinh dấu phẩy thập phân làm hỏng URL
         var url = string.Create(CultureInfo.InvariantCulture,
             $"{config["OpenMeteo:ForecastUrl"]}?latitude={lat}&longitude={lon}" +
-            $"&current=temperature_2m,wind_speed_10m,weather_code" +
+            $"&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code" +
+            $"&hourly=temperature_2m,weather_code&forecast_hours=24" +
             $"&daily=temperature_2m_max,temperature_2m_min,weather_code" +
             $"&forecast_days={days}&timezone=auto");
 

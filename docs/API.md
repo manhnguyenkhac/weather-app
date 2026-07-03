@@ -13,7 +13,7 @@ Backend .NET 10 Minimal API chạy tại `http://localhost:5155`. Frontend gọi
 
 ## GET /api/weather
 
-Lấy thời tiết hiện tại và forecast theo ngày cho một tọa độ. Backend gọi Open-Meteo `https://api.open-meteo.com/v1/forecast`.
+Lấy thời tiết hiện tại, dự báo theo giờ (24h tới) và dự báo theo ngày cho một tọa độ. Backend gọi Open-Meteo `https://api.open-meteo.com/v1/forecast`.
 
 ### Query params
 
@@ -29,9 +29,15 @@ Lấy thời tiết hiện tại và forecast theo ngày cho một tọa độ. 
 {
   "current": {
     "temperature": 27.4,
+    "apparentTemperature": 32.1,
+    "humidity": 78,
     "windSpeed": 11.2,
     "weatherCode": 3
   },
+  "hourly": [
+    { "time": "2026-07-03T14:00", "temperature": 30.0, "weatherCode": 3 },
+    { "time": "2026-07-03T15:00", "temperature": 29.5, "weatherCode": 61 }
+  ],
   "daily": [
     { "date": "2026-07-03", "tempMax": 33.1, "tempMin": 25.6, "weatherCode": 80 },
     { "date": "2026-07-04", "tempMax": 32.0, "tempMin": 25.1, "weatherCode": 61 }
@@ -39,7 +45,9 @@ Lấy thời tiết hiện tại và forecast theo ngày cho một tọa độ. 
 }
 ```
 
-Mỗi phần tử `daily`: `date` (ISO `yyyy-MM-dd`), `tempMax` / `tempMin` (°C), `weatherCode` (WMO weather code từ Open-Meteo).
+- `current`: `temperature` (°C), `apparentTemperature` (RealFeel, °C), `humidity` (% độ ẩm tương đối), `windSpeed` (km/h), `weatherCode` (WMO).
+- `hourly`: 24 giờ tới (`forecast_hours=24`), mỗi phần tử `time` (ISO local `yyyy-MM-ddTHH:mm`), `temperature` (°C), `weatherCode`.
+- `daily`: mỗi phần tử `date` (ISO `yyyy-MM-dd`), `tempMax` / `tempMin` (°C), `weatherCode` (WMO weather code từ Open-Meteo).
 
 ### Mã lỗi
 

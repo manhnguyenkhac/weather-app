@@ -1,6 +1,20 @@
-<section class="card">
-  <h2>{{ city().name }}, {{ city().country }}</h2>
-  <p class="temperature">{{ displayTemperature() }}°{{ pref.unit() }}</p>
-  <p class="condition">{{ conditionLabel() }}</p>
-  <p class="wind">💨 Gió {{ current().windSpeed }} km/h</p>
+<section class="hero">
+  <div class="hero-head">
+    <h2>{{ city().name }}, {{ city().country }}</h2>
+    <span class="now">Hiện tại</span>
+  </div>
+
+  <div class="hero-main">
+    <span class="emoji">{{ emoji() }}</span>
+    <span class="temperature">{{ displayTemperature() }}°<small>{{ pref.unit() }}</small></span>
+    <div class="meta">
+      <p class="condition">{{ conditionText() }}</p>
+      <p class="realfeel">RealFeel® {{ displayRealFeel() }}°</p>
+    </div>
+  </div>
+
+  <div class="hero-details">
+    <span>💨 Gió {{ current().windSpeed }} km/h</span>
+    <span>💧 Độ ẩm {{ current().humidity }}%</span>
+  </div>
 </section>
