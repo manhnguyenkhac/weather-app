@@ -22,18 +22,21 @@ export class RecentLocationCard {
     return c ? weatherUrl(c.latitude, c.longitude, 1) : undefined;
   });
 
+  private readonly current = computed(() =>
+    this.weather.hasValue() ? this.weather.value().current : undefined);
+
   protected readonly emoji = computed(() => {
-    const w = this.weather.hasValue() ? this.weather.value() : undefined;
-    return w ? weatherCodeEmoji(w.current.weatherCode) : '';
+    const c = this.current();
+    return c ? weatherCodeEmoji(c.weatherCode) : '';
   });
 
   protected readonly temp = computed(() => {
-    const w = this.weather.hasValue() ? this.weather.value() : undefined;
-    return w ? convertTemp(w.current.temperature, this.pref.unit()) : null;
+    const c = this.current();
+    return c ? convertTemp(c.temperature, this.pref.unit()) : null;
   });
 
   protected readonly realFeel = computed(() => {
-    const w = this.weather.hasValue() ? this.weather.value() : undefined;
-    return w ? convertTemp(w.current.apparentTemperature, this.pref.unit()) : null;
+    const c = this.current();
+    return c ? convertTemp(c.apparentTemperature, this.pref.unit()) : null;
   });
 }

@@ -16,14 +16,17 @@
     </section>
 
     @if (api.selectedCity(); as city) {
-      <section>
-        <h3>{{ city.name }} thời tiết</h3>
-        <ul class="links">
-          <li><button type="button" (click)="goTo('current')">☀️ Hiện tại</button></li>
-          <li><button type="button" (click)="goTo('hourly')">🕒 Theo giờ</button></li>
-          <li><button type="button" (click)="goTo('daily')">📅 7 ngày</button></li>
-        </ul>
-      </section>
+      <!-- Section đích (#current/#hourly/#daily) chỉ tồn tại khi forecast đã có dữ liệu -->
+      @if (api.forecast.hasValue()) {
+        <section>
+          <h3>{{ city.name }} thời tiết</h3>
+          <ul class="links">
+            <li><button type="button" (click)="goTo('current')">☀️ Hiện tại</button></li>
+            <li><button type="button" (click)="goTo('hourly')">🕒 Theo giờ</button></li>
+            <li><button type="button" (click)="goTo('daily')">📅 7 ngày</button></li>
+          </ul>
+        </section>
+      }
     }
 
     @if (recent.locations().length > 0) {

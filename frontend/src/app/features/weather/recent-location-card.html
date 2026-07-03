@@ -8,6 +8,8 @@
         <span class="temp">{{ temp() }}°<small>{{ pref.unit() }}</small></span>
       </span>
       <span class="realfeel">RealFeel® {{ realFeel() }}°</span>
+    } @else if (weather.error()) {
+      <span class="realfeel">Không tải được dữ liệu</span>
     } @else {
       <span class="realfeel">Đang tải…</span>
     }

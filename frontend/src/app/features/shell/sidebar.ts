@@ -18,9 +18,7 @@ export class Sidebar {
   protected readonly recent = inject(RecentLocations);
 
   setUnit(unit: TemperatureUnit): void {
-    if (this.pref.unit() !== unit) {
-      this.pref.toggle();
-    }
+    this.pref.setUnit(unit);
   }
 
   goTo(sectionId: string): void {

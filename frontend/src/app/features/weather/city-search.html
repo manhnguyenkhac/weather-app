@@ -5,7 +5,9 @@
     <button type="submit" [disabled]="searchForm().invalid()">Tìm</button>
   </form>
 
-  @if (!closed()) {
+  <!-- Dropdown suy ra từ state chung: MỌI đường chọn city (dropdown, recent list, sidebar) đều đóng nó,
+       search() reset selectedCity nên tìm mới lại mở ra -->
+  @if (!api.selectedCity()) {
     @if (api.cities.isLoading()) {
       <div class="dropdown"><p class="hint">Đang tìm…</p></div>
     } @else if (api.cities.error()) {
