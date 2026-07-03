@@ -6,6 +6,7 @@
       [attr.aria-label]="'Chuyển sang °' + (pref.unit() === 'C' ? 'F' : 'C')">
       °{{ pref.unit() }}
     </button>
+    <button type="button" class="menu" (click)="sidebarOpen.set(true)" aria-label="Mở menu">☰</button>
   </div>
 </header>
 
@@ -16,14 +17,17 @@
     } @else if (api.forecast.error()) {
       <p class="error">Không lấy được dữ liệu thời tiết — thử lại sau.</p>
     } @else if (api.forecast.hasValue()) {
-      <app-weather-card [city]="city" [current]="api.forecast.value().current" />
-      <app-hourly-strip [hours]="api.forecast.value().hourly" />
-      <app-forecast-list [days]="api.forecast.value().daily" />
+      <app-weather-card id="current" [city]="city" [current]="api.forecast.value().current" />
+      <app-hourly-strip id="hourly" [hours]="api.forecast.value().hourly" />
+      <app-forecast-list id="daily" [days]="api.forecast.value().daily" />
     }
   } @else {
     <div class="empty">
       <p class="empty-emoji">🌤️</p>
       <p>Tìm một thành phố để xem thời tiết hiện tại, dự báo theo giờ và 7 ngày tới.</p>
     </div>
+    <app-recent-location-list />
   }
 </main>
+
+<app-sidebar [open]="sidebarOpen()" (closed)="sidebarOpen.set(false)" />

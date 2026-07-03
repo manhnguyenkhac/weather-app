@@ -17,13 +17,17 @@ const STORAGE_KEY = 'weather-app.unit';
 export class UnitPreference {
   readonly unit = signal<TemperatureUnit>(readInitialUnit());
 
-  toggle(): void {
-    this.unit.update((u) => (u === 'C' ? 'F' : 'C'));
+  setUnit(unit: TemperatureUnit): void {
+    this.unit.set(unit);
     try {
-      localStorage.setItem(STORAGE_KEY, this.unit());
+      localStorage.setItem(STORAGE_KEY, unit);
     } catch {
       // localStorage bị chặn (private mode...) — không nhớ được nhưng app vẫn chạy
     }
+  }
+
+  toggle(): void {
+    this.setUnit(this.unit() === 'C' ? 'F' : 'C');
   }
 }
 
