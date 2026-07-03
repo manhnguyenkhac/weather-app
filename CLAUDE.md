@@ -52,8 +52,8 @@ cd backend && dotnet test
 
 1. Đọc `docs/ARCHITECTURE.md` trước khi thêm feature mới.
 2. Chạy test (`ng test`, `dotnet test`) trước khi báo hoàn thành.
-3. Commit theo **Conventional Commits**: `feat|fix|chore|docs|test|refactor(scope): mô tả`.
-4. Làm việc trên branch `feature/*`, mở PR vào `main`.
+3. Git flow: `main` chỉ chứa base (hook chặn commit/merge/push trên main). Nhánh tích hợp là `develop`. Mỗi feature: tạo GitHub issue (`gh issue create`), tạo nhánh `feature/<số issue>-<slug>` từ `develop`, commit theo **Conventional Commits** kèm link issue: `feat(scope): mô tả (#N)`. PR vào `develop`.
+4. **Review gate trước khi push**: chạy `/code-review`, sửa hết Critical/Warning, rồi ghi dấu đạt: `git rev-parse HEAD > .claude/.review-passed`. Hook `git-guard.sh` chặn push khi HEAD chưa có dấu review.
 
 Tài liệu tham chiếu:
 - `docs/ARCHITECTURE.md` — kiến trúc tổng thể, luồng dữ liệu.
@@ -65,4 +65,5 @@ Tài liệu tham chiếu:
 
 - Tự thêm package/dependency khi chưa hỏi.
 - Sửa file trong `docs/` khi không được yêu cầu — NGOẠI TRỪ cập nhật `docs/API.md` / `docs/ROADMAP.md` theo quy trình bắt buộc của skill `dotnet10-endpoint` và `new-feature`.
-- Commit thẳng vào `main` — luôn đi qua branch `feature/*` + PR.
+- Commit/merge/push thẳng vào `main` — mọi việc đi qua `feature/<issue>-<slug>` → PR vào `develop`.
+- Push khi chưa qua review gate (hook sẽ chặn — đừng tìm cách vòng qua).

@@ -50,8 +50,12 @@ weather-app/
 
 ## 4. Git flow
 
-- **Branch**: tạo `feature/<slug>` từ `main` — ví dụ `feature/geocode-endpoint`, `feature/city-search-ui`.
-- **CẤM commit thẳng `main`**. Mọi thay đổi đi qua PR vào `main`, merge bằng **squash merge**.
+- **Vai trò nhánh**: `main` chỉ chứa base — KHÔNG commit/merge/push trực tiếp (hook `.claude/hooks/git-guard.sh` chặn). `develop` là nhánh tích hợp, mọi PR merge vào đây.
+- **Issue trước, code sau**: mỗi feature/module tạo GitHub issue trước (`gh issue create --title "..." --body "..."`). Số issue dùng để đặt tên nhánh và link commit.
+- **Branch**: tạo `feature/<số issue>-<slug>` từ `develop` — ví dụ `feature/2-geocode-endpoint`, `feature/5-city-search-ui`.
+- **Commit link issue**: message kết thúc bằng `(#N)` — ví dụ `feat(backend): add GET /api/weather endpoint (#4)`.
+- **Review gate trước khi push** (hook cưỡng chế): chạy `/code-review`, sửa hết 🔴 Critical và 🟡 Warning, rồi ghi dấu đạt `git rev-parse HEAD > .claude/.review-passed` — thiếu dấu đúng SHA của HEAD thì `git push` bị chặn.
+- **PR vào `develop`**, merge bằng **squash merge**. `main` chỉ nhận merge release từ `develop` khi user quyết định.
 - **Trước khi mở PR**: chạy test và pass toàn bộ — `cd frontend && ng test` và `cd backend && dotnet test`.
 - **Conventional Commits**: `type(scope): mô tả`. Các type cho phép:
   - `feat` — tính năng mới: `feat(backend): add GET /api/weather endpoint`

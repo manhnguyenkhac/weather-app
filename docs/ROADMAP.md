@@ -25,5 +25,5 @@ Thứ tự ưu tiên từ trên xuống. Mỗi mục: mô tả + tiêu chí xong
 
 ### Vận hành
 
-- [ ] CI chạy test — DoD: pipeline chạy `dotnet test` + `ng test` trên mọi PR vào `main`, PR fail test không merge được.
+- [ ] CI chạy test — DoD: pipeline chạy `dotnet test` + `ng test` trên mọi PR vào `develop`, PR fail test không merge được.
 - [ ] Deploy — DoD: backend + frontend deploy tự động từ `main`, có URL public truy cập được.

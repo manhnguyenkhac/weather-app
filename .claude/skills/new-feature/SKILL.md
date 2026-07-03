@@ -28,9 +28,10 @@ Trình bày plan gọn (bullet, không lan man), gồm:
 
 **BẮT BUỘC dừng sau khi trình plan. KHÔNG viết code, KHÔNG tạo file, KHÔNG tạo branch trước khi user đồng ý rõ ràng.** Nếu user yêu cầu chỉnh plan → sửa plan, trình lại, tiếp tục chờ. Chỉ sang bước 4 khi có approve.
 
-## Bước 4 — Code
+## Bước 4 — Tạo issue + branch + Code
 
-- Tạo branch `feature/<ten-ngan>` từ `main` (CẤM commit thẳng main).
+- Tạo GitHub issue cho feature: `gh issue create --title "feat: <tên feature>" --body "<plan đã approve>"` → lấy số issue `N`.
+- Tạo branch `feature/<N>-<slug>` từ `develop` (KHÔNG từ main — main chỉ chứa base, hook chặn).
 - Backend: theo skill `dotnet10-endpoint` (record DTO, MapGroup, 400/502, IHttpClientFactory, InvariantCulture).
 - Frontend: theo skill `angular22-patterns` (standalone, OnPush, signals, httpResource, Signal Forms, naming kiểu mới).
 - Nếu phù hợp, giao việc cho subagent `backend-dev` / `frontend-dev` làm song song từng phía.
@@ -50,13 +51,15 @@ Cả hai phải pass. Fail thì sửa xong mới đi tiếp. Muốn xem chạy t
 - `docs/ROADMAP.md` — tick mục vừa làm xong.
 - `docs/ARCHITECTURE.md` — chỉ khi thay đổi kiến trúc/quy ước.
 
-## Bước 7 — Commit + PR
+## Bước 7 — Commit + Review gate + Push + PR
 
-- Commit theo Conventional Commits: `feat|fix|chore|docs|test|refactor(scope): mô tả` — ví dụ `feat(weather): them endpoint hourly forecast`.
-- Push branch `feature/*`, mở PR vào `main`. KHÔNG commit thẳng main.
+- Commit theo Conventional Commits, kết thúc message bằng link issue `(#N)` — ví dụ `feat(weather): them endpoint hourly forecast (#4)`.
+- **Review gate**: chạy `/code-review`, sửa hết Critical/Warning (commit fix nếu có), rồi ghi dấu đạt: `git rev-parse HEAD > .claude/.review-passed`. Hook chặn push khi thiếu dấu này.
+- Push branch `feature/<N>-<slug>`, mở PR vào `develop` (`gh pr create --base develop`), body ghi `Closes #N`. KHÔNG đụng main.
 
 ## Tóm tắt luồng
 
 ```
-đọc docs → plan → [CHỜ APPROVE] → code (branch feature/*) → test 2 phía → cập nhật docs → commit + PR
+đọc docs → plan → [CHỜ APPROVE] → issue (#N) → branch feature/<N>-<slug> từ develop
+→ code → test 2 phía → cập nhật docs → commit (#N) → /code-review sạch → marker → push → PR vào develop
 ```
