@@ -1,0 +1,7 @@
+# Artifacts build local (Windows) không được lọt vào container Linux —
+# obj/ chứa đường dẫn NuGet của máy host sẽ làm hỏng restore/publish trong image
+**/bin/
+**/obj/
+
+# Test project không cần cho image runtime
+WeatherApp.Api.Tests/

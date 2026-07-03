@@ -1,0 +1,12 @@
+# Render Blueprint — tạo backend service bằng "New + → Blueprint" trỏ vào repo này
+# Deploy tự động từ main (theo DoD trong docs/ROADMAP.md)
+services:
+  - type: web
+    name: weather-app-api
+    runtime: docker
+    plan: free
+    branch: main
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /api/health
+    autoDeploy: true
