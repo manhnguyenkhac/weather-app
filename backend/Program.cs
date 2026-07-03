@@ -1,10 +1,14 @@
 using WeatherApp.Api.Endpoints;
+using WeatherApp.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpClient<OpenMeteoClient>();
 
 var app = builder.Build();
 
 app.MapHealthEndpoints();
+app.MapGeocodeEndpoints();
 
 app.Run();
 
