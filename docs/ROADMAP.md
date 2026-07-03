@@ -14,7 +14,7 @@ Thứ tự ưu tiên từ trên xuống. Mỗi mục: mô tả + tiêu chí xong
 - [x] Scaffold backend .NET 10 Minimal API trong `/backend` (#3) — DoD: `cd backend && dotnet run --urls http://localhost:5155` chạy được (health check `GET /api/health`), `dotnet test WeatherApp.Api.Tests` pass, cấu trúc folder đúng `docs/CONVENTIONS.md`.
 - [x] Scaffold frontend Angular 22 trong `/frontend` + `proxy.conf.json` (#7) — DoD: `cd frontend && ng serve` chạy tại http://localhost:4200, request `/api/*` được proxy sang port 5155 (verify GET /api/health qua 4200 trả 200), `ng test` pass (vitest).
 - [x] Endpoint `GET /api/geocode?q={string}&count={int, mặc định 5}` gọi Open-Meteo Geocoding (#9) — DoD: trả JSON danh sách city, 400 khi thiếu/sai `q`, 502 khi upstream lỗi, có test (16 test pass, verify sống với Open-Meteo).
-- [ ] Endpoint `GET /api/weather?lat={double}&lon={double}&days={int, mặc định 7}` gọi Open-Meteo Forecast — DoD: trả forecast theo `days`, 400 khi param sai/thiếu, 502 khi upstream lỗi, có test.
+- [x] Endpoint `GET /api/weather?lat={double}&lon={double}&days={int, mặc định 7}` gọi Open-Meteo Forecast (#11) — DoD: trả forecast theo `days`, 400 khi param sai/thiếu, 502 khi upstream lỗi, có test (33 test pass, verify sống với Open-Meteo).
 - [ ] UI tìm city + hiển thị forecast — DoD: nhập tên city gọi `/api/geocode`, chọn kết quả gọi `/api/weather` và render forecast 7 ngày; dùng httpResource + signals, có test component.
 
 ### Nâng cao
