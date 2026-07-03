@@ -1,0 +1,22 @@
+:host {
+  display: block;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+h1 {
+  font-size: 1.6rem;
+  color: #1976d2;
+}
+
+.hint {
+  color: #607d8b;
+  margin-top: 1rem;
+}
+
+.error {
+  color: #c62828;
+  margin-top: 1rem;
+}

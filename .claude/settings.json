@@ -4,6 +4,8 @@
     "allow": [
       "Bash",
       "PowerShell",
+      "Bash(*)",
+      "PowerShell(*)",
       "TaskStop",
       "ToolSearch",
       "Bash(cd *)",

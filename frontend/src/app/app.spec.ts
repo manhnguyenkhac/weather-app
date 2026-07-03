@@ -1,10 +1,13 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { App } from './app';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
   });
 
@@ -14,10 +17,11 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('hiển thị title weather-app trong h1', async () => {
+  it('hiển thị title weather-app trong h1 và form tìm city', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h1')?.textContent).toContain('weather-app');
+    expect(compiled.querySelector('app-city-search input')).toBeTruthy();
   });
 });
