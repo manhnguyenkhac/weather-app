@@ -2,6 +2,10 @@
   "permissions": {
     "defaultMode": "dontAsk",
     "allow": [
+      "Bash",
+      "PowerShell",
+      "TaskStop",
+      "ToolSearch",
       "Bash(cd *)",
       "Bash(echo *)",
       "Bash(export *)",
