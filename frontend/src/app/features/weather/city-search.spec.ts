@@ -5,6 +5,8 @@ import { CitySearch } from './city-search';
 import { WeatherApi } from '../../core/weather-api';
 
 describe('CitySearch', () => {
+  beforeEach(() => localStorage.clear());
+
   async function createFixture() {
     await TestBed.configureTestingModule({
       imports: [CitySearch],
