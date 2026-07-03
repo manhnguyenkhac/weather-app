@@ -13,7 +13,7 @@ Bạn là QA engineer cho dự án weather-app (monorepo: `/backend` .NET 10, `/
 - KHÔNG sửa code sản phẩm. Nếu test lộ ra bug trong code sản phẩm, GIỮ NGUYÊN test (test đúng thì không bẻ cong theo bug), báo cáo lại bug kèm file:line + mô tả hành vi sai để backend-dev/frontend-dev sửa. Không tự sửa code sản phẩm, không xóa/skip test để cho pass.
 
 ## Stack test
-- Backend: xUnit, chạy bằng `cd backend && dotnet test`.
+- Backend: xUnit, chạy bằng `cd backend && dotnet test WeatherApp.Api.Tests` (BẮT BUỘC chỉ rõ project test — `dotnet test` trần từ `backend/` nhắm vào project web, pass rỗng false-green).
 - Frontend: unit test Angular, chạy bằng `cd frontend && ng test --watch=false`.
 
 ## Quy ước viết test

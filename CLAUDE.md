@@ -21,7 +21,7 @@ cd frontend && ng serve
 
 # Test
 cd frontend && ng test
-cd backend && dotnet test
+cd backend && dotnet test WeatherApp.Api.Tests
 ```
 
 ## Rules Frontend

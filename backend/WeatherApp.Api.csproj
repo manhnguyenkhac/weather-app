@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>WeatherApp.Api</RootNamespace>
+    <!-- Project test nằm trong thư mục con - loại khỏi glob mặc định của project web -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);WeatherApp.Api.Tests/**</DefaultItemExcludes>
+  </PropertyGroup>
+
+</Project>

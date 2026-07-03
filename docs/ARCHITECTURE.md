@@ -32,7 +32,7 @@ flowchart LR
 - Gọi Open-Meteo qua **typed HttpClient** (`OpenMeteoClient`) đăng ký bằng `IHttpClientFactory`; URL Open-Meteo đặt trong `appsettings.json`, không hardcode trong code.
 - DTO là `record`. Khi format số (lat/lon) vào URL upstream, luôn dùng `CultureInfo.InvariantCulture`.
 - Mã lỗi: `400` khi param sai/thiếu, `502` khi Open-Meteo upstream lỗi.
-- Chạy dev: `cd backend && dotnet run --urls http://localhost:5155`. Test: `cd backend && dotnet test`.
+- Chạy dev: `cd backend && dotnet run --urls http://localhost:5155`. Test: `cd backend && dotnet test WeatherApp.Api.Tests`.
 
 ### External — Open-Meteo
 

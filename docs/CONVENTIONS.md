@@ -56,7 +56,7 @@ weather-app/
 - **Commit link issue**: message kết thúc bằng `(#N)` — ví dụ `feat(backend): add GET /api/weather endpoint (#4)`.
 - **Review gate trước khi push** (hook cưỡng chế): chạy `/code-review`, sửa hết 🔴 Critical và 🟡 Warning, rồi ghi dấu đạt `git rev-parse HEAD > .claude/.review-passed` — thiếu dấu đúng SHA của HEAD thì `git push` bị chặn.
 - **PR vào `develop`**, merge bằng **squash merge**. `main` chỉ nhận merge release từ `develop` khi user quyết định.
-- **Trước khi mở PR**: chạy test và pass toàn bộ — `cd frontend && ng test` và `cd backend && dotnet test`.
+- **Trước khi mở PR**: chạy test và pass toàn bộ — `cd frontend && ng test` và `cd backend && dotnet test WeatherApp.Api.Tests` (phải chỉ rõ project test — chạy `dotnet test` trần từ `backend/` sẽ nhắm vào project web và pass rỗng, false-green).
 - **Conventional Commits**: `type(scope): mô tả`. Các type cho phép:
   - `feat` — tính năng mới: `feat(backend): add GET /api/weather endpoint`
   - `fix` — sửa bug: `fix(frontend): handle empty geocode result`

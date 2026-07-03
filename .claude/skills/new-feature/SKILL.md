@@ -39,7 +39,7 @@ Trình bày plan gọn (bullet, không lan man), gồm:
 ## Bước 5 — Chạy toàn bộ test 2 phía
 
 ```
-cd backend && dotnet test
+cd backend && dotnet test WeatherApp.Api.Tests
 cd frontend && ng test
 ```
 
