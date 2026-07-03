@@ -26,5 +26,5 @@ Thứ tự ưu tiên từ trên xuống. Mỗi mục: mô tả + tiêu chí xong
 
 ### Vận hành
 
-- [ ] CI chạy test — DoD: pipeline chạy `dotnet test` + `ng test` trên mọi PR vào `develop`, PR fail test không merge được.
+- [x] CI chạy test (#21) — DoD: pipeline chạy `dotnet test` + `ng test` trên mọi PR vào `develop` (GitHub Actions, 2 job song song), PR fail test không merge được (required status checks backend + frontend trên branch protection của `develop`).
 - [ ] Deploy — DoD: backend + frontend deploy tự động từ `main`, có URL public truy cập được.
