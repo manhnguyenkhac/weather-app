@@ -1,0 +1,27 @@
+<form (submit)="$event.preventDefault(); search()">
+  <input [formField]="searchForm.city" placeholder="Tên thành phố (vd: Hanoi, Da Nang…)" autocomplete="off" />
+  <button type="submit" [disabled]="searchForm().invalid()">Tìm</button>
+</form>
+
+@if (api.cities.isLoading()) {
+  <p class="hint">Đang tìm…</p>
+} @else if (api.cities.error()) {
+  <p class="error">Không tìm được thành phố — thử lại sau.</p>
+} @else if (api.cities.hasValue()) {
+  @if (api.cities.value().length === 0) {
+    <p class="hint">Không có kết quả nào khớp.</p>
+  } @else {
+    <ul class="results">
+      @for (city of api.cities.value(); track city.latitude + ',' + city.longitude) {
+        <li>
+          <button
+            type="button"
+            [class.selected]="city === api.selectedCity()"
+            (click)="api.selectCity(city)">
+            {{ city.name }}, {{ city.country }}
+          </button>
+        </li>
+      }
+    </ul>
+  }
+}

@@ -1,0 +1,9 @@
+<ul class="forecast">
+  @for (day of days(); track day.date) {
+    <li>
+      <span class="date">{{ day.date }}</span>
+      <span class="condition">{{ label(day.weatherCode) }}</span>
+      <span class="range">{{ day.tempMin }}° – {{ day.tempMax }}°</span>
+    </li>
+  }
+</ul>

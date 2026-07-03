@@ -1,4 +1,16 @@
 <main>
   <h1>{{ title() }}</h1>
-  <p>Frontend Angular 22 — UI thời tiết sẽ được thêm ở các module sau (xem docs/ROADMAP.md).</p>
+
+  <app-city-search />
+
+  @if (api.selectedCity(); as city) {
+    @if (api.forecast.isLoading()) {
+      <p class="hint">Đang tải dự báo…</p>
+    } @else if (api.forecast.error()) {
+      <p class="error">Không lấy được dữ liệu thời tiết — thử lại sau.</p>
+    } @else if (api.forecast.hasValue()) {
+      <app-weather-card [city]="city" [current]="api.forecast.value().current" />
+      <app-forecast-list [days]="api.forecast.value().daily" />
+    }
+  }
 </main>

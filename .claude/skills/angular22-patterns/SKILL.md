@@ -87,13 +87,13 @@ Ghi chú:
 ```ts
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
-import { form, required, minLength, Control } from '@angular/forms/signals';
+import { FormField, form, minLength, required } from '@angular/forms/signals';
 
 @Component({
   selector: 'app-city-search',
   templateUrl: './city-search.html',
   styleUrl: './city-search.css',
-  imports: [Control],
+  imports: [FormField],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CitySearch {
@@ -133,7 +133,7 @@ export interface GeocodeResult {
 
 ```html
 <form (submit)="$event.preventDefault(); search()">
-  <input [control]="searchForm.city" placeholder="Tên thành phố" />
+  <input [formField]="searchForm.city" placeholder="Tên thành phố" />
   <button type="submit" [disabled]="searchForm().invalid()">Tìm</button>
 </form>
 ```
