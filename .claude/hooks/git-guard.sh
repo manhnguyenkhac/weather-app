@@ -33,6 +33,16 @@ case "$input" in
     if [ "$branch" = "main" ]; then
       deny "BLOCKED: khong push tu main. Lam viec tren develop hoac feature/*."
     fi
+    case "$input" in
+      *"git commit"*|*"git merge"*)
+        deny "BLOCKED: khong gop git push chung voi git commit/git merge trong mot lenh - review gate phai kiem tra HEAD cuoi cung. Commit xong, review, ghi marker, roi push bang lenh rieng."
+        ;;
+    esac
+    case "$input" in
+      *"push --force"*|*"push -f"*|*"--force-with-lease"*)
+        deny "BLOCKED: cam force push trong repo nay."
+        ;;
+    esac
     head=$(git rev-parse HEAD 2>/dev/null)
     ok=$(cat .claude/.review-passed 2>/dev/null)
     if [ -n "$head" ] && [ "$head" = "$ok" ]; then

@@ -65,3 +65,4 @@ weather-app/
   - `test` — thêm/sửa test: `test(backend): cover 400 on missing lat`
   - `refactor` — đổi cấu trúc không đổi hành vi: `refactor(frontend): extract forecast-list component`
 - Scope gợi ý: `backend`, `frontend`, hoặc bỏ trống khi ảnh hưởng toàn repo.
+- **Ngôn ngữ commit**: title theo Conventional Commits (tiếng Anh). Body viết tiếng Anh hoặc tiếng Việt đều được — nhưng nếu tiếng Việt thì BẮT BUỘC có dấu đầy đủ (không viết "chua co dau" khó đọc).
