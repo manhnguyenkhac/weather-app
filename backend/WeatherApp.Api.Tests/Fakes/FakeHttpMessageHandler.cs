@@ -10,9 +10,12 @@ public sealed class FakeHttpMessageHandler(HttpStatusCode statusCode, string bod
 {
     public Uri? LastRequestUri { get; private set; }
 
+    public int RequestCount { get; private set; }
+
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         LastRequestUri = request.RequestUri;
+        RequestCount++;
 
         var response = new HttpResponseMessage(statusCode)
         {

@@ -120,6 +120,63 @@ public class OpenMeteoClientTests
     }
 
     [Fact]
+    public async Task SearchLocations_CacheHit_KhongGoiLaiUpstream_KhiCungThamSo()
+    {
+        var handler = new FakeHttpMessageHandler(HttpStatusCode.OK, """{"results":[{"name":"Hanoi","country":"Vietnam","latitude":21.0,"longitude":105.8}]}""");
+        var client = TestOpenMeteo.CreateClient(handler);
+
+        var first = await client.SearchLocationsAsync("Hanoi", 5);
+        var second = await client.SearchLocationsAsync("Hanoi", 5);
+
+        Assert.Equal(1, handler.RequestCount); // lần 2 lấy từ cache
+        Assert.Equal(first, second);
+    }
+
+    [Fact]
+    public async Task SearchLocations_KhongDungCache_KhiThamSoKhac()
+    {
+        var handler = new FakeHttpMessageHandler(HttpStatusCode.OK, """{"results":[]}""");
+        var client = TestOpenMeteo.CreateClient(handler);
+
+        await client.SearchLocationsAsync("Hanoi", 5);
+        await client.SearchLocationsAsync("Hanoi", 10);
+        await client.SearchLocationsAsync("Hue", 5);
+
+        Assert.Equal(3, handler.RequestCount);
+    }
+
+    [Fact]
+    public async Task SearchLocations_KhongCacheLoi_UpstreamLoiThiLanSauGoiLai()
+    {
+        var handler = new FakeHttpMessageHandler(HttpStatusCode.InternalServerError, "boom");
+        var client = TestOpenMeteo.CreateClient(handler);
+
+        await client.SearchLocationsAsync("Hanoi", 5);
+        await client.SearchLocationsAsync("Hanoi", 5);
+
+        Assert.Equal(2, handler.RequestCount); // null không được cache
+    }
+
+    [Fact]
+    public async Task GetForecast_CacheHit_KhongGoiLaiUpstream_KhiCungToaDo()
+    {
+        const string body = """
+            {
+              "current": { "temperature_2m": 27.4, "wind_speed_10m": 11.2, "weather_code": 3 },
+              "daily": { "time": ["2026-07-03"], "temperature_2m_max": [33.1], "temperature_2m_min": [25.6], "weather_code": [80] }
+            }
+            """;
+        var handler = new FakeHttpMessageHandler(HttpStatusCode.OK, body);
+        var client = TestOpenMeteo.CreateClient(handler);
+
+        await client.GetForecastAsync(21.0278, 105.8342, 7);
+        await client.GetForecastAsync(21.0278, 105.8342, 7);
+        await client.GetForecastAsync(21.0278, 105.8342, 3); // days khác -> URL khác -> gọi thật
+
+        Assert.Equal(2, handler.RequestCount);
+    }
+
+    [Fact]
     public async Task GetForecast_ParseDuocSnakeCase_KhiUpstreamTraJsonHopLe()
     {
         const string body = """

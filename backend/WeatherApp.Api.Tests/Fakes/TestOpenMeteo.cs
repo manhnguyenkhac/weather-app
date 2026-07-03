@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using WeatherApp.Api.Services;
 
@@ -22,7 +23,7 @@ public static class TestOpenMeteo
             })
             .Build();
 
-        return new OpenMeteoClient(new HttpClient(handler), config);
+        return new OpenMeteoClient(new HttpClient(handler), config, new MemoryCache(new MemoryCacheOptions()));
     }
 
     public static OpenMeteoClient CreateClient(HttpStatusCode statusCode, string body, string contentType = "application/json") =>
