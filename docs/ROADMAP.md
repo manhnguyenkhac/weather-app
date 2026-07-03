@@ -23,7 +23,7 @@ Thứ tự ưu tiên từ trên xuống. Mỗi mục: mô tả + tiêu chí xong
 - [x] Toggle °C/°F trên UI (#17) — DoD: chuyển đổi đơn vị tức thì bằng computed signal, lựa chọn được giữ trong `localStorage` (19 test pass, có test DOM 30°C → 86°F).
 - [x] Giao diện kiểu AccuWeather (#19, user yêu cầu ngoài backlog) — header tối + search dropdown, hero current (RealFeel®, độ ẩm), dải hourly 24h cuộn ngang, daily dạng card; `/api/weather` mở rộng `apparentTemperature`/`humidity`/`hourly` (63 test pass 2 phía, verify sống).
 - [x] Địa điểm gần đây + sidebar (#23, user yêu cầu ngoài backlog) — lịch sử ≤5 city trong localStorage, card kèm nhiệt độ + RealFeel sống ở trang chủ; sidebar ☰ trượt phải (cài đặt °C/°F, link cuộn section, chọn nhanh/xóa lịch sử) (38 test frontend pass, review đa góc 4 finder + verify).
-- [ ] PWA + offline — DoD: app cài được (installable), forecast xem gần nhất hiển thị được khi mất mạng.
+- [x] PWA + offline (#27) — DoD: app cài được (manifest + service worker trong production build), forecast xem gần nhất hiển thị được khi mất mạng (SW dataGroup `/api/**` strategy freshness, timeout 5s → cache, maxAge 1d). Package thêm: @angular/pwa (user đã duyệt).
 
 ### Vận hành
 
