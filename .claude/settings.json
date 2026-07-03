@@ -1,7 +1,10 @@
 {
   "permissions": {
-    "defaultMode": "acceptEdits",
+    "defaultMode": "dontAsk",
     "allow": [
+      "Bash(cd *)",
+      "Bash(echo *)",
+      "Bash(export *)",
       "Skill",
       "Agent",
       "Workflow",
