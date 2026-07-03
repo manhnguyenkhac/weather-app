@@ -28,4 +28,4 @@ Thứ tự ưu tiên từ trên xuống. Mỗi mục: mô tả + tiêu chí xong
 ### Vận hành
 
 - [x] CI chạy test (#21) — DoD: pipeline chạy `dotnet test` + `ng test` trên mọi PR vào `develop` (GitHub Actions, 2 job song song), PR fail test không merge được (required status checks backend + frontend trên branch protection của `develop`).
-- [ ] Deploy — DoD: backend + frontend deploy tự động từ `main`, có URL public truy cập được.
+- [ ] Deploy — DoD: backend + frontend deploy tự động từ `main`, có URL public truy cập được. **Tiến độ (#29)**: config xong (Vercel + Render — `render.yaml`, `backend/Dockerfile` đã verify chạy container thật, `frontend/vercel.json` rewrites), release đầu tiên develop→main đã tạo; còn bước user tạo tài khoản + import theo `docs/DEPLOY.md` (~10 phút) để có URL public.
