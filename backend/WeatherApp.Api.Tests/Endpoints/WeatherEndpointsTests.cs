@@ -27,6 +27,7 @@ public class WeatherEndpointsTests
     [InlineData(null)]
     [InlineData(-90.1)]
     [InlineData(90.1)]
+    [InlineData(double.NaN)]
     public async Task Weather_Tra400_KhiLatThieuHoacNgoaiKhoang(double? lat)
     {
         var client = TestOpenMeteo.CreateClient(HttpStatusCode.OK, ValidBody);

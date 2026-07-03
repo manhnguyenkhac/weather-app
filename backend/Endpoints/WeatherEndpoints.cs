@@ -15,14 +15,15 @@ public static class WeatherEndpoints
     // Tách handler thành method public để unit test gọi trực tiếp không cần host
     public static async Task<IResult> HandleAsync(double? lat, double? lon, int? days, OpenMeteoClient openMeteo, CancellationToken ct)
     {
-        if (lat is null or < -90 or > 90)
+        // Lưu ý NaN: fail mọi phép so sánh nên phải check riêng (double.TryParse("NaN") thành công)
+        if (lat is null or < -90 or > 90 || double.IsNaN(lat.Value))
         {
             return Results.Problem(
                 detail: "Query param 'lat' là bắt buộc và phải là số trong khoảng -90..90.",
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        if (lon is null or < -180 or > 180)
+        if (lon is null or < -180 or > 180 || double.IsNaN(lon.Value))
         {
             return Results.Problem(
                 detail: "Query param 'lon' là bắt buộc và phải là số trong khoảng -180..180.",
