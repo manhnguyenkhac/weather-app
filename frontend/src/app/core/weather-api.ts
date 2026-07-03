@@ -1,5 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
+import { RecentLocations } from './recent-locations';
 
 // ===== Shape khớp đúng contract backend trong docs/API.md =====
 
@@ -89,6 +90,8 @@ export function weatherCodeLabel(code: number): string {
  */
 @Injectable({ providedIn: 'root' })
 export class WeatherApi {
+  private readonly recent = inject(RecentLocations);
+
   readonly submittedQuery = signal<string | undefined>(undefined);
   readonly selectedCity = signal<GeocodeResult | undefined>(undefined);
 
@@ -109,5 +112,6 @@ export class WeatherApi {
 
   selectCity(city: GeocodeResult): void {
     this.selectedCity.set(city);
+    this.recent.add(city);
   }
 }

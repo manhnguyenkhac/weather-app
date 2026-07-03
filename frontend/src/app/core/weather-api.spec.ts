@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { RecentLocations } from './recent-locations';
 import {
   WeatherApi,
   GeocodeResult,
@@ -59,6 +60,7 @@ describe('WeatherApi', () => {
   const hanoi: GeocodeResult = { name: 'Hanoi', country: 'Vietnam', latitude: 21.0245, longitude: 105.8412 };
 
   function createService(): WeatherApi {
+    localStorage.clear();
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
@@ -75,12 +77,13 @@ describe('WeatherApi', () => {
     expect(api.selectedCity()).toBeUndefined();
   });
 
-  it('selectCity() lưu city được chọn', () => {
+  it('selectCity() lưu city được chọn và ghi vào lịch sử gần đây', () => {
     const api = createService();
 
     api.selectCity(hanoi);
 
     expect(api.selectedCity()).toEqual(hanoi);
+    expect(TestBed.inject(RecentLocations).locations()[0]).toEqual(hanoi);
   });
 
   it('resource ở trạng thái idle khi chưa search/chọn gì', () => {

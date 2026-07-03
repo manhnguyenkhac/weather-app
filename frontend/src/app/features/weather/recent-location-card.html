@@ -1,0 +1,15 @@
+@if (city(); as c) {
+  <button type="button" class="card" (click)="chosen.emit(c)">
+    <span class="name">{{ c.name }}</span>
+    <span class="country">{{ c.country }}</span>
+    @if (temp() !== null) {
+      <span class="row">
+        <span class="emoji">{{ emoji() }}</span>
+        <span class="temp">{{ temp() }}°<small>{{ pref.unit() }}</small></span>
+      </span>
+      <span class="realfeel">RealFeel® {{ realFeel() }}°</span>
+    } @else {
+      <span class="realfeel">Đang tải…</span>
+    }
+  </button>
+}

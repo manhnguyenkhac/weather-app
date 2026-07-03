@@ -50,6 +50,20 @@
   color: #fff;
 }
 
+.menu {
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+}
+
+.menu:hover {
+  color: #f05514;
+}
+
 /* ===== Nội dung ===== */
 main {
   max-width: 960px;

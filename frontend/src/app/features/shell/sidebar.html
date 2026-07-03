@@ -1,0 +1,41 @@
+@if (open()) {
+  <div class="backdrop" (click)="closed.emit()"></div>
+
+  <aside class="panel">
+    <header>
+      <h2>⚙️ Cài đặt</h2>
+      <button type="button" class="close" (click)="closed.emit()" aria-label="Đóng menu">✕</button>
+    </header>
+
+    <section>
+      <h3>Đơn vị nhiệt độ</h3>
+      <div class="segmented">
+        <button type="button" [class.active]="pref.unit() === 'C'" (click)="setUnit('C')">°C</button>
+        <button type="button" [class.active]="pref.unit() === 'F'" (click)="setUnit('F')">°F</button>
+      </div>
+    </section>
+
+    @if (api.selectedCity(); as city) {
+      <section>
+        <h3>{{ city.name }} thời tiết</h3>
+        <ul class="links">
+          <li><button type="button" (click)="goTo('current')">☀️ Hiện tại</button></li>
+          <li><button type="button" (click)="goTo('hourly')">🕒 Theo giờ</button></li>
+          <li><button type="button" (click)="goTo('daily')">📅 7 ngày</button></li>
+        </ul>
+      </section>
+    }
+
+    @if (recent.locations().length > 0) {
+      <section>
+        <h3>Địa điểm gần đây</h3>
+        <ul class="links">
+          @for (city of recent.locations(); track city.latitude + ',' + city.longitude) {
+            <li><button type="button" (click)="choose(city)">📍 {{ city.name }}, {{ city.country }}</button></li>
+          }
+        </ul>
+        <button type="button" class="clear" (click)="recent.clear()">Xóa lịch sử</button>
+      </section>
+    }
+  </aside>
+}
