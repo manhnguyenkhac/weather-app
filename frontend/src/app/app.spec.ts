@@ -4,6 +4,8 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { App } from './app';
 
 describe('App', () => {
+  beforeEach(() => localStorage.clear());
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],

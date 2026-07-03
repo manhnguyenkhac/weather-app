@@ -9,6 +9,9 @@ describe('ForecastList', () => {
     { date: '2026-07-04', tempMax: 32.0, tempMin: 25.1, weatherCode: 61 },
   ];
 
+  // Unit 'F' còn sót trong localStorage từ spec khác sẽ làm nhiệt độ render thành °F (flaky theo thứ tự chạy)
+  beforeEach(() => localStorage.clear());
+
   it('render mỗi ngày một card với thứ, ngày, max/min', async () => {
     await TestBed.configureTestingModule({ imports: [ForecastList] }).compileComponents();
     const fixture = TestBed.createComponent(ForecastList);
