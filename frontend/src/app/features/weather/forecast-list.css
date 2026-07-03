@@ -1,0 +1,64 @@
+.panel {
+  margin-top: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+}
+
+h3 {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #5b616e;
+}
+
+.days {
+  list-style: none;
+  display: flex;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0 0 0.4rem;
+  overflow-x: auto;
+}
+
+.days li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 4.5rem;
+  padding: 0.6rem 0.4rem;
+  border-radius: 8px;
+  border: 1px solid #eceef1;
+}
+
+.days li:hover {
+  border-color: #f05514;
+}
+
+.weekday {
+  font-weight: 700;
+  color: #26272b;
+}
+
+.date {
+  font-size: 0.75rem;
+  color: #5b616e;
+}
+
+.emoji {
+  font-size: 1.6rem;
+  margin: 0.2rem 0;
+}
+
+.max {
+  font-weight: 700;
+  color: #26272b;
+}
+
+.min {
+  color: #8b919d;
+}

@@ -1,0 +1,14 @@
+<section class="panel">
+  <h3>Dự báo {{ displayDays().length }} ngày</h3>
+  <ul class="days">
+    @for (day of displayDays(); track day.date) {
+      <li [title]="day.condition">
+        <span class="weekday">{{ day.weekday }}</span>
+        <span class="date">{{ day.dateShort }}</span>
+        <span class="emoji">{{ day.emoji }}</span>
+        <span class="max">{{ day.tempMax }}°</span>
+        <span class="min">{{ day.tempMin }}°</span>
+      </li>
+    }
+  </ul>
+</section>

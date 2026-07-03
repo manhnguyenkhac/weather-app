@@ -1,0 +1,12 @@
+<section class="panel">
+  <h3>Theo giờ</h3>
+  <ul class="strip">
+    @for (hour of displayHours(); track hour.label) {
+      <li>
+        <span class="hour">{{ hour.label }}</span>
+        <span class="emoji">{{ hour.emoji }}</span>
+        <span class="temp">{{ hour.temperature }}°</span>
+      </li>
+    }
+  </ul>
+</section>

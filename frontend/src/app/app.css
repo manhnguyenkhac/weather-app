@@ -1,0 +1,93 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+/* ===== Header tối kiểu AccuWeather ===== */
+.topbar {
+  background: #26272b;
+  padding: 0.6rem 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.topbar-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.search-slot {
+  flex: 1;
+  min-width: 0;
+}
+
+.unit-toggle {
+  padding: 0.35rem 0.9rem;
+  border: 1px solid #f05514;
+  border-radius: 999px;
+  background: transparent;
+  color: #f05514;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.unit-toggle:hover {
+  background: #f05514;
+  color: #fff;
+}
+
+.menu {
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+}
+
+.menu:hover {
+  color: #f05514;
+}
+
+/* ===== Nội dung ===== */
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0.5rem 1rem 3rem;
+}
+
+.hint {
+  color: #5b616e;
+  margin-top: 1rem;
+}
+
+.error {
+  color: #c62828;
+  margin-top: 1rem;
+}
+
+.empty {
+  text-align: center;
+  color: #5b616e;
+  margin-top: 4rem;
+}
+
+.empty-emoji {
+  font-size: 3rem;
+  margin: 0 0 0.5rem;
+}
