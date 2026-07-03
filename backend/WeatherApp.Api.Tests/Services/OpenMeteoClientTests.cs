@@ -109,6 +109,10 @@ public class OpenMeteoClientTests
             // vi-VN format double bằng dấu phẩy (21,0278) — InvariantCulture phải giữ dấu chấm
             Assert.Contains("latitude=21.0278", url);
             Assert.Contains("longitude=105.8342", url);
+            Assert.Contains("apparent_temperature", url);
+            Assert.Contains("relative_humidity_2m", url);
+            Assert.Contains("hourly=temperature_2m,weather_code", url);
+            Assert.Contains("forecast_hours=24", url);
             Assert.Contains("forecast_days=7", url);
             Assert.Contains("timezone=auto", url);
             Assert.DoesNotContain("21,0278", url);
@@ -181,7 +185,12 @@ public class OpenMeteoClientTests
     {
         const string body = """
             {
-              "current": { "temperature_2m": 27.4, "wind_speed_10m": 11.2, "weather_code": 3 },
+              "current": { "temperature_2m": 27.4, "apparent_temperature": 32.1, "relative_humidity_2m": 78, "wind_speed_10m": 11.2, "weather_code": 3 },
+              "hourly": {
+                "time": ["2026-07-03T14:00"],
+                "temperature_2m": [30.0],
+                "weather_code": [3]
+              },
               "daily": {
                 "time": ["2026-07-03"],
                 "temperature_2m_max": [33.1],
@@ -196,8 +205,12 @@ public class OpenMeteoClientTests
 
         Assert.NotNull(result);
         Assert.Equal(27.4, result!.Current!.Temperature);
+        Assert.Equal(32.1, result.Current.ApparentTemperature);
+        Assert.Equal(78, result.Current.Humidity);
         Assert.Equal(11.2, result.Current.WindSpeed);
         Assert.Equal(3, result.Current.WeatherCode);
+        Assert.Equal("2026-07-03T14:00", Assert.Single(result.Hourly!.Time!));
+        Assert.Equal(30.0, Assert.Single(result.Hourly.Temperature!));
         Assert.Equal("2026-07-03", Assert.Single(result.Daily!.Time!));
         Assert.Equal(33.1, Assert.Single(result.Daily.TempMax!));
     }

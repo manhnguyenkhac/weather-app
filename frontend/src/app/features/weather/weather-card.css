@@ -1,29 +1,79 @@
-.card {
-  margin-top: 1.5rem;
+.hero {
+  margin-top: 1rem;
   padding: 1.25rem 1.5rem;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #1976d2, #42a5f5);
-  color: #fff;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+  border-top: 4px solid #f05514;
 }
 
-.card h2 {
-  margin: 0 0 0.5rem;
-  font-size: 1.25rem;
+.hero-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.hero-head h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #26272b;
+}
+
+.now {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #5b616e;
+}
+
+.hero-main {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.emoji {
+  font-size: 3.5rem;
+  line-height: 1;
 }
 
 .temperature {
-  margin: 0;
-  font-size: 3rem;
+  font-size: 4rem;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1;
+  color: #f05514;
+}
+
+.temperature small {
+  font-size: 1.5rem;
+  font-weight: 600;
+  vertical-align: super;
+}
+
+.meta {
+  margin-left: 0.5rem;
 }
 
 .condition {
-  margin: 0.25rem 0 0;
+  margin: 0;
   font-size: 1.1rem;
+  font-weight: 600;
+  color: #26272b;
 }
 
-.wind {
-  margin: 0.5rem 0 0;
-  opacity: 0.9;
+.realfeel {
+  margin: 0.25rem 0 0;
+  color: #5b616e;
+}
+
+.hero-details {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #eceef1;
+  color: #5b616e;
+  font-size: 0.95rem;
 }

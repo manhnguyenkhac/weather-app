@@ -11,7 +11,12 @@ public class WeatherEndpointsTests
 {
     private const string ValidBody = """
         {
-          "current": { "temperature_2m": 27.4, "wind_speed_10m": 11.2, "weather_code": 3 },
+          "current": { "temperature_2m": 27.4, "apparent_temperature": 32.1, "relative_humidity_2m": 78, "wind_speed_10m": 11.2, "weather_code": 3 },
+          "hourly": {
+            "time": ["2026-07-03T14:00", "2026-07-03T15:00"],
+            "temperature_2m": [30.0, 29.5],
+            "weather_code": [3, 61]
+          },
           "daily": {
             "time": ["2026-07-03", "2026-07-04"],
             "temperature_2m_max": [33.1, 32.0],
@@ -78,9 +83,18 @@ public class WeatherEndpointsTests
 
     [Theory]
     [InlineData("{}")]
-    [InlineData("""{ "current": { "temperature_2m": 1, "wind_speed_10m": 2, "weather_code": 3 } }""")]
+    // Thiếu hourly + daily
+    [InlineData("""{ "current": { "temperature_2m": 1, "apparent_temperature": 1, "relative_humidity_2m": 50, "wind_speed_10m": 2, "weather_code": 3 } }""")]
+    // Thiếu current + hourly
     [InlineData("""{ "daily": { "time": ["2026-07-03"], "temperature_2m_max": [1], "temperature_2m_min": [0], "weather_code": [0] } }""")]
-    public async Task Weather_Tra502_KhiBody200ThieuBlockCurrentHoacDaily(string body)
+    // Có current + daily nhưng thiếu hourly
+    [InlineData("""
+        {
+          "current": { "temperature_2m": 1, "apparent_temperature": 1, "relative_humidity_2m": 50, "wind_speed_10m": 2, "weather_code": 3 },
+          "daily": { "time": ["2026-07-03"], "temperature_2m_max": [1], "temperature_2m_min": [0], "weather_code": [0] }
+        }
+        """)]
+    public async Task Weather_Tra502_KhiBody200ThieuBlock(string body)
     {
         var client = TestOpenMeteo.CreateClient(HttpStatusCode.OK, body);
 
@@ -99,7 +113,9 @@ public class WeatherEndpointsTests
 
         var ok = Assert.IsType<Ok<WeatherResponseDto>>(result);
         var response = ok.Value!;
-        Assert.Equal(new CurrentWeatherDto(27.4, 11.2, 3), response.Current);
+        Assert.Equal(new CurrentWeatherDto(27.4, 32.1, 78, 11.2, 3), response.Current);
+        Assert.Equal(2, response.Hourly.Count);
+        Assert.Equal(new HourlyForecastDto("2026-07-03T14:00", 30.0, 3), response.Hourly[0]);
         Assert.Equal(2, response.Daily.Count);
         Assert.Equal(new DailyForecastDto("2026-07-03", 33.1, 25.6, 80), response.Daily[0]);
         Assert.Equal(new DailyForecastDto("2026-07-04", 32.0, 25.1, 61), response.Daily[1]);
@@ -108,10 +124,15 @@ public class WeatherEndpointsTests
     [Fact]
     public async Task Weather_ZipTheoMangNganNhat_KhiMangCotLechNhau()
     {
-        // Upstream bất thường: time có 2 ngày nhưng temperature_2m_min chỉ có 1 phần tử
+        // Upstream bất thường: hourly.time có 2 giờ nhưng temperature chỉ 1; daily.time 2 ngày nhưng min chỉ 1
         const string raggedBody = """
             {
-              "current": { "temperature_2m": 27.4, "wind_speed_10m": 11.2, "weather_code": 3 },
+              "current": { "temperature_2m": 27.4, "apparent_temperature": 32.1, "relative_humidity_2m": 78, "wind_speed_10m": 11.2, "weather_code": 3 },
+              "hourly": {
+                "time": ["2026-07-03T14:00", "2026-07-03T15:00"],
+                "temperature_2m": [30.0],
+                "weather_code": [3, 61]
+              },
               "daily": {
                 "time": ["2026-07-03", "2026-07-04"],
                 "temperature_2m_max": [33.1, 32.0],
@@ -125,7 +146,8 @@ public class WeatherEndpointsTests
         var result = await WeatherEndpoints.HandleAsync(HaNoi.Lat, HaNoi.Lon, days: null, client, CancellationToken.None);
 
         var ok = Assert.IsType<Ok<WeatherResponseDto>>(result);
-        var day = Assert.Single(ok.Value!.Daily);
+        Assert.Single(ok.Value!.Hourly);
+        var day = Assert.Single(ok.Value.Daily);
         Assert.Equal("2026-07-03", day.Date);
     }
 }
