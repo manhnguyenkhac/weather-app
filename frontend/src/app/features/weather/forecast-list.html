@@ -1,5 +1,5 @@
 <ul class="forecast">
-  @for (day of days(); track day.date) {
+  @for (day of displayDays(); track day.date) {
     <li>
       <span class="date">{{ day.date }}</span>
       <span class="condition">{{ label(day.weatherCode) }}</span>

@@ -1,5 +1,11 @@
 <main>
-  <h1>{{ title() }}</h1>
+  <header class="app-header">
+    <h1>{{ title() }}</h1>
+    <button type="button" class="unit-toggle" (click)="pref.toggle()"
+      [attr.aria-label]="'Chuyển sang °' + (pref.unit() === 'C' ? 'F' : 'C')">
+      °{{ pref.unit() }}
+    </button>
+  </header>
 
   <app-city-search />
 

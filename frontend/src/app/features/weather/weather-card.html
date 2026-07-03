@@ -1,6 +1,6 @@
 <section class="card">
   <h2>{{ city().name }}, {{ city().country }}</h2>
-  <p class="temperature">{{ current().temperature }}°C</p>
+  <p class="temperature">{{ displayTemperature() }}°{{ pref.unit() }}</p>
   <p class="condition">{{ conditionLabel() }}</p>
   <p class="wind">💨 Gió {{ current().windSpeed }} km/h</p>
 </section>
