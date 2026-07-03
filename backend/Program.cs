@@ -12,6 +12,7 @@ foreach (var key in (string[])["OpenMeteo:GeocodingUrl", "OpenMeteo:ForecastUrl"
     }
 }
 
+builder.Services.AddMemoryCache();
 builder.Services.AddHttpClient<OpenMeteoClient>();
 
 var app = builder.Build();

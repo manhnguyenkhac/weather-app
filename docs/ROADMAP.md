@@ -19,7 +19,7 @@ Thứ tự ưu tiên từ trên xuống. Mỗi mục: mô tả + tiêu chí xong
 
 ### Nâng cao
 
-- [ ] Cache backend bằng `IMemoryCache` cho response Open-Meteo — DoD: request trùng (lat/lon/days hoặc q/count) trong TTL không gọi lại upstream, có test verify cache hit.
+- [x] Cache backend bằng `IMemoryCache` cho response Open-Meteo (#15) — DoD: request trùng (lat/lon/days hoặc q/count) trong TTL không gọi lại upstream, có test verify cache hit (38 test pass; verify sống: 5 request → 2 lần gọi upstream, latency 907ms → 2ms).
 - [ ] Toggle °C/°F trên UI — DoD: chuyển đổi đơn vị tức thì bằng computed signal, lựa chọn được giữ trong `localStorage`.
 - [ ] PWA + offline — DoD: app cài được (installable), forecast xem gần nhất hiển thị được khi mất mạng.
 
