@@ -1,0 +1,50 @@
+<section class="panel">
+  <h3>Biểu đồ nhiệt độ (°{{ pref.unit() }})</h3>
+
+  @if (line(); as l) {
+    <h4 class="sub">24 giờ tới</h4>
+    <div class="chart-wrap">
+      <svg [attr.viewBox]="'0 0 ' + lineFrame.width + ' ' + lineFrame.height" class="line-chart"
+        role="img" aria-label="Biểu đồ nhiệt độ 24 giờ tới"
+        (mousemove)="onLineMove($event)" (mouseleave)="hoverIndex.set(null)">
+        @for (tick of l.yTicks; track tick.value) {
+          <line [attr.x1]="lineFrame.padLeft" [attr.x2]="lineFrame.width - lineFrame.padRight"
+            [attr.y1]="tick.y" [attr.y2]="tick.y" class="grid" />
+          <text [attr.x]="lineFrame.padLeft - 6" [attr.y]="tick.y + 3" class="axis" text-anchor="end">{{ tick.value }}°</text>
+        }
+        @for (tick of l.xTicks; track tick.x) {
+          <text [attr.x]="tick.x" [attr.y]="lineFrame.height - 6" class="axis" text-anchor="middle">{{ tick.label }}</text>
+        }
+        <path [attr.d]="l.area" class="area" />
+        <path [attr.d]="l.path" class="line" />
+        @for (p of l.extremes; track p.index) {
+          <circle [attr.cx]="p.x" [attr.cy]="p.y" r="3.5" class="dot" />
+          <text [attr.x]="p.x" [attr.y]="p.y - 8" class="extreme" text-anchor="middle">{{ p.value }}°</text>
+        }
+        @if (hoverPoint(); as hp) {
+          <line [attr.x1]="hp.x" [attr.x2]="hp.x" [attr.y1]="lineFrame.padTop"
+            [attr.y2]="lineFrame.height - lineFrame.padBottom" class="crosshair" />
+          <circle [attr.cx]="hp.x" [attr.cy]="hp.y" r="5" class="hover-dot" />
+        }
+      </svg>
+      @if (hoverPoint(); as hp) {
+        <div class="tooltip" [style.left.%]="(hp.x / lineFrame.width) * 100">
+          {{ hp.label }} — {{ hp.value }}°{{ pref.unit() }}
+        </div>
+      }
+    </div>
+  }
+
+  @if (rangeBars().length > 0) {
+    <h4 class="sub">Min–max theo ngày</h4>
+    <svg [attr.viewBox]="'0 0 ' + rangeFrame.width + ' ' + rangeFrame.height" class="range-chart"
+      role="img" aria-label="Dải nhiệt độ min max theo ngày">
+      @for (bar of rangeBars(); track bar.date) {
+        <text [attr.x]="bar.x" [attr.y]="bar.yMax - 8" class="val" text-anchor="middle">{{ bar.max }}°</text>
+        <line [attr.x1]="bar.x" [attr.x2]="bar.x" [attr.y1]="bar.yMax" [attr.y2]="bar.yMin" class="range-bar" />
+        <text [attr.x]="bar.x" [attr.y]="bar.yMin + 14" class="val min" text-anchor="middle">{{ bar.min }}°</text>
+        <text [attr.x]="bar.x" [attr.y]="rangeFrame.height - 6" class="axis" text-anchor="middle">{{ bar.weekday }}</text>
+      }
+    </svg>
+  }
+</section>

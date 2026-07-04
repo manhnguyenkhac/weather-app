@@ -112,7 +112,9 @@ public class OpenMeteoClientTests
             Assert.Contains("apparent_temperature", url);
             Assert.Contains("relative_humidity_2m", url);
             Assert.Contains("hourly=temperature_2m,weather_code", url);
-            Assert.Contains("forecast_hours=24", url);
+            // hourly phủ toàn dải ngày (24×days) — KHÔNG giới hạn forecast_hours
+            Assert.DoesNotContain("forecast_hours", url);
+            Assert.Contains("sunrise,sunset,uv_index_max,precipitation_sum,precipitation_probability_max", url);
             Assert.Contains("forecast_days=7", url);
             Assert.Contains("timezone=auto", url);
             Assert.DoesNotContain("21,0278", url);

@@ -21,7 +21,12 @@ public class WeatherEndpointsTests
             "time": ["2026-07-03", "2026-07-04"],
             "temperature_2m_max": [33.1, 32.0],
             "temperature_2m_min": [25.6, 25.1],
-            "weather_code": [80, 61]
+            "weather_code": [80, 61],
+            "sunrise": ["2026-07-03T05:19", "2026-07-04T05:20"],
+            "sunset": ["2026-07-03T18:43", "2026-07-04T18:43"],
+            "uv_index_max": [8.5, 7.0],
+            "precipitation_sum": [12.3, 4.0],
+            "precipitation_probability_max": [88, 60]
           }
         }
         """;
@@ -117,8 +122,36 @@ public class WeatherEndpointsTests
         Assert.Equal(2, response.Hourly.Count);
         Assert.Equal(new HourlyForecastDto("2026-07-03T14:00", 30.0, 3), response.Hourly[0]);
         Assert.Equal(2, response.Daily.Count);
-        Assert.Equal(new DailyForecastDto("2026-07-03", 33.1, 25.6, 80), response.Daily[0]);
-        Assert.Equal(new DailyForecastDto("2026-07-04", 32.0, 25.1, 61), response.Daily[1]);
+        Assert.Equal(new DailyForecastDto("2026-07-03", 33.1, 25.6, 80, "2026-07-03T05:19", "2026-07-03T18:43", 8.5, 12.3, 88), response.Daily[0]);
+        Assert.Equal(new DailyForecastDto("2026-07-04", 32.0, 25.1, 61, "2026-07-04T05:20", "2026-07-04T18:43", 7.0, 4.0, 60), response.Daily[1]);
+    }
+
+    [Fact]
+    public async Task Weather_FieldChiTietThieu_FallbackMacDinh_KhongPhai502()
+    {
+        // Body chỉ có block lõi — không có sunrise/uv/mưa (vd upstream cắt giảm)
+        const string coreOnly = """
+            {
+              "current": { "temperature_2m": 27.4, "apparent_temperature": 32.1, "relative_humidity_2m": 78, "wind_speed_10m": 11.2, "weather_code": 3 },
+              "hourly": { "time": ["2026-07-03T14:00"], "temperature_2m": [30.0], "weather_code": [3] },
+              "daily": {
+                "time": ["2026-07-03"],
+                "temperature_2m_max": [33.1],
+                "temperature_2m_min": [25.6],
+                "weather_code": [80]
+              }
+            }
+            """;
+        var client = TestOpenMeteo.CreateClient(HttpStatusCode.OK, coreOnly);
+
+        var result = await WeatherEndpoints.HandleAsync(HaNoi.Lat, HaNoi.Lon, days: 1, client, CancellationToken.None);
+
+        var ok = Assert.IsType<Ok<WeatherResponseDto>>(result);
+        var day = Assert.Single(ok.Value!.Daily);
+        Assert.Equal("", day.Sunrise);
+        Assert.Equal(0, day.UvIndexMax);
+        Assert.Equal(0, day.PrecipitationProbabilityMax);
+        Assert.Equal(33.1, day.TempMax); // lõi vẫn nguyên
     }
 
     [Fact]
