@@ -31,7 +31,7 @@ public static class GeocodeEndpoints
         }
 
         var upstream = await openMeteo.SearchLocationsAsync(q.Trim(), resultCount, ct);
-        if (upstream is null)
+        if (upstream.Data is null)
         {
             return Results.Problem(
                 detail: "Open-Meteo không phản hồi hoặc trả về lỗi.",
@@ -39,10 +39,10 @@ public static class GeocodeEndpoints
         }
 
         // Open-Meteo bỏ key "results" khi không tìm thấy — contract của ta là mảng rỗng, vẫn 200
-        var results = (upstream.Results ?? [])
+        var results = (upstream.Data.Results ?? [])
             .Select(r => new GeocodeResultDto(r.Name, r.Country ?? "", r.Latitude, r.Longitude))
             .ToList();
 
-        return Results.Ok(results);
+        return StaleOk.Ok(results, upstream.IsStale);
     }
 }
