@@ -1,18 +1,18 @@
 .panel {
-  margin-top: 1rem;
-  padding: 1.1rem 1.35rem 1.25rem;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+  margin-top: var(--section-gap);
+  padding: var(--panel-pad);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-panel);
 }
 
 h3 {
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.75rem;
   font-size: 0.85rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #5b616e;
+  color: var(--color-muted);
 }
 
 .sub {
@@ -21,29 +21,29 @@ h3 {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #8b919d;
+  color: var(--color-muted-light);
 }
 
 .chart-wrap { position: relative; }
 
 svg { display: block; width: 100%; height: auto; }
 
-.grid { stroke: #eceef1; stroke-width: 1; }
-.axis { fill: #8b919d; font-size: 10px; font-variant-numeric: tabular-nums; }
+.grid { stroke: var(--color-border); stroke-width: 1; }
+.axis { fill: var(--color-muted-light); font-size: 10px; font-variant-numeric: tabular-nums; }
 
 .area { fill: rgb(240 85 20 / 0.08); stroke: none; }
-.line { fill: none; stroke: #f05514; stroke-width: 2; stroke-linejoin: round; }
-.dot { fill: #f05514; stroke: #fff; stroke-width: 1.5; }
-.extreme { fill: #26272b; font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.line { fill: none; stroke: var(--color-accent); stroke-width: 2; stroke-linejoin: round; }
+.dot { fill: var(--color-accent); stroke: #fff; stroke-width: 1.5; }
+.extreme { fill: var(--color-text); font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
 
-.crosshair { stroke: #c8ccd4; stroke-width: 1; stroke-dasharray: 3 3; }
-.hover-dot { fill: #f05514; stroke: #fff; stroke-width: 2; }
+.crosshair { stroke: var(--color-disabled); stroke-width: 1; stroke-dasharray: 3 3; }
+.hover-dot { fill: var(--color-accent); stroke: #fff; stroke-width: 2; }
 
 .tooltip {
   position: absolute;
   top: 0;
   transform: translateX(-50%);
-  background: #26272b;
+  background: var(--color-text);
   color: #fff;
   font-size: 0.75rem;
   padding: 0.25rem 0.55rem;
@@ -54,10 +54,10 @@ svg { display: block; width: 100%; height: auto; }
 }
 
 .range-bar {
-  stroke: #f05514;
+  stroke: var(--color-accent);
   stroke-width: 10;
   stroke-linecap: round;
 }
 
-.val { fill: #26272b; font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.val.min { fill: #8b919d; }
+.val { fill: var(--color-text); font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.val.min { fill: var(--color-muted-light); }

@@ -11,7 +11,7 @@
   right: 0;
   bottom: 0;
   width: min(320px, 85vw);
-  background: #fff;
+  background: var(--color-surface);
   z-index: 40;
   padding: 1rem 1.25rem 2rem;
   overflow-y: auto;
@@ -38,25 +38,25 @@ header {
 h2 {
   margin: 0;
   font-size: 1.15rem;
-  color: #26272b;
+  color: var(--color-text);
 }
 
 .close {
   border: none;
   background: transparent;
   font-size: 1.2rem;
-  color: #5b616e;
+  color: var(--color-muted);
   cursor: pointer;
   padding: 0.25rem 0.5rem;
 }
 
 .close:hover {
-  color: #26272b;
+  color: var(--color-text);
 }
 
 section {
   padding: 1rem 0;
-  border-top: 1px solid #eceef1;
+  border-top: 1px solid var(--color-border);
 }
 
 h3 {
@@ -65,27 +65,27 @@ h3 {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #5b616e;
+  color: var(--color-muted);
 }
 
 .segmented {
   display: inline-flex;
-  border: 1px solid #f05514;
-  border-radius: 999px;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-pill);
   overflow: hidden;
 }
 
 .segmented button {
   border: none;
-  background: #fff;
-  color: #f05514;
+  background: var(--color-surface);
+  color: var(--color-accent);
   font-weight: 700;
   padding: 0.4rem 1.2rem;
   cursor: pointer;
 }
 
 .segmented button.active {
-  background: #f05514;
+  background: var(--color-accent);
   color: #fff;
 }
 
@@ -103,21 +103,21 @@ h3 {
   background: transparent;
   padding: 0.55rem 0.25rem;
   font-size: 1rem;
-  color: #26272b;
+  color: var(--color-text);
   cursor: pointer;
   border-radius: 6px;
 }
 
 .links button:hover {
-  background: #f2f4f7;
-  color: #f05514;
+  background: var(--color-bg);
+  color: var(--color-accent);
 }
 
 .clear {
   margin-top: 0.5rem;
   border: none;
   background: transparent;
-  color: #c62828;
+  color: var(--color-error);
   font-size: 0.85rem;
   cursor: pointer;
   padding: 0.25rem;
