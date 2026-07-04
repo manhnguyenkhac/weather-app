@@ -22,6 +22,7 @@ Thứ tự ưu tiên từ trên xuống. Mỗi mục: mô tả + tiêu chí xong
 - [x] Cache backend bằng `IMemoryCache` cho response Open-Meteo (#15) — DoD: request trùng (lat/lon/days hoặc q/count) trong TTL không gọi lại upstream, có test verify cache hit (38 test pass; verify sống: 5 request → 2 lần gọi upstream, latency 907ms → 2ms).
 - [x] Toggle °C/°F trên UI (#17) — DoD: chuyển đổi đơn vị tức thì bằng computed signal, lựa chọn được giữ trong `localStorage` (19 test pass, có test DOM 30°C → 86°F).
 - [x] Giao diện kiểu AccuWeather (#19, user yêu cầu ngoài backlog) — header tối + search dropdown, hero current (RealFeel®, độ ẩm), dải hourly 24h cuộn ngang, daily dạng card; `/api/weather` mở rộng `apparentTemperature`/`humidity`/`hourly` (63 test pass 2 phía, verify sống).
+- [x] Bản đồ radar mưa (#51, user chốt kèm duyệt package leaflet) — Leaflet + OSM + RainViewer (miễn phí không key): radar thật 2h qua + nowcast 30 phút, Play tua thời gian, click bản đồ chọn vị trí xem thời tiết + AQI; panel thu gọn mặc định, lazy-init; ADR-003 (76 test frontend).
 - [x] Keep-alive Render (#44) — GitHub Actions cron ping /api/health mỗi 10 phút, hết cảnh chờ ~50s đánh thức.
 - [x] Chi tiết từng ngày (#46) — daily thêm mọc/lặn, UV max (nhãn WHO), tổng mưa + xác suất; hourly phủ cả dải ngày; bấm card ngày xổ chi tiết + hourly riêng ngày đó.
 - [x] Biểu đồ nhiệt độ (#48) — SVG tự vẽ: line 24h (grid chìm, hover crosshair + tooltip, label cực trị) + dải min-max theo ngày; hình học tách hàm thuần có test.

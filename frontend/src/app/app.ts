@@ -8,11 +8,12 @@ import { TemperatureChart } from './features/weather/temperature-chart';
 import { ForecastList } from './features/weather/forecast-list';
 import { AirQualityPanel } from './features/weather/air-quality-panel';
 import { RecentLocationList } from './features/weather/recent-location-list';
+import { RainMap } from './features/map/rain-map';
 import { Sidebar } from './features/shell/sidebar';
 
 @Component({
   selector: 'app-root',
-  imports: [CitySearch, WeatherCard, AirQualityPanel, HourlyStrip, TemperatureChart, ForecastList, RecentLocationList, Sidebar],
+  imports: [CitySearch, WeatherCard, AirQualityPanel, HourlyStrip, TemperatureChart, ForecastList, RecentLocationList, RainMap, Sidebar],
   templateUrl: './app.html',
   styleUrl: './app.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
