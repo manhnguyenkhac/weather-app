@@ -10,13 +10,15 @@ import { UnitPreference, convertTemp } from '../../core/unit-preference';
 })
 export class HourlyStrip {
   readonly hours = input.required<HourlyForecast[]>();
+  // hourly giờ phủ cả dải ngày (24×days) — dải chính chỉ hiện limit giờ đầu
+  readonly limit = input(24);
 
   private readonly pref = inject(UnitPreference);
 
   // Danh sách đã quy đổi đơn vị + nhãn giờ — computed từ (hours, unit)
   protected readonly displayHours = computed(() => {
     const unit = this.pref.unit();
-    return this.hours().map((hour) => ({
+    return this.hours().slice(0, this.limit()).map((hour) => ({
       label: hourLabel(hour.time),
       emoji: weatherCodeEmoji(hour.weatherCode),
       temperature: convertTemp(hour.temperature, unit),

@@ -30,6 +30,11 @@ export interface DailyForecast {
   tempMax: number;
   tempMin: number;
   weatherCode: number;
+  sunrise: string;
+  sunset: string;
+  uvIndexMax: number;
+  precipitationSum: number;
+  precipitationProbabilityMax: number;
 }
 
 export interface WeatherResponse {
@@ -85,6 +90,21 @@ export function hourLabel(isoTime: string): string {
   const timePart = isoTime.split('T')[1] ?? '';
   const hour = timePart.slice(0, 2);
   return hour ? `${Number(hour)}h` : isoTime;
+}
+
+/** "2026-07-04T05:19" → "05:19" — giờ mọc/lặn. Rỗng/không có T → "—". */
+export function timeOfDay(isoTime: string): string {
+  const timePart = isoTime.split('T')[1];
+  return timePart ? timePart.slice(0, 5) : '—';
+}
+
+/** Nhãn mức UV theo thang WHO. */
+export function uvLabel(uv: number): string {
+  if (uv < 3) return 'Thấp';
+  if (uv < 6) return 'Trung bình';
+  if (uv < 8) return 'Cao';
+  if (uv < 11) return 'Rất cao';
+  return 'Cực đoan';
 }
 
 /** "2026-07-03" → "T6" / "CN" — nhãn thứ trong tuần cho card daily. */

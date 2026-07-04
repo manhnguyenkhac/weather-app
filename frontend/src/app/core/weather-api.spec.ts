@@ -13,6 +13,8 @@ import {
   weatherCodeEmoji,
   weatherCodeText,
   hourLabel,
+  timeOfDay,
+  uvLabel,
   weekdayLabel,
 } from './weather-api';
 
@@ -130,6 +132,21 @@ describe('WeatherApi', () => {
     expect(api.locating()).toBe(false);
     expect(api.locationError()).toContain('từ chối quyền định vị');
     expect(api.selectedCity()).toBeUndefined();
+  });
+});
+
+describe('timeOfDay / uvLabel', () => {
+  it('timeOfDay rút hh:mm từ ISO, fallback — khi rỗng', () => {
+    expect(timeOfDay('2026-07-04T05:19')).toBe('05:19');
+    expect(timeOfDay('')).toBe('—');
+  });
+
+  it('uvLabel theo thang WHO', () => {
+    expect(uvLabel(1)).toBe('Thấp');
+    expect(uvLabel(3)).toBe('Trung bình');
+    expect(uvLabel(6.5)).toBe('Cao');
+    expect(uvLabel(8.5)).toBe('Rất cao');
+    expect(uvLabel(11)).toBe('Cực đoan');
   });
 });
 

@@ -1,14 +1,42 @@
 <section class="panel">
-  <h3>Dự báo {{ displayDays().length }} ngày</h3>
+  <h3>Dự báo {{ displayDays().length }} ngày <span class="hint-inline">— bấm vào ngày để xem chi tiết</span></h3>
   <ul class="days">
     @for (day of displayDays(); track day.date) {
-      <li [title]="day.condition">
-        <span class="weekday">{{ day.weekday }}</span>
-        <span class="date">{{ day.dateShort }}</span>
-        <span class="emoji">{{ day.emoji }}</span>
-        <span class="max">{{ day.tempMax }}°</span>
-        <span class="min">{{ day.tempMin }}°</span>
+      <li>
+        <button type="button" class="day-card" [title]="day.condition"
+          [class.selected]="day.date === expandedDate()"
+          [attr.aria-expanded]="day.date === expandedDate()"
+          (click)="toggleDay(day.date)">
+          <span class="weekday">{{ day.weekday }}</span>
+          <span class="date">{{ day.dateShort }}</span>
+          <span class="emoji">{{ day.emoji }}</span>
+          <span class="max">{{ day.tempMax }}°</span>
+          <span class="min">{{ day.tempMin }}°</span>
+        </button>
       </li>
     }
   </ul>
+
+  @if (detail(); as d) {
+    <div class="day-detail">
+      <h4>{{ d.title }}</h4>
+      <div class="facts">
+        <span>🌅 Mọc {{ d.sunrise }}</span>
+        <span>🌇 Lặn {{ d.sunset }}</span>
+        <span>☀️ UV {{ d.uv }} — {{ d.uvLabel }}</span>
+        <span>🌧️ Mưa {{ d.precipitation }} mm ({{ d.precipitationProbability }}%)</span>
+      </div>
+      @if (d.dayHours.length > 0) {
+        <ul class="strip">
+          @for (hour of d.dayHours; track hour.label) {
+            <li>
+              <span class="hour">{{ hour.label }}</span>
+              <span class="h-emoji">{{ hour.emoji }}</span>
+              <span class="temp">{{ hour.temperature }}°</span>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  }
 </section>
