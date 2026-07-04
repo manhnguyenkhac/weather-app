@@ -181,6 +181,44 @@ public class OpenMeteoClientTests
     }
 
     [Fact]
+    public async Task GetAirQuality_GhepUrlDungThamSo_VaInvariantCulture()
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        CultureInfo.CurrentCulture = new CultureInfo("vi-VN");
+        try
+        {
+            var handler = new FakeHttpMessageHandler(HttpStatusCode.OK, "{}");
+            var client = TestOpenMeteo.CreateClient(handler);
+
+            await client.GetAirQualityAsync(21.0278, 105.8342);
+
+            var url = handler.LastRequestUri!.AbsoluteUri;
+            Assert.StartsWith(TestOpenMeteo.AirQualityUrl, url);
+            Assert.Contains("latitude=21.0278", url);
+            Assert.Contains("current=us_aqi,pm2_5,pm10,ozone,nitrogen_dioxide,sulphur_dioxide,carbon_monoxide", url);
+            Assert.Contains("hourly=us_aqi", url);
+            Assert.Contains("forecast_hours=24", url);
+            Assert.DoesNotContain("21,0278", url);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
+    }
+
+    [Fact]
+    public async Task GetAirQuality_CacheHit_KhongGoiLaiUpstream()
+    {
+        var handler = new FakeHttpMessageHandler(HttpStatusCode.OK, """{ "current": { "us_aqi": 50 } }""");
+        var client = TestOpenMeteo.CreateClient(handler);
+
+        await client.GetAirQualityAsync(21.0278, 105.8342);
+        await client.GetAirQualityAsync(21.0278, 105.8342);
+
+        Assert.Equal(1, handler.RequestCount);
+    }
+
+    [Fact]
     public async Task GetForecast_ParseDuocSnakeCase_KhiUpstreamTraJsonHopLe()
     {
         const string body = """

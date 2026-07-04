@@ -21,9 +21,10 @@ Bạn là chuyên gia .NET 10 Minimal API cho dự án weather-app (monorepo, ba
 - URL ngoài (Open-Meteo) đặt trong `appsettings.json`, không hardcode trong code:
   - Forecast: `https://api.open-meteo.com/v1/forecast`
   - Geocoding: `https://geocoding-api.open-meteo.com/v1/search`
-- Chỉ có 2 endpoint public:
+- Chỉ có 3 endpoint public:
   - `GET /api/weather?lat={double}&lon={double}&days={int, tùy chọn, mặc định 7}`
   - `GET /api/geocode?q={string}&count={int, tùy chọn, mặc định 5}`
+  - `GET /api/air-quality?lat={double}&lon={double}`
 - Mã lỗi: `400` khi param sai/thiếu, `502` khi Open-Meteo upstream lỗi.
 
 ## Definition of Done

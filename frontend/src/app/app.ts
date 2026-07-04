@@ -5,12 +5,13 @@ import { CitySearch } from './features/weather/city-search';
 import { WeatherCard } from './features/weather/weather-card';
 import { HourlyStrip } from './features/weather/hourly-strip';
 import { ForecastList } from './features/weather/forecast-list';
+import { AirQualityPanel } from './features/weather/air-quality-panel';
 import { RecentLocationList } from './features/weather/recent-location-list';
 import { Sidebar } from './features/shell/sidebar';
 
 @Component({
   selector: 'app-root',
-  imports: [CitySearch, WeatherCard, HourlyStrip, ForecastList, RecentLocationList, Sidebar],
+  imports: [CitySearch, WeatherCard, AirQualityPanel, HourlyStrip, ForecastList, RecentLocationList, Sidebar],
   templateUrl: './app.html',
   styleUrl: './app.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

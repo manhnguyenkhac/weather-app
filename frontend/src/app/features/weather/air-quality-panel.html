@@ -1,0 +1,81 @@
+<section class="panel">
+  <h3>Chất lượng không khí</h3>
+
+  @if (api.airQuality.isLoading()) {
+    <p class="hint">Đang tải chỉ số không khí…</p>
+  } @else if (api.airQuality.error()) {
+    <p class="error">Không lấy được chỉ số không khí — thử lại sau.</p>
+  } @else if (aqi() !== null) {
+    <div class="aqi-hero">
+      <div class="gauge-wrap">
+        <svg [attr.viewBox]="'0 0 215 150'" width="215" height="150" role="img"
+          [attr.aria-label]="'AQI ' + aqi() + ' — ' + levelName()">
+          @for (seg of segments; track seg.path) {
+            <path [attr.d]="seg.path" fill="none" [attr.stroke]="seg.color"
+              [attr.stroke-width]="gauge.width" opacity="0.32" />
+          }
+          <path [attr.d]="doneArc()" fill="none" [attr.stroke]="levelColor()"
+            [attr.stroke-width]="gauge.width" stroke-linecap="round" />
+          <circle [attr.cx]="needle().x" [attr.cy]="needle().y" r="8.5"
+            [attr.fill]="levelColor()" stroke="#fff" stroke-width="3" />
+          <text x="12" y="132" fill="#5b616e" font-size="10">0</text>
+          <text x="203" y="132" fill="#5b616e" font-size="10" text-anchor="end">500</text>
+        </svg>
+        <div class="gauge-center">
+          <span class="gauge-value">{{ aqi() }}</span>
+          <span class="gauge-scale">US AQI</span>
+        </div>
+      </div>
+
+      <div class="verdict">
+        <span class="level-chip" [style.background]="levelColor()">● {{ levelName() }}</span>
+        <h2>{{ headline() }}</h2>
+        @if (mainTile(); as main) {
+          <p class="dominant">
+            Chất ô nhiễm chính: <b>{{ main.label }} — {{ main.value }} µg/m³</b>
+            @if (mainTimes() >= 1) {
+              (gấp {{ mainTimes() }}× ngưỡng WHO)
+            }
+          </p>
+        }
+        <ul class="advice">
+          @for (tip of advice(); track tip) {
+            <li>{{ tip }}</li>
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="pollutants">
+      @for (tile of tiles(); track tile.key) {
+        <div class="pol" [class.main]="tile.main">
+          <div class="name">
+            {{ tile.label }}
+            @if (tile.main) { <span class="tag">chính</span> }
+          </div>
+          <div class="val">{{ tile.value }} <small>µg/m³</small></div>
+          <div class="bar">
+            <i [style.width.%]="tile.percent" [style.background]="tile.color"></i>
+          </div>
+        </div>
+      }
+    </div>
+
+    @if (hourBars().length > 0) {
+      <h4 class="sub">AQI theo giờ — 24 giờ tới</h4>
+      <div class="hourly">
+        @for (bar of hourBars(); track $index) {
+          <div class="col" [title]="bar.title">
+            <i [style.height.%]="bar.heightPercent" [style.background]="bar.color"></i>
+          </div>
+        }
+      </div>
+    }
+
+    <div class="legend">
+      @for (item of legend; track item.name) {
+        <span><i [style.background]="item.color"></i><b>{{ item.range }}</b> {{ item.name }}</span>
+      }
+    </div>
+  }
+</section>

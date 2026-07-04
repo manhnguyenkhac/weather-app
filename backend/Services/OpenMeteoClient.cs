@@ -12,9 +12,11 @@ namespace WeatherApp.Api.Services;
 /// </summary>
 public class OpenMeteoClient(HttpClient http, IConfiguration config, IMemoryCache cache)
 {
-    // Tọa độ city gần như bất biến — cache dài; forecast đổi theo giờ — cache ngắn
+    // Tọa độ city gần như bất biến — cache dài; forecast đổi theo giờ — cache ngắn;
+    // AQI cập nhật theo giờ — cache trung bình
     private static readonly TimeSpan GeocodeTtl = TimeSpan.FromHours(1);
     private static readonly TimeSpan ForecastTtl = TimeSpan.FromMinutes(10);
+    private static readonly TimeSpan AirQualityTtl = TimeSpan.FromMinutes(30);
 
     public Task<OpenMeteoGeocodeResponse?> SearchLocationsAsync(string query, int count, CancellationToken ct = default)
     {
@@ -35,6 +37,17 @@ public class OpenMeteoClient(HttpClient http, IConfiguration config, IMemoryCach
             $"&forecast_days={days}&timezone=auto");
 
         return GetJsonCachedAsync<OpenMeteoForecastResponseDto>(url, ForecastTtl, ct);
+    }
+
+    public Task<OpenMeteoAirQualityResponseDto?> GetAirQualityAsync(double lat, double lon, CancellationToken ct = default)
+    {
+        // InvariantCulture bắt buộc: lat/lon là double, culture vi-VN sẽ sinh dấu phẩy thập phân làm hỏng URL
+        var url = string.Create(CultureInfo.InvariantCulture,
+            $"{config["OpenMeteo:AirQualityUrl"]}?latitude={lat}&longitude={lon}" +
+            $"&current=us_aqi,pm2_5,pm10,ozone,nitrogen_dioxide,sulphur_dioxide,carbon_monoxide" +
+            $"&hourly=us_aqi&forecast_hours=24&timezone=auto");
+
+        return GetJsonCachedAsync<OpenMeteoAirQualityResponseDto>(url, AirQualityTtl, ct);
     }
 
     // CHỈ cache response thành công — upstream lỗi (null) không cache để request sau thử lại ngay
