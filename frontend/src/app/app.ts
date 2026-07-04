@@ -3,6 +3,7 @@ import { WeatherApi } from './core/weather-api';
 import { UnitPreference } from './core/unit-preference';
 import { I18n } from './core/i18n';
 import { ThemePreference } from './core/theme';
+import { CityUrl } from './core/city-url';
 import { CitySearch } from './features/weather/city-search';
 import { WeatherCard } from './features/weather/weather-card';
 import { WeatherAlerts } from './features/weather/weather-alerts';
@@ -28,6 +29,8 @@ export class App {
   protected readonly i18n = inject(I18n);
   // Khởi tạo eager để data-theme được gắn/đồng bộ ngay từ boot
   protected readonly themePref = inject(ThemePreference);
+  // Đồng bộ URL ↔ thành phố đang chọn (deep link, share, back/forward)
+  protected readonly cityUrl = inject(CityUrl);
   protected readonly title = signal('weather-app');
   protected readonly sidebarOpen = signal(false);
 }
