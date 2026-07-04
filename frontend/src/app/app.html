@@ -19,6 +19,7 @@
     } @else if (api.forecast.hasValue()) {
       <app-weather-card id="current" [city]="city" [current]="api.forecast.value().current" />
       <app-hourly-strip id="hourly" [hours]="api.forecast.value().hourly" />
+      <app-temperature-chart id="chart" [hours]="api.forecast.value().hourly" [days]="api.forecast.value().daily" />
       <app-forecast-list id="daily" [days]="api.forecast.value().daily" [hours]="api.forecast.value().hourly" />
       <app-air-quality-panel id="air-quality" />
     }
