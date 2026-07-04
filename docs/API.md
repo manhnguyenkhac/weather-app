@@ -40,15 +40,18 @@ Lấy thời tiết hiện tại, dự báo theo giờ (24h tới) và dự báo
     { "time": "2026-07-03T15:00", "temperature": 29.5, "weatherCode": 61 }
   ],
   "daily": [
-    { "date": "2026-07-03", "tempMax": 33.1, "tempMin": 25.6, "weatherCode": 80 },
-    { "date": "2026-07-04", "tempMax": 32.0, "tempMin": 25.1, "weatherCode": 61 }
+    {
+      "date": "2026-07-03", "tempMax": 33.1, "tempMin": 25.6, "weatherCode": 80,
+      "sunrise": "2026-07-03T05:19", "sunset": "2026-07-03T18:43",
+      "uvIndexMax": 8.5, "precipitationSum": 12.3, "precipitationProbabilityMax": 88
+    }
   ]
 }
 ```
 
 - `current`: `temperature` (°C), `apparentTemperature` (RealFeel, °C), `humidity` (% độ ẩm tương đối), `windSpeed` (km/h), `weatherCode` (WMO).
-- `hourly`: 24 giờ tới (`forecast_hours=24`), mỗi phần tử `time` (ISO local `yyyy-MM-ddTHH:mm`), `temperature` (°C), `weatherCode`.
-- `daily`: mỗi phần tử `date` (ISO `yyyy-MM-dd`), `tempMax` / `tempMin` (°C), `weatherCode` (WMO weather code từ Open-Meteo).
+- `hourly`: phủ TOÀN dải ngày yêu cầu — `24 × days` phần tử; mỗi phần tử `time` (ISO local `yyyy-MM-ddTHH:mm`), `temperature` (°C), `weatherCode`.
+- `daily`: mỗi phần tử `date` (ISO `yyyy-MM-dd`), `tempMax`/`tempMin` (°C), `weatherCode` (WMO), `sunrise`/`sunset` (ISO local), `uvIndexMax`, `precipitationSum` (mm), `precipitationProbabilityMax` (%). Nhóm field chi tiết (sunrise → precipitationProbabilityMax) là bổ sung: upstream thiếu thì trả `""`/`0`, không gây 502.
 
 ### Mã lỗi
 

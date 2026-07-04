@@ -66,7 +66,17 @@ public static class WeatherEndpoints
         var forecast = new List<DailyForecastDto>(dayCount);
         for (var i = 0; i < dayCount; i++)
         {
-            forecast.Add(new DailyForecastDto(daily.Time[i], daily.TempMax[i], daily.TempMin[i], daily.WeatherCode[i]));
+            // Field chi tiết là bổ sung — thiếu mảng/thiếu phần tử/null thì fallback mặc định, không 502
+            forecast.Add(new DailyForecastDto(
+                daily.Time[i],
+                daily.TempMax[i],
+                daily.TempMin[i],
+                daily.WeatherCode[i],
+                daily.Sunrise?.ElementAtOrDefault(i) ?? "",
+                daily.Sunset?.ElementAtOrDefault(i) ?? "",
+                daily.UvIndexMax?.ElementAtOrDefault(i) ?? 0,
+                daily.PrecipitationSum?.ElementAtOrDefault(i) ?? 0,
+                daily.PrecipitationProbabilityMax?.ElementAtOrDefault(i) ?? 0));
         }
 
         var current = new CurrentWeatherDto(

@@ -13,7 +13,16 @@ public record CurrentWeatherDto(
 
 public record HourlyForecastDto(string Time, double Temperature, int WeatherCode);
 
-public record DailyForecastDto(string Date, double TempMax, double TempMin, int WeatherCode);
+public record DailyForecastDto(
+    string Date,
+    double TempMax,
+    double TempMin,
+    int WeatherCode,
+    string Sunrise,
+    string Sunset,
+    double UvIndexMax,
+    double PrecipitationSum,
+    int PrecipitationProbabilityMax);
 
 public record WeatherResponseDto(
     CurrentWeatherDto Current,
@@ -45,4 +54,10 @@ public record OpenMeteoDailyDto(
     [property: JsonPropertyName("time")] IReadOnlyList<string>? Time,
     [property: JsonPropertyName("temperature_2m_max")] IReadOnlyList<double>? TempMax,
     [property: JsonPropertyName("temperature_2m_min")] IReadOnlyList<double>? TempMin,
-    [property: JsonPropertyName("weather_code")] IReadOnlyList<int>? WeatherCode);
+    [property: JsonPropertyName("weather_code")] IReadOnlyList<int>? WeatherCode,
+    // Các field bổ sung (chi tiết ngày) — có thể thiếu/null từng phần tử, endpoint fallback mặc định
+    [property: JsonPropertyName("sunrise")] IReadOnlyList<string?>? Sunrise,
+    [property: JsonPropertyName("sunset")] IReadOnlyList<string?>? Sunset,
+    [property: JsonPropertyName("uv_index_max")] IReadOnlyList<double?>? UvIndexMax,
+    [property: JsonPropertyName("precipitation_sum")] IReadOnlyList<double?>? PrecipitationSum,
+    [property: JsonPropertyName("precipitation_probability_max")] IReadOnlyList<int?>? PrecipitationProbabilityMax);

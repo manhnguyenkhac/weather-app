@@ -30,6 +30,20 @@ describe('HourlyStrip', () => {
     expect(items[1].textContent).toContain('29.5°');
   });
 
+  it('limit cắt số giờ hiển thị (hourly giờ phủ cả tuần)', async () => {
+    const manyHours = Array.from({ length: 48 }, (_, i) => ({
+      time: `2026-07-0${3 + Math.floor(i / 24)}T${String(i % 24).padStart(2, '0')}:00`,
+      temperature: 25 + (i % 5),
+      weatherCode: 3,
+    }));
+    await TestBed.configureTestingModule({ imports: [HourlyStrip] }).compileComponents();
+    const fixture = TestBed.createComponent(HourlyStrip);
+    fixture.componentRef.setInput('hours', manyHours);
+    await fixture.whenStable();
+
+    expect((fixture.nativeElement as HTMLElement).querySelectorAll('li').length).toBe(24);
+  });
+
   it('toggle đơn vị thì nhiệt độ hourly đổi sang °F', async () => {
     const fixture = await createFixture();
 
