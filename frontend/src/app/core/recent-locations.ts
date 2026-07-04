@@ -11,7 +11,7 @@ export class RecentLocations {
 
   add(city: GeocodeResult): void {
     this.locations.update((list) => {
-      const rest = list.filter((c) => !sameLocation(c, city));
+      const rest = list.filter((c) => !sameEntry(c, city));
       return [city, ...rest].slice(0, MAX_RECENT);
     });
     persist(this.locations());
@@ -23,8 +23,12 @@ export class RecentLocations {
   }
 }
 
-function sameLocation(a: GeocodeResult, b: GeocodeResult): boolean {
-  return a.latitude === b.latitude && a.longitude === b.longitude;
+// Dedup theo NHÃN hiển thị (name + country) chứ không theo tọa độ:
+// - "Vị trí của tôi" không nhân bản khi tọa độ xê dịch vài mét giữa các lần định vị
+// - 2 kết quả geocode cùng nhãn (vd 2 "Hanoi, Vietnam" khác tọa độ) không hiện trùng nhau
+function sameEntry(a: GeocodeResult, b: GeocodeResult): boolean {
+  return (a.name === b.name && a.country === b.country)
+    || (a.latitude === b.latitude && a.longitude === b.longitude);
 }
 
 function persist(list: GeocodeResult[]): void {

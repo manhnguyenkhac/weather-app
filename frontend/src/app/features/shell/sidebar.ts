@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
-import { GeocodeResult, WeatherApi } from '../../core/weather-api';
+import { GeocodeResult, WeatherApi, formatCityLabel } from '../../core/weather-api';
 import { RecentLocations } from '../../core/recent-locations';
 import { TemperatureUnit, UnitPreference } from '../../core/unit-preference';
 
@@ -16,6 +16,8 @@ export class Sidebar {
   protected readonly pref = inject(UnitPreference);
   protected readonly api = inject(WeatherApi);
   protected readonly recent = inject(RecentLocations);
+
+  protected readonly label = formatCityLabel;
 
   setUnit(unit: TemperatureUnit): void {
     this.pref.setUnit(unit);

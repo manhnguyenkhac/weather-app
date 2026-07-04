@@ -5,6 +5,8 @@ import { RecentLocations } from './recent-locations';
 import {
   WeatherApi,
   GeocodeResult,
+  MY_LOCATION_NAME,
+  formatCityLabel,
   geocodeUrl,
   weatherUrl,
   weatherCodeLabel,
@@ -91,5 +93,49 @@ describe('WeatherApi', () => {
 
     expect(api.cities.hasValue()).toBe(false);
     expect(api.forecast.hasValue()).toBe(false);
+  });
+
+  function mockGeolocation(impl: Partial<Geolocation>) {
+    Object.defineProperty(navigator, 'geolocation', { value: impl, configurable: true });
+  }
+
+  it('useMyLocation thành công: chọn city ảo với tọa độ làm tròn 4 số lẻ', () => {
+    const api = createService();
+    mockGeolocation({
+      getCurrentPosition: (success) =>
+        success({ coords: { latitude: 21.02781234, longitude: 105.83421987 } } as GeolocationPosition),
+    });
+
+    api.useMyLocation();
+
+    expect(api.locating()).toBe(false);
+    expect(api.locationError()).toBeUndefined();
+    expect(api.selectedCity()).toEqual({
+      name: MY_LOCATION_NAME,
+      country: '',
+      latitude: 21.0278,
+      longitude: 105.8342,
+    });
+  });
+
+  it('useMyLocation bị từ chối quyền: báo lỗi tiếng Việt, không chọn city', () => {
+    const api = createService();
+    mockGeolocation({
+      getCurrentPosition: (_success, errorCb) =>
+        errorCb!({ code: 1, message: 'denied' } as GeolocationPositionError),
+    });
+
+    api.useMyLocation();
+
+    expect(api.locating()).toBe(false);
+    expect(api.locationError()).toContain('từ chối quyền định vị');
+    expect(api.selectedCity()).toBeUndefined();
+  });
+});
+
+describe('formatCityLabel', () => {
+  it('có country thì "name, country"; city ảo không country thì chỉ name', () => {
+    expect(formatCityLabel({ name: 'Hanoi', country: 'Vietnam', latitude: 1, longitude: 1 })).toBe('Hanoi, Vietnam');
+    expect(formatCityLabel({ name: MY_LOCATION_NAME, country: '', latitude: 1, longitude: 1 })).toBe(MY_LOCATION_NAME);
   });
 });
