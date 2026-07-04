@@ -38,7 +38,8 @@ public static class WeatherEndpoints
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        var upstream = await openMeteo.GetForecastAsync(lat.Value, lon.Value, forecastDays, ct);
+        var result = await openMeteo.GetForecastAsync(lat.Value, lon.Value, forecastDays, ct);
+        var upstream = result.Data;
 
         // Thiếu hẳn block current/hourly/daily trong body 200 cũng là upstream lỗi — không dựng được response đúng contract
         if (upstream?.Current is null
@@ -86,6 +87,6 @@ public static class WeatherEndpoints
             upstream.Current.WindSpeed,
             upstream.Current.WeatherCode);
 
-        return Results.Ok(new WeatherResponseDto(current, hours, forecast));
+        return StaleOk.Ok(new WeatherResponseDto(current, hours, forecast), result.IsStale);
     }
 }

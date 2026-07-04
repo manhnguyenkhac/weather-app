@@ -30,7 +30,8 @@ public static class AirQualityEndpoints
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        var upstream = await openMeteo.GetAirQualityAsync(lat.Value, lon.Value, ct);
+        var result = await openMeteo.GetAirQualityAsync(lat.Value, lon.Value, ct);
+        var upstream = result.Data;
 
         // Thiếu block current hoặc thiếu us_aqi (headline) là upstream lỗi — không dựng được response đúng contract
         if (upstream?.Current?.UsAqi is null)
@@ -66,6 +67,6 @@ public static class AirQualityEndpoints
             }
         }
 
-        return Results.Ok(new AirQualityResponseDto(current, hours));
+        return StaleOk.Ok(new AirQualityResponseDto(current, hours), result.IsStale);
     }
 }

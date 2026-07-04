@@ -34,6 +34,8 @@ Thứ tự ưu tiên từ trên xuống. Mỗi mục: mô tả + tiêu chí xong
 - [x] Đa ngôn ngữ VI/EN (#58, user yêu cầu) — service `I18n` tự viết (signal `lang` + `t(key, params)`, dict ~70 key, không thêm package), nút VI/EN trên header + segmented control trong sidebar, giữ trong localStorage; toàn bộ UI/cảnh báo/AQI/thứ trong tuần dịch theo lang (101 test frontend).
 - [x] PWA + offline (#27) — DoD: app cài được (manifest + service worker trong production build), forecast xem gần nhất hiển thị được khi mất mạng (SW dataGroup `/api/**` strategy freshness, timeout 5s → cache, maxAge 1d). Package thêm: @angular/pwa (user đã duyệt).
 
+- [x] Backend chống lỗi upstream (#61, user chốt từ đề xuất sau vụ 502 production 2026-07-04) — retry có backoff (3 lần, chỉ lỗi transient: timeout/network/5xx/429), serve-stale 2 tầng (TTL tươi như cũ + stale horizon geocode 24h, forecast/AQI 6h): upstream chết mà còn bản cũ thì trả 200 + header `X-Data-Stale: true`, 502 chỉ khi không còn gì; TimeProvider built-in, không thêm package (65 test backend).
+
 ### Vận hành
 
 - [x] CI chạy test (#21) — DoD: pipeline chạy `dotnet test` + `ng test` trên mọi PR vào `develop` (GitHub Actions, 2 job song song), PR fail test không merge được (required status checks backend + frontend trên branch protection của `develop`).
