@@ -3,6 +3,7 @@ import { WeatherApi } from './core/weather-api';
 import { UnitPreference } from './core/unit-preference';
 import { CitySearch } from './features/weather/city-search';
 import { WeatherCard } from './features/weather/weather-card';
+import { WeatherAlerts } from './features/weather/weather-alerts';
 import { HourlyStrip } from './features/weather/hourly-strip';
 import { TemperatureChart } from './features/weather/temperature-chart';
 import { ForecastList } from './features/weather/forecast-list';
@@ -13,7 +14,7 @@ import { Sidebar } from './features/shell/sidebar';
 
 @Component({
   selector: 'app-root',
-  imports: [CitySearch, WeatherCard, AirQualityPanel, HourlyStrip, TemperatureChart, ForecastList, RecentLocationList, RainMap, Sidebar],
+  imports: [CitySearch, WeatherCard, WeatherAlerts, AirQualityPanel, HourlyStrip, TemperatureChart, ForecastList, RecentLocationList, RainMap, Sidebar],
   templateUrl: './app.html',
   styleUrl: './app.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
