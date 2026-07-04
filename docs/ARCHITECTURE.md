@@ -60,6 +60,22 @@ Mọi request tới Open-Meteo đều đi qua .NET backend. Frontend chỉ biế
 - (+) Dễ đổi weather provider mà không phải sửa frontend — contract `/api/*` giữ nguyên.
 - (−) Thêm một hop mạng và backend phải map/chuẩn hóa response upstream.
 
+## ADR-003 — Tile bản đồ (OSM/RainViewer) do browser tải thẳng, không qua backend
+
+### Context
+
+Feature bản đồ radar mưa cần tile ảnh nền (OpenStreetMap) và tile radar (RainViewer, miễn phí không key). ADR-001 quy định mọi dữ liệu đi qua backend `/api/*`.
+
+### Decision
+
+Tile ảnh bản đồ và metadata frames RainViewer do **browser tải thẳng** từ CDN của provider. Chỉ **dữ liệu thời tiết domain** (forecast/geocode/air-quality) mới bắt buộc qua backend.
+
+### Consequences
+
+- (+) Không nghẽn băng thông/latency qua Render free (mỗi lần pan/zoom là hàng chục tile ảnh).
+- (+) Tận dụng CDN + cache của OSM/RainViewer; không cần key nên không có secret để che.
+- (−) Frontend biết 2 origin ngoài (tile.openstreetmap.org, rainviewer.com) — đổi provider bản đồ phải sửa frontend, chấp nhận vì tile là tài nguyên hiển thị, không phải contract dữ liệu.
+
 ## ADR-002 — Chọn Open-Meteo làm weather provider
 
 ### Context

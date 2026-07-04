@@ -9,3 +9,10 @@ body {
   color: #26272b;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
+
+/* Marker emoji cho Leaflet divIcon (class toàn cục do Leaflet render ngoài component) */
+.map-pin {
+  font-size: 22px;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.35);
+}
