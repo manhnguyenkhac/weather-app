@@ -74,3 +74,13 @@ body {
   line-height: 1;
   text-shadow: 0 1px 2px rgb(0 0 0 / 0.35);
 }
+
+/* Dark mode cho tile OSM (Leaflet render ngoài component nên phải global):
+   invert + hue-rotate cho bản đồ tối, không chói giữa UI tối (#74) */
+:root[data-theme='dark'] .leaflet-layer:first-child .leaflet-tile {
+  filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+}
+
+:root[data-theme='dark'] .leaflet-container {
+  background: #14161a;
+}

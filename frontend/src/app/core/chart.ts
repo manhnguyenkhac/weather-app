@@ -24,6 +24,7 @@ export function scaleLinear(value: number, min: number, max: number, out0: numbe
 
 /** Miền y "đẹp": nới min/max thô ±5% rồi làm tròn 1 độ cho gridline không lẻ. */
 export function niceDomain(values: number[]): { min: number; max: number } {
+  if (values.length === 0) return { min: 0, max: 1 }; // Math.min(...[]) = Infinity → path NaN
   const rawMin = Math.min(...values);
   const rawMax = Math.max(...values);
   const pad = Math.max((rawMax - rawMin) * 0.1, 0.5);

@@ -28,6 +28,9 @@ h3 {
 
 svg { display: block; width: 100%; height: auto; }
 
+/* pointermove cần touch-action để chạy liên tục trên màn cảm ứng (#74) */
+.line-chart { touch-action: pan-y; }
+
 .grid { stroke: var(--color-border); stroke-width: 1; }
 .axis { fill: var(--color-muted-light); font-size: 10px; font-variant-numeric: tabular-nums; }
 

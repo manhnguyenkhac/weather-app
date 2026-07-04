@@ -48,7 +48,7 @@ cd backend && dotnet test WeatherApp.Api.Tests
   - `GET /api/geocode?q={string}&count={int, tùy chọn, mặc định 5}`
   - `GET /api/air-quality?lat={double}&lon={double}`
   - `GET /api/history?lat={double}&lon={double}`
-- Mã lỗi: `400` (param sai/thiếu), `502` (Open-Meteo upstream lỗi).
+- Mã lỗi: `400` (param sai/thiếu), `429` (vượt rate limit 100 req/phút/IP), `502` (Open-Meteo upstream lỗi và hết cache stale).
 
 ## Workflow
 

@@ -11,6 +11,7 @@ describe('WeatherCard', () => {
     humidity: 78,
     windSpeed: 6.8,
     weatherCode: 3,
+    time: '2026-07-04T14:15',
   };
 
   beforeEach(() => localStorage.clear());

@@ -95,6 +95,10 @@ h3 {
   color: var(--color-text);
 }
 
+/* Màu SVG qua token — dark mode không tàng hình (#74) */
+.gauge-axis { fill: var(--color-muted); }
+.needle { stroke: var(--color-surface); }
+
 .gauge-scale {
   font-size: 0.72rem;
   font-weight: 700;

@@ -94,7 +94,7 @@ public class HistoryEndpointsTests
 
         var url = handler.LastRequestUri!.AbsoluteUri;
         Assert.StartsWith(TestOpenMeteo.ArchiveUrl, url);
-        Assert.Contains("latitude=21.0278", url);
+        Assert.Contains("latitude=21.03", url);
         Assert.Contains("start_date=2016-07-04", url);
         Assert.Contains("end_date=2026-07-03", url);
         Assert.Contains("daily=temperature_2m_max,temperature_2m_min,precipitation_sum", url);

@@ -71,5 +71,7 @@
   font-size: 0.78rem;
 }
 
+.aqi-none { color: var(--color-muted-light); }
+
 .loading, .err { margin: 0.4rem 0 0; font-size: 0.85rem; color: var(--color-muted); }
 .err { color: var(--color-error); }

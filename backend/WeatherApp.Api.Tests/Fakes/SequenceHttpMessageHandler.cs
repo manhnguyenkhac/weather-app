@@ -9,17 +9,26 @@ namespace WeatherApp.Api.Tests.Fakes;
 /// </summary>
 public sealed class SequenceHttpMessageHandler(params (HttpStatusCode StatusCode, string Body)[] responses) : HttpMessageHandler
 {
-    public int RequestCount { get; private set; }
+    private int requestCount;
 
-    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    public int RequestCount => requestCount;
+
+    /// <summary>Giữ response lại một nhịp — test single-flight cần cửa sổ để các request chồng nhau.</summary>
+    public TimeSpan Delay { get; set; } = TimeSpan.Zero;
+
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var (statusCode, body) = responses[Math.Min(RequestCount, responses.Length - 1)];
-        RequestCount++;
+        var index = Interlocked.Increment(ref requestCount) - 1;
+        var (statusCode, body) = responses[Math.Min(index, responses.Length - 1)];
 
-        var response = new HttpResponseMessage(statusCode)
+        if (Delay > TimeSpan.Zero)
+        {
+            await Task.Delay(Delay, cancellationToken);
+        }
+
+        return new HttpResponseMessage(statusCode)
         {
             Content = new StringContent(body, Encoding.UTF8, "application/json"),
         };
-        return Task.FromResult(response);
     }
 }

@@ -5,3 +5,6 @@
 
 # Test project không cần cho image runtime
 WeatherApp.Api.Tests/
+
+# Config dev không được lọt vào image prod (hygiene — tránh rủi ro khi sau này thêm giá trị nhạy cảm)
+appsettings.Development.json

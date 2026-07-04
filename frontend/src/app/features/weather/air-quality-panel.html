@@ -31,10 +31,10 @@
             }
             <path [attr.d]="doneArc()" fill="none" [attr.stroke]="levelColor()"
               [attr.stroke-width]="gauge.width" stroke-linecap="round" />
-            <circle [attr.cx]="needle().x" [attr.cy]="needle().y" r="8.5"
-              [attr.fill]="levelColor()" stroke="#fff" stroke-width="3" />
-            <text x="12" y="132" fill="#5b616e" font-size="10">0</text>
-            <text x="203" y="132" fill="#5b616e" font-size="10" text-anchor="end">500</text>
+            <circle class="needle" [attr.cx]="needle().x" [attr.cy]="needle().y" r="8.5"
+              [attr.fill]="levelColor()" stroke-width="3" />
+            <text class="gauge-axis" x="12" y="132" font-size="10">0</text>
+            <text class="gauge-axis" x="203" y="132" font-size="10" text-anchor="end">500</text>
           </svg>
           <div class="gauge-center">
             <span class="gauge-value">{{ aqi() }}</span>
