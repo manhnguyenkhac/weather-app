@@ -4,7 +4,7 @@ using WeatherApp.Api.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Fail-fast lúc boot: thiếu URL Open-Meteo thì mọi request sẽ 500 khó hiểu lúc runtime
-foreach (var key in (string[])["OpenMeteo:GeocodingUrl", "OpenMeteo:ForecastUrl"])
+foreach (var key in (string[])["OpenMeteo:GeocodingUrl", "OpenMeteo:ForecastUrl", "OpenMeteo:AirQualityUrl"])
 {
     if (!Uri.IsWellFormedUriString(builder.Configuration[key], UriKind.Absolute))
     {
@@ -20,6 +20,7 @@ var app = builder.Build();
 app.MapHealthEndpoints();
 app.MapGeocodeEndpoints();
 app.MapWeatherEndpoints();
+app.MapAirQualityEndpoints();
 
 app.Run();
 

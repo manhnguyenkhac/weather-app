@@ -1,6 +1,6 @@
 # API Reference — weather-app backend
 
-Backend .NET 10 Minimal API chạy tại `http://localhost:5155`. Frontend gọi qua đường dẫn tương đối `/api/*` (dev proxy qua `proxy.conf.json`). Backend chỉ có đúng 2 endpoint dưới đây.
+Backend .NET 10 Minimal API chạy tại `http://localhost:5155`. Frontend gọi qua đường dẫn tương đối `/api/*` (dev proxy qua `proxy.conf.json`). Backend chỉ có đúng 3 endpoint dưới đây.
 
 > **BẮT BUỘC:** file này phải được cập nhật trong **cùng commit** với mọi thay đổi endpoint (thêm/sửa param, đổi shape response, đổi mã lỗi). Skill `dotnet10-endpoint` sẽ nhắc điều này.
 
@@ -8,8 +8,9 @@ Backend .NET 10 Minimal API chạy tại `http://localhost:5155`. Frontend gọi
 
 | Method | Path | Mô tả |
 |--------|------|-------|
-| GET | `/api/weather` | Forecast thời tiết theo tọa độ (current + daily) |
+| GET | `/api/weather` | Forecast thời tiết theo tọa độ (current + hourly + daily) |
 | GET | `/api/geocode` | Tìm tọa độ địa điểm theo tên |
+| GET | `/api/air-quality` | Chỉ số chất lượng không khí US AQI + chi tiết theo chất |
 
 ## GET /api/weather
 
@@ -108,3 +109,45 @@ Body lỗi theo dạng ProblemDetails, ví dụ 502:
   "detail": "Open-Meteo không phản hồi hoặc trả về lỗi."
 }
 ```
+
+## GET /api/air-quality
+
+Chỉ số chất lượng không khí hiện tại (US AQI + nồng độ từng chất) và AQI theo giờ 24h tới. Backend gọi Open-Meteo `https://air-quality-api.open-meteo.com/v1/air-quality`.
+
+### Query params
+
+| Tên | Kiểu | Bắt buộc | Mặc định | Mô tả |
+|------|--------|----------|----------|-------|
+| `lat` | double | Có | — | Vĩ độ, khoảng -90..90 |
+| `lon` | double | Có | — | Kinh độ, khoảng -180..180 |
+
+### Response 200 (mẫu)
+
+```json
+{
+  "current": {
+    "usAqi": 132,
+    "pm25": 48.2,
+    "pm10": 87.0,
+    "ozone": 61.0,
+    "nitrogenDioxide": 34.0,
+    "sulphurDioxide": 12.0,
+    "carbonMonoxide": 640.0
+  },
+  "hourly": [
+    { "time": "2026-07-04T10:00", "usAqi": 128 },
+    { "time": "2026-07-04T11:00", "usAqi": 141 }
+  ]
+}
+```
+
+- `current`: `usAqi` (US AQI 0..500), các chất theo µg/m³ — chất nào upstream không có dữ liệu thì trả `0`.
+- `hourly`: tối đa 24 giờ tới; giờ nào upstream thiếu `us_aqi` sẽ bị loại khỏi mảng (mảng có thể rỗng — không phải lỗi).
+
+### Mã lỗi
+
+| Status | Khi nào |
+|--------|---------|
+| 200 | Thành công |
+| 400 | Param sai/thiếu (`lat`/`lon` thiếu, không parse được, ngoài khoảng, NaN) |
+| 502 | Open-Meteo upstream lỗi, hoặc body 200 nhưng thiếu `us_aqi` hiện tại |

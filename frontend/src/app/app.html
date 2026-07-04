@@ -18,6 +18,7 @@
       <p class="error">Không lấy được dữ liệu thời tiết — thử lại sau.</p>
     } @else if (api.forecast.hasValue()) {
       <app-weather-card id="current" [city]="city" [current]="api.forecast.value().current" />
+      <app-air-quality-panel id="air-quality" />
       <app-hourly-strip id="hourly" [hours]="api.forecast.value().hourly" />
       <app-forecast-list id="daily" [days]="api.forecast.value().daily" />
     }
