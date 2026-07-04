@@ -1,0 +1,36 @@
+@if (city(); as c) {
+  <div class="card">
+    <div class="card-head">
+      <b class="name">{{ label() }}</b>
+      <button type="button" class="remove" (click)="removed.emit(c)" [attr.aria-label]="'Bỏ ' + c.name + ' khỏi so sánh'">✕</button>
+    </div>
+
+    @if (data(); as d) {
+      <div class="now">
+        <span class="emoji">{{ d.emoji }}</span>
+        <span class="temp">{{ d.temp }}°<small>{{ pref.unit() }}</small></span>
+      </div>
+      <dl class="facts">
+        <div><dt>RealFeel®</dt><dd>{{ d.realFeel }}°</dd></div>
+        @if (d.max !== null) {
+          <div><dt>Cao / thấp</dt><dd>{{ d.max }}° / {{ d.min }}°</dd></div>
+        }
+        <div><dt>Mưa hôm nay</dt><dd>{{ d.rain }} mm</dd></div>
+        <div>
+          <dt>AQI</dt>
+          <dd>
+            @if (aqi(); as a) {
+              <span class="aqi-chip" [style.background]="a.color">{{ a.value }}</span>
+            } @else {
+              …
+            }
+          </dd>
+        </div>
+      </dl>
+    } @else if (weather.error()) {
+      <p class="err">Không tải được dữ liệu</p>
+    } @else {
+      <p class="loading">Đang tải…</p>
+    }
+  </div>
+}
