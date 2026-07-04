@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Globalization;
 using System.Net;
 using System.Text.Json;
@@ -48,8 +47,25 @@ public class OpenMeteoClient(
     private static readonly TimeSpan[] DefaultRetryDelays =
         [TimeSpan.FromMilliseconds(250), TimeSpan.FromMilliseconds(750)];
 
-    // Single-flight: gate per cache-key, dùng chung mọi instance (typed client là transient)
-    private static readonly ConcurrentDictionary<string, SemaphoreSlim> Gates = new();
+    // Single-flight bằng striped-lock: mảng cố định semaphore, chia key theo hash.
+    // KHÔNG dùng dictionary per-key (geocode key chứa query tùy ý → phình vô hạn, không trần).
+    // Đánh đổi: 2 key khác nhau có thể chung 1 gate — hiếm, chỉ chờ thêm chút, không sai kết quả.
+    private const int GateCount = 64;
+    private static readonly SemaphoreSlim[] Gates = CreateGates();
+
+    private static SemaphoreSlim[] CreateGates()
+    {
+        var gates = new SemaphoreSlim[GateCount];
+        for (var i = 0; i < GateCount; i++)
+        {
+            gates[i] = new SemaphoreSlim(1, 1);
+        }
+        return gates;
+    }
+
+    // string.GetHashCode ổn định trong một tiến trình (đủ cho gate in-memory); &MaxValue tránh âm
+    private static SemaphoreSlim GateFor(string key) =>
+        Gates[(key.GetHashCode() & int.MaxValue) % GateCount];
 
     private readonly TimeProvider clock = time ?? TimeProvider.System;
     private readonly IReadOnlyList<TimeSpan> delays = retryDelays ?? DefaultRetryDelays;
@@ -129,7 +145,7 @@ public class OpenMeteoClient(
         }
 
         // Single-flight: request sau chờ request đầu fetch xong rồi đọc lại cache
-        var gate = Gates.GetOrAdd(cacheKey, _ => new SemaphoreSlim(1, 1));
+        var gate = GateFor(cacheKey);
         await gate.WaitAsync(ct);
         try
         {
