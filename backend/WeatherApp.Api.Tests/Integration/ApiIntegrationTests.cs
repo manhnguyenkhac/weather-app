@@ -1,6 +1,10 @@
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
 using WeatherApp.Api.Models;
@@ -12,7 +16,9 @@ namespace WeatherApp.Api.Tests.Integration;
 /// <summary>
 /// Integration test qua HTTP pipeline THẬT (#83) — phủ lớp middleware mà unit test gọi thẳng
 /// HandleAsync bỏ qua: routing, ForwardedHeaders, rate limiter, content-type ProblemDetails,
-/// header X-Data-Stale. Upstream Open-Meteo bị thay bằng fake handler — không request nào ra internet.
+/// header X-Data-Stale, và WIRE JSON (tên field camelCase thật trên dây — thứ frontend phụ thuộc).
+/// Upstream Open-Meteo bị thay bằng fake handler — không request nào ra internet.
+/// Host test TẮT retry (IReadOnlyList&lt;TimeSpan&gt; rỗng qua DI) — không ngủ 250/750ms thật.
 /// </summary>
 public class ApiIntegrationTests
 {
@@ -24,17 +30,37 @@ public class ApiIntegrationTests
         }
         """;
 
-    /// <summary>Dựng cả app in-memory; thay primary handler của typed client + TimeProvider nếu cần.</summary>
-    private static WebApplicationFactory<Program> CreateApp(HttpMessageHandler upstream, TimeProvider? time = null)
+    /// <summary>
+    /// Dựng cả app in-memory: thay primary handler của typed client, tắt retry,
+    /// override TimeProvider và ngưỡng rate limit khi test cần.
+    /// </summary>
+    private static WebApplicationFactory<Program> CreateApp(
+        HttpMessageHandler upstream,
+        TimeProvider? time = null,
+        int? rateLimitPermit = null)
     {
         return new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
         {
+            if (rateLimitPermit is int permit)
+            {
+                // Ngưỡng nhỏ → burst kết thúc trong mili-giây, không đua với cửa sổ 60s
+                // của FixedWindowRateLimiter (đồng hồ THẬT, FakeTimeProvider không điều khiển được).
+                // UseSetting (không phải ConfigureAppConfiguration — source đó bị appsettings.json đè
+                // trong minimal hosting) để giá trị test thắng.
+                builder.UseSetting("RateLimit:PermitLimit", permit.ToString(CultureInfo.InvariantCulture));
+            }
+
             builder.ConfigureServices(services =>
             {
                 // Typed client AddHttpClient<OpenMeteoClient>() đăng ký theo tên class —
                 // chèn PrimaryHandler giả vào đúng named client đó
                 services.Configure<HttpClientFactoryOptions>(nameof(OpenMeteoClient), o =>
                     o.HttpMessageHandlerBuilderActions.Add(b => b.PrimaryHandler = upstream));
+
+                // Tắt retry: OpenMeteoClient resolve optional param IReadOnlyList<TimeSpan> qua DI
+                // (như unit test) — nếu không, mỗi test upstream-chết ngủ ~1s Task.Delay THẬT
+                // trong khi giữ gate static, các test class song song bị chặn theo
+                services.AddSingleton<IReadOnlyList<TimeSpan>>([]);
 
                 if (time is not null)
                 {
@@ -65,10 +91,19 @@ public class ApiIntegrationTests
 
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         Assert.False(resp.Headers.Contains("X-Data-Stale")); // fresh — không có cờ stale
-        var body = await resp.Content.ReadFromJsonAsync<WeatherResponseDto>();
-        Assert.NotNull(body);
-        Assert.Equal("2026-07-04T14:15", body!.Current.Time);
-        Assert.Single(body.Hourly);
+
+        // PIN WIRE JSON bằng JsonDocument thô — không round-trip qua DTO server
+        // (ReadFromJsonAsync case-insensitive nên đổi naming policy vẫn xanh oan; docs/API.md
+        // quy định camelCase, frontend chết nếu đổi). Mutation test đã chứng minh lỗ hổng này.
+        using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
+        var current = doc.RootElement.GetProperty("current"); // camelCase — GetProperty là case-SENSITIVE
+        Assert.Equal(27.4, current.GetProperty("temperature").GetDouble());
+        Assert.Equal(32.1, current.GetProperty("apparentTemperature").GetDouble());
+        Assert.Equal("2026-07-04T14:15", current.GetProperty("time").GetString());
+        var day0 = doc.RootElement.GetProperty("daily")[0];
+        Assert.Equal("2026-07-04", day0.GetProperty("date").GetString());
+        Assert.Equal(33.1, day0.GetProperty("tempMax").GetDouble());
+        Assert.Equal(1, doc.RootElement.GetProperty("hourly").GetArrayLength());
     }
 
     [Fact]
@@ -119,41 +154,38 @@ public class ApiIntegrationTests
     }
 
     [Fact]
-    public async Task RateLimiter_Vuot100RequestMotPhut_Tra429()
+    public async Task RateLimiter_200DungDenNguong_Roi429NgayRequestKeTiep()
     {
-        await using var app = CreateApp(new FakeHttpMessageHandler(HttpStatusCode.OK, "{}"));
+        // Pin ĐÚNG ngưỡng: permit=5 → request 1..5 phải 200 (không được chặn sớm hơn config),
+        // request 6 phải 429. Burst 6 request in-memory xong trong mili-giây — không đua cửa sổ 60s.
+        await using var app = CreateApp(new FakeHttpMessageHandler(HttpStatusCode.OK, "{}"), rateLimitPermit: 5);
         using var client = app.CreateClient();
         client.DefaultRequestHeaders.Add("X-Forwarded-For", "203.0.113.7");
 
-        HttpStatusCode last = HttpStatusCode.OK;
-        var got429 = false;
-        for (var i = 0; i < 101; i++)
+        for (var i = 1; i <= 5; i++)
         {
             var resp = await client.GetAsync("/api/health");
-            last = resp.StatusCode;
-            if (resp.StatusCode == HttpStatusCode.TooManyRequests)
-            {
-                got429 = true;
-                break;
-            }
+            Assert.Equal(HttpStatusCode.OK, resp.StatusCode); // chặn sớm hơn ngưỡng = vi phạm contract
         }
 
-        Assert.True(got429, $"101 request cùng cửa sổ phải dính 429 — kết quả cuối: {(int)last}");
+        var blocked = await client.GetAsync("/api/health");
+        Assert.Equal(HttpStatusCode.TooManyRequests, blocked.StatusCode);
     }
 
     [Fact]
     public async Task RateLimiter_PhanBietTheoIp_XForwardedFor()
     {
-        // Đây là hành vi PHẢI có để rate limit chạy đúng sau proxy Render:
-        // ForwardedHeaders phải áp X-Forwarded-For vào RemoteIpAddress (Known* đã Clear = trust mọi proxy).
-        // Nếu test này fail nghĩa là mọi user chung 1 bucket — chính nghi vấn từ production.
-        await using var app = CreateApp(new FakeHttpMessageHandler(HttpStatusCode.OK, "{}"));
+        // Hành vi PHẢI có để rate limit chạy đúng sau proxy Render: ForwardedHeaders áp
+        // X-Forwarded-For vào RemoteIpAddress (Known* đã Clear = trust mọi proxy).
+        // Fail nghĩa là mọi user chung 1 bucket — chính nghi vấn từ production.
+        await using var app = CreateApp(new FakeHttpMessageHandler(HttpStatusCode.OK, "{}"), rateLimitPermit: 5);
 
         using var clientA = app.CreateClient();
         clientA.DefaultRequestHeaders.Add("X-Forwarded-For", "198.51.100.1");
-        for (var i = 0; i < 100; i++)
+        for (var i = 1; i <= 5; i++)
         {
-            await clientA.GetAsync("/api/health"); // đốt sạch quota của IP A
+            var resp = await clientA.GetAsync("/api/health");
+            Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
         }
         var blocked = await clientA.GetAsync("/api/health");
         Assert.Equal(HttpStatusCode.TooManyRequests, blocked.StatusCode);
@@ -163,6 +195,18 @@ public class ApiIntegrationTests
         var other = await clientB.GetAsync("/api/health");
 
         Assert.Equal(HttpStatusCode.OK, other.StatusCode); // IP khác — bucket khác, không bị vạ lây
+    }
+
+    [Fact]
+    public async Task RateLimit_MacDinhProduction_La100ReqMotPhut_KhopDocs()
+    {
+        // Pin giá trị appsettings.json khớp docs/API.md ("100 request/phút/IP") —
+        // regression hạ ngưỡng khi refactor sẽ bị bắt ở đây
+        await using var app = CreateApp(new FakeHttpMessageHandler(HttpStatusCode.OK, "{}"));
+        var config = app.Services.GetRequiredService<IConfiguration>();
+
+        Assert.Equal(100, config.GetValue<int>("RateLimit:PermitLimit"));
+        Assert.Equal(60, config.GetValue<int>("RateLimit:WindowSeconds"));
     }
 
     [Fact]
