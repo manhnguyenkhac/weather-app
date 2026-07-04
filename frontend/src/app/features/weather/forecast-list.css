@@ -45,7 +45,7 @@ h3 {
 
 .day-card.selected {
   border-color: var(--color-accent);
-  background: #fef3ee;
+  background: var(--color-accent-tint);
 }
 
 .hint-inline {
@@ -59,7 +59,7 @@ h3 {
   margin-top: 0.9rem;
   padding: 0.9rem 1rem;
   border-radius: 8px;
-  background: #f8f9fb;
+  background: var(--color-surface-alt);
   border: 1px solid var(--color-border);
 }
 
@@ -96,7 +96,7 @@ h3 {
   border-radius: 8px;
 }
 
-.strip li:hover { background: #eef0f4; }
+.strip li:hover { background: var(--color-surface-dim); }
 .strip .hour { font-size: 0.75rem; color: var(--color-muted); }
 .strip .h-emoji { font-size: 1.2rem; }
 .strip .temp { font-weight: 700; color: var(--color-text); font-size: 0.9rem; }

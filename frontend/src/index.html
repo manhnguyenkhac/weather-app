@@ -8,6 +8,14 @@
     <meta name="theme-color" content="#26272b" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="manifest" href="manifest.webmanifest" />
+    <!-- Gắn data-theme TRƯỚC khi app boot — tránh chớp nền sáng khi user dùng dark (#67) -->
+    <script>
+      try {
+        var t = localStorage.getItem('weather-app.theme');
+        var dark = t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <app-root></app-root>
