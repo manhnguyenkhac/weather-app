@@ -26,6 +26,12 @@
     <div class="empty">
       <p class="empty-emoji">🌤️</p>
       <p>Tìm một thành phố để xem thời tiết hiện tại, dự báo theo giờ và 7 ngày tới.</p>
+      <button type="button" class="my-location" (click)="api.useMyLocation()" [disabled]="api.locating()">
+        {{ api.locating() ? '📡 Đang định vị…' : '📍 Thời tiết chỗ tôi' }}
+      </button>
+      @if (api.locationError(); as err) {
+        <p class="error">{{ err }}</p>
+      }
     </div>
     <app-recent-location-list />
   }

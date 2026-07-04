@@ -35,6 +35,16 @@ describe('RecentLocations', () => {
     expect(recent.locations().map((c) => c.name)).toEqual(['Hanoi', 'Huế']);
   });
 
+  it('cùng nhãn (name+country) nhưng tọa độ xê dịch thì thay thế, không nhân bản — case Vị trí của tôi', () => {
+    const recent = TestBed.inject(RecentLocations);
+
+    recent.add({ name: 'Vị trí của tôi', country: '', latitude: 21.0278, longitude: 105.8342 });
+    recent.add({ name: 'Vị trí của tôi', country: '', latitude: 21.0301, longitude: 105.8399 });
+
+    expect(recent.locations()).toHaveLength(1);
+    expect(recent.locations()[0].latitude).toBe(21.0301); // giữ bản mới nhất
+  });
+
   it('giữ tối đa 5 địa điểm', () => {
     const recent = TestBed.inject(RecentLocations);
 

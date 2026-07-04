@@ -34,7 +34,7 @@
         <h3>Địa điểm gần đây</h3>
         <ul class="links">
           @for (city of recent.locations(); track city.latitude + ',' + city.longitude) {
-            <li><button type="button" (click)="choose(city)">📍 {{ city.name }}, {{ city.country }}</button></li>
+            <li><button type="button" (click)="choose(city)">📍 {{ label(city) }}</button></li>
           }
         </ul>
         <button type="button" class="clear" (click)="recent.clear()">Xóa lịch sử</button>
