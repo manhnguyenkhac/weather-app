@@ -1,6 +1,7 @@
 using System.Net;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using WeatherApp.Api.Services;
 
 namespace WeatherApp.Api.Tests.Fakes;
@@ -20,7 +21,8 @@ public static class TestOpenMeteo
     public static OpenMeteoClient CreateClient(
         HttpMessageHandler handler,
         TimeProvider? time = null,
-        IReadOnlyList<TimeSpan>? retryDelays = null)
+        IReadOnlyList<TimeSpan>? retryDelays = null,
+        ILogger<OpenMeteoClient>? logger = null)
     {
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
@@ -34,7 +36,7 @@ public static class TestOpenMeteo
 
         return new OpenMeteoClient(
             new HttpClient(handler), config, new MemoryCache(new MemoryCacheOptions()),
-            time, retryDelays ?? []);
+            time, retryDelays ?? [], logger);
     }
 
     public static OpenMeteoClient CreateClient(HttpStatusCode statusCode, string body, string contentType = "application/json") =>

@@ -35,7 +35,8 @@ flowchart LR
   - `GET /api/history?lat={double}&lon={double}`
 - Gọi Open-Meteo qua **typed HttpClient** (`OpenMeteoClient`) đăng ký bằng `IHttpClientFactory`; URL Open-Meteo đặt trong `appsettings.json`, không hardcode trong code.
 - DTO là `record`. Khi format số (lat/lon) vào URL upstream, luôn dùng `CultureInfo.InvariantCulture`.
-- Mã lỗi: `400` khi param sai/thiếu, `502` khi Open-Meteo upstream lỗi.
+- Mã lỗi: `400` khi param sai/thiếu, `429` khi vượt rate limit, `502` khi Open-Meteo upstream lỗi.
+- **Observability** (#80): mỗi lời gọi Open-Meteo log structured qua `ILogger` — `kind` (geocode/forecast/air-quality/history) + status + latency (ms); fetch thật → Information, serve-stale/fail → Warning, cache hit → Debug. Production dùng JSON console (`AddJsonConsole`) để Render thu stdout query được (`State.Kind`, `State.Ms`); dev giữ console đẹp. KHÔNG log lat/lon/query (privacy). Noise của `IHttpClientFactory` hạ xuống Warning trong `appsettings.json`.
 - Chạy dev: `cd backend && dotnet run --urls http://localhost:5155`. Test: `cd backend && dotnet test WeatherApp.Api.Tests`.
 
 ### External — Open-Meteo
