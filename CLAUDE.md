@@ -8,7 +8,7 @@ Dữ liệu thời tiết lấy từ **Open-Meteo** (miễn phí, không cần A
 **Tech stack:**
 - Frontend: Angular 22 — standalone component, signals, httpResource, Signal Forms, `ChangeDetectionStrategy.OnPush` mặc định, zoneless.
 - Backend: .NET 10 Minimal API — MapGroup theo domain, DTO record, IHttpClientFactory.
-- Provider: Open-Meteo (forecast: `https://api.open-meteo.com/v1/forecast`, geocoding: `https://geocoding-api.open-meteo.com/v1/search`, air quality: `https://air-quality-api.open-meteo.com/v1/air-quality`).
+- Provider: Open-Meteo (forecast: `https://api.open-meteo.com/v1/forecast`, geocoding: `https://geocoding-api.open-meteo.com/v1/search`, air quality: `https://air-quality-api.open-meteo.com/v1/air-quality`). Bản đồ: OSM tiles + RainViewer radar — browser tải thẳng, xem ADR-003.
 
 ## Lệnh thường dùng
 
