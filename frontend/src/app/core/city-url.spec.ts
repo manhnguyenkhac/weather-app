@@ -20,6 +20,11 @@ describe('cityToPath / pathToCity', () => {
     expect(pathToCity(cityToPath(city))).toEqual(city);
   });
 
+  it('roundtrip tên có dấu gạch THẬT — không bị biến thành khoảng trắng (#74)', () => {
+    const city = { name: 'Baden-Baden', country: 'Germany', latitude: 48.76, longitude: 8.24 };
+    expect(pathToCity(cityToPath(city))).toEqual(city);
+  });
+
   it('path rác hoặc tọa độ ngoài khoảng → null', () => {
     expect(pathToCity('/')).toBeNull();
     expect(pathToCity('/city/abc')).toBeNull();

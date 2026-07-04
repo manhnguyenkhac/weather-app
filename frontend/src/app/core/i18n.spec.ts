@@ -50,11 +50,13 @@ describe('I18n', () => {
     expect(createI18n().t('does.not.exist')).toBe('does.not.exist');
   });
 
-  it('t() thay placeholder {x} bằng param', () => {
+  it('t() thay placeholder {x} bằng param — MỌI lần xuất hiện (#74)', () => {
     const i18n = createI18n();
     expect(i18n.t('aqi.whoTimes', { x: 3 })).toBe('gấp 3× ngưỡng WHO');
     i18n.setLang('en');
     expect(i18n.t('aqi.whoTimes', { x: 3 })).toBe('3× WHO guideline');
+    // Key không tồn tại trả nguyên key — nhưng param vẫn thay hết mọi chỗ
+    expect(i18n.t('{n} of {n}', { n: 2 })).toBe('2 of 2');
   });
 });
 

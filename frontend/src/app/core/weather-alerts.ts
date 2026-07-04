@@ -1,6 +1,7 @@
 // Cảnh báo thời tiết xấu — hàm thuần suy ra từ dữ liệu sẵn có, test không cần Angular.
 
-import { AirQualityResponse, WeatherResponse, hourLabel } from './weather-api';
+import { AirQualityResponse, WeatherResponse, currentHourIndex, hourLabel } from './weather-api';
+import { TemperatureUnit, convertTemp } from './unit-preference';
 
 export type AlertSeverity = 'warning' | 'danger';
 
@@ -31,9 +32,9 @@ const TEXTS = {
     rainDangerTitle: 'Mưa rất to hôm nay',
     rainDetail: (mm: number, p: number) => `Dự kiến ~${mm} mm (xác suất ${p}%) — đề phòng ngập úng cục bộ.`,
     heatTitle: 'Nắng nóng gay gắt',
-    heatDetail: (t: number) => `Nhiệt độ cao nhất ~${t}°C — uống đủ nước, tránh ra ngoài giữa trưa.`,
+    heatDetail: (t: string) => `Nhiệt độ cao nhất ~${t} — uống đủ nước, tránh ra ngoài giữa trưa.`,
     coldTitle: 'Rét đậm',
-    coldDetail: (t: number) => `Nhiệt độ thấp nhất ~${t}°C — giữ ấm, đặc biệt người già và trẻ nhỏ.`,
+    coldDetail: (t: string) => `Nhiệt độ thấp nhất ~${t} — giữ ấm, đặc biệt người già và trẻ nhỏ.`,
     uvTitle: 'UV rất cao',
     uvDetail: (uv: number) => `Chỉ số UV ~${uv} — che chắn, dùng kem chống nắng khi ra ngoài.`,
     windTitle: 'Gió mạnh',
@@ -48,9 +49,9 @@ const TEXTS = {
     rainDangerTitle: 'Very heavy rain today',
     rainDetail: (mm: number, p: number) => `Expected ~${mm} mm (${p}% chance) — watch for local flooding.`,
     heatTitle: 'Extreme heat',
-    heatDetail: (t: number) => `High of ~${t}°C — stay hydrated, avoid midday sun.`,
+    heatDetail: (t: string) => `High of ~${t} — stay hydrated, avoid midday sun.`,
     coldTitle: 'Severe cold',
-    coldDetail: (t: number) => `Low of ~${t}°C — keep warm, especially the elderly and children.`,
+    coldDetail: (t: string) => `Low of ~${t} — keep warm, especially the elderly and children.`,
     uvTitle: 'Very high UV',
     uvDetail: (uv: number) => `UV index ~${uv} — cover up and use sunscreen outdoors.`,
     windTitle: 'Strong wind',
@@ -61,11 +62,21 @@ const TEXTS = {
 } as const;
 
 /** Suy cảnh báo từ forecast (24h tới + hôm nay) và AQI hiện tại. Trả mảng đã sort: danger trước. */
-export function buildAlerts(forecast: WeatherResponse, airQuality?: AirQualityResponse, lang: Lang = 'vi'): WeatherAlert[] {
+export function buildAlerts(
+  forecast: WeatherResponse,
+  airQuality?: AirQualityResponse,
+  lang: Lang = 'vi',
+  unit: TemperatureUnit = 'C',
+): WeatherAlert[] {
   const t = TEXTS[lang];
   const alerts: WeatherAlert[] = [];
   const today = forecast.daily[0];
-  const next24 = forecast.hourly.slice(0, 24);
+  // "24 giờ TỚI" thật sự: hourly bắt đầu từ 00:00 giờ địa phương, phải trượt tới giờ hiện tại (#74)
+  // — nếu không, mở app buổi tối sẽ bỏ sót dông sáng sớm mai và báo lại dông đã qua từ rạng sáng
+  const nowIndex = currentHourIndex(forecast.current, forecast.hourly);
+  const next24 = forecast.hourly.slice(nowIndex, nowIndex + 24);
+  // Ngưỡng so sánh luôn bằng °C thô; chỉ phần HIỂN THỊ đổi theo đơn vị user chọn
+  const show = (celsius: number) => `${convertTemp(celsius, unit)}°${unit}`;
 
   const firstThunder = next24.find((h) => h.weatherCode >= THUNDER_CODE);
   if (firstThunder) {
@@ -88,11 +99,11 @@ export function buildAlerts(forecast: WeatherResponse, airQuality?: AirQualityRe
   }
 
   if (today && today.tempMax >= HEAT_C) {
-    alerts.push({ severity: 'danger', emoji: '🥵', title: t.heatTitle, detail: t.heatDetail(today.tempMax) });
+    alerts.push({ severity: 'danger', emoji: '🥵', title: t.heatTitle, detail: t.heatDetail(show(today.tempMax)) });
   }
 
   if (today && today.tempMin <= COLD_C) {
-    alerts.push({ severity: 'warning', emoji: '🥶', title: t.coldTitle, detail: t.coldDetail(today.tempMin) });
+    alerts.push({ severity: 'warning', emoji: '🥶', title: t.coldTitle, detail: t.coldDetail(show(today.tempMin)) });
   }
 
   if (today && today.uvIndexMax >= UV_HIGH) {

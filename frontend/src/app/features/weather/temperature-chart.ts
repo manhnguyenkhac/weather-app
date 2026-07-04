@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
-import { DailyForecast, HourlyForecast, hourLabel, weekdayLabel } from '../../core/weather-api';
+import { CurrentWeather, DailyForecast, HourlyForecast, currentHourIndex, hourLabel, weekdayLabel } from '../../core/weather-api';
 import { ChartFrame, areaPath, linePath, linePoints, niceDomain, scaleLinear } from '../../core/chart';
 import { UnitPreference, convertTemp } from '../../core/unit-preference';
 import { I18n } from '../../core/i18n';
@@ -16,6 +16,8 @@ const RANGE_FRAME: ChartFrame = { width: 560, height: 150, padLeft: 10, padRight
 export class TemperatureChart {
   readonly hours = input.required<HourlyForecast[]>();
   readonly days = input.required<DailyForecast[]>();
+  // Mốc "bây giờ" — thiếu thì fallback đầu mảng (hành vi cũ)
+  readonly current = input<CurrentWeather | undefined>(undefined);
 
   protected readonly pref = inject(UnitPreference);
   protected readonly i18n = inject(I18n);
@@ -25,7 +27,12 @@ export class TemperatureChart {
   // Giờ đang hover trên biểu đồ đường (null = không hover)
   readonly hoverIndex = signal<number | null>(null);
 
-  private readonly hours24 = computed(() => this.hours().slice(0, 24));
+  // "24 giờ TỚI" thật: hourly bắt đầu từ 00:00 giờ địa phương — trượt tới giờ hiện tại (#74)
+  private readonly hours24 = computed(() => {
+    const current = this.current();
+    const start = current ? currentHourIndex(current, this.hours()) : 0;
+    return this.hours().slice(start, start + 24);
+  });
 
   // ===== Biểu đồ đường 24h =====
   protected readonly line = computed(() => {

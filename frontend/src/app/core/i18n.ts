@@ -46,7 +46,6 @@ const DICT: Record<string, Record<Lang, string>> = {
   'aqi.dominant': { vi: 'Chất ô nhiễm chính:', en: 'Main pollutant:' },
   'aqi.whoTimes': { vi: 'gấp {x}× ngưỡng WHO', en: '{x}× WHO guideline' },
   'aqi.hourly': { vi: 'AQI theo giờ — 24 giờ tới', en: 'Hourly AQI — next 24 hours' },
-  'aqi.scale': { vi: 'Thang mức US AQI', en: 'US AQI scale' },
   'aqi.main': { vi: 'chính', en: 'main' },
 
   // Bản đồ
@@ -121,11 +120,11 @@ export class I18n {
     this.setLang(this.lang() === 'vi' ? 'en' : 'vi');
   }
 
-  /** Tra từ điển; thiếu key thì trả chính key (dễ phát hiện khi dev). Hỗ trợ thay {x}/{n}. */
+  /** Tra từ điển; thiếu key thì trả chính key (dễ phát hiện khi dev). Hỗ trợ thay {x}/{n} — mọi lần xuất hiện. */
   t(key: string, params?: Record<string, string | number>): string {
     let text = DICT[key]?.[this.lang()] ?? key;
     for (const [name, value] of Object.entries(params ?? {})) {
-      text = text.replace(`{${name}}`, String(value));
+      text = text.split(`{${name}}`).join(String(value));
     }
     return text;
   }

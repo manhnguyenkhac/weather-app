@@ -107,9 +107,10 @@ public class OpenMeteoClientTests
 
             var url = handler.LastRequestUri!.AbsoluteUri;
             Assert.StartsWith(TestOpenMeteo.ForecastUrl, url);
-            // vi-VN format double bằng dấu phẩy (21,0278) — InvariantCulture phải giữ dấu chấm
-            Assert.Contains("latitude=21.0278", url);
-            Assert.Contains("longitude=105.8342", url);
+            // vi-VN format double bằng dấu phẩy (21,03) — InvariantCulture phải giữ dấu chấm.
+            // Tọa độ làm tròn 2 số lẻ (#74): chặn cache phình theo biến thể tọa độ + tăng hit-rate.
+            Assert.Contains("latitude=21.03", url);
+            Assert.Contains("longitude=105.83", url);
             Assert.Contains("apparent_temperature", url);
             Assert.Contains("relative_humidity_2m", url);
             Assert.Contains("hourly=temperature_2m,weather_code", url);
@@ -177,7 +178,7 @@ public class OpenMeteoClientTests
         var client = TestOpenMeteo.CreateClient(handler);
 
         await client.GetForecastAsync(21.0278, 105.8342, 7);
-        await client.GetForecastAsync(21.0278, 105.8342, 7);
+        await client.GetForecastAsync(21.0301, 105.8299, 7); // tọa độ lệch <1.1km — làm tròn về cùng key -> cache hit
         await client.GetForecastAsync(21.0278, 105.8342, 3); // days khác -> URL khác -> gọi thật
 
         Assert.Equal(2, handler.RequestCount);
@@ -197,7 +198,7 @@ public class OpenMeteoClientTests
 
             var url = handler.LastRequestUri!.AbsoluteUri;
             Assert.StartsWith(TestOpenMeteo.AirQualityUrl, url);
-            Assert.Contains("latitude=21.0278", url);
+            Assert.Contains("latitude=21.03", url);
             Assert.Contains("current=us_aqi,pm2_5,pm10,ozone,nitrogen_dioxide,sulphur_dioxide,carbon_monoxide", url);
             Assert.Contains("hourly=us_aqi", url);
             Assert.Contains("forecast_hours=24", url);

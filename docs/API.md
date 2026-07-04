@@ -18,6 +18,7 @@ Backend .NET 10 Minimal API chạy tại `http://localhost:5155`. Frontend gọi
 - **Retry có backoff**: mỗi lời gọi Open-Meteo thử tối đa 3 lần (delay ~250ms/750ms) khi gặp lỗi transient (timeout, network, 5xx, 429). Upstream trả 4xx hoặc body rác thì fail ngay, không retry.
 - **Serve-stale**: response thành công được cache 2 tầng — TTL tươi (geocode 1h, forecast 10', AQI 30', history 12h) và stale horizon (geocode 24h, forecast/AQI 6h, history 48h). Hết TTL tươi mà upstream chết (sau retry) → trả **200 với bản cache cũ** kèm header **`X-Data-Stale: true`**.
 - **502 chỉ trả khi** upstream lỗi **và** không còn bản cache nào trong stale horizon.
+- **Rate limit (#74)**: 100 request/phút/IP (fixed window, đọc IP thật qua X-Forwarded-For). Vượt ngưỡng → **429 Too Many Requests**. Tọa độ lat/lon được backend làm tròn 2 số lẻ (~1.1km) trước khi gọi upstream — nhỏ hơn grid ~11km của Open-Meteo nên không đổi kết quả.
 
 ## GET /api/weather
 
@@ -40,7 +41,8 @@ Lấy thời tiết hiện tại, dự báo theo giờ (24h tới) và dự báo
     "apparentTemperature": 32.1,
     "humidity": 78,
     "windSpeed": 11.2,
-    "weatherCode": 3
+    "weatherCode": 3,
+    "time": "2026-07-03T14:15"
   },
   "hourly": [
     { "time": "2026-07-03T14:00", "temperature": 30.0, "weatherCode": 3 },
@@ -56,7 +58,7 @@ Lấy thời tiết hiện tại, dự báo theo giờ (24h tới) và dự báo
 }
 ```
 
-- `current`: `temperature` (°C), `apparentTemperature` (RealFeel, °C), `humidity` (% độ ẩm tương đối), `windSpeed` (km/h), `weatherCode` (WMO).
+- `current`: `temperature` (°C), `apparentTemperature` (RealFeel, °C), `humidity` (% độ ẩm tương đối), `windSpeed` (km/h), `weatherCode` (WMO), `time` (ISO local của city — mốc "bây giờ" để client định vị trong mảng `hourly`; upstream thiếu thì `""`).
 - `hourly`: phủ TOÀN dải ngày yêu cầu — `24 × days` phần tử; mỗi phần tử `time` (ISO local `yyyy-MM-ddTHH:mm`), `temperature` (°C), `weatherCode`.
 - `daily`: mỗi phần tử `date` (ISO `yyyy-MM-dd`), `tempMax`/`tempMin` (°C), `weatherCode` (WMO), `sunrise`/`sunset` (ISO local), `uvIndexMax`, `precipitationSum` (mm), `precipitationProbabilityMax` (%). Nhóm field chi tiết (sunrise → precipitationProbabilityMax) là bổ sung: upstream thiếu thì trả `""`/`0`, không gây 502.
 

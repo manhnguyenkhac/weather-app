@@ -9,9 +9,20 @@ export const MAX_COMPARE = 3;
 export class CompareList {
   readonly cities = signal<GeocodeResult[]>(readInitial());
 
-  /** Thêm city (bỏ qua nếu trùng nhãn hoặc đã đủ chỗ). Trả về true nếu thêm được. */
+  /** Thêm city; trùng nhãn thì THAY entry cũ (tọa độ có thể đã đổi — "Vị trí của tôi" sau khi
+   *  di chuyển phải cập nhật, không giữ tọa độ đóng băng #74). Trả về true nếu danh sách đổi. */
   add(city: GeocodeResult): boolean {
-    if (this.has(city) || this.cities().length >= MAX_COMPARE) {
+    const existing = this.cities().find((c) => sameEntry(c, city));
+    if (existing) {
+      if (existing.latitude === city.latitude && existing.longitude === city.longitude) {
+        return false; // trùng hệt — không có gì để cập nhật
+      }
+      this.cities.update((list) => list.map((c) => (sameEntry(c, city) ? city : c)));
+      persist(this.cities());
+      return true;
+    }
+
+    if (this.cities().length >= MAX_COMPARE) {
       return false;
     }
     this.cities.update((list) => [...list, city]);

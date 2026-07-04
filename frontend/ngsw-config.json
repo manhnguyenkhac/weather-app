@@ -1,13 +1,23 @@
 {
   "$schema": "./node_modules/@angular/service-worker/config/schema.json",
   "index": "/index.html",
+  "navigationUrls": ["/**", "!/**/*__*", "!/**/*__*/**"],
   "dataGroups": [
+    {
+      "name": "api-history",
+      "urls": ["/api/history**"],
+      "cacheConfig": {
+        "strategy": "performance",
+        "maxSize": 20,
+        "maxAge": "12h"
+      }
+    },
     {
       "name": "api-weather",
       "urls": ["/api/**"],
       "cacheConfig": {
         "strategy": "freshness",
-        "timeout": "5s",
+        "timeout": "10s",
         "maxSize": 50,
         "maxAge": "1d"
       }

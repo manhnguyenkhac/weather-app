@@ -101,6 +101,21 @@ describe('WeatherApi', () => {
     Object.defineProperty(navigator, 'geolocation', { value: impl, configurable: true });
   }
 
+  it('callback định vị muộn KHÔNG ghi đè city user vừa chọn (#74)', () => {
+    const api = createService();
+    let lateSuccess: PositionCallback | undefined;
+    mockGeolocation({
+      getCurrentPosition: (success) => { lateSuccess = success; }, // GPS chưa trả — giữ callback
+    });
+
+    api.useMyLocation();
+    const tokyo = { name: 'Tokyo', country: 'Japan', latitude: 35.68, longitude: 139.69 };
+    api.selectCity(tokyo); // user hết kiên nhẫn, chọn tay
+    lateSuccess!({ coords: { latitude: 21.0278, longitude: 105.8342 } } as GeolocationPosition);
+
+    expect(api.selectedCity()).toEqual(tokyo); // không bị nhảy ngược về "Vị trí của tôi"
+  });
+
   it('useMyLocation thành công: chọn city ảo với tọa độ làm tròn 4 số lẻ', () => {
     const api = createService();
     mockGeolocation({

@@ -1,10 +1,11 @@
-# CI: chạy test 2 phía trên mọi PR vào develop (và mỗi lần push lên develop).
+# CI: chạy test 2 phía trên mọi PR vào develop VÀ main (PR release develop→main cũng phải
+# qua check — merge vào main là auto-deploy production, không được lên mà chưa test đúng SHA).
 # Tên job "backend"/"frontend" được dùng làm required status check trong branch protection.
 name: CI
 
 on:
   pull_request:
-    branches: [develop]
+    branches: [develop, main]
   push:
     branches: [develop]
 

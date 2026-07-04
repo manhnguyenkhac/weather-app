@@ -14,15 +14,14 @@ export class ThemePreference {
 
   private readonly media = window.matchMedia?.('(prefers-color-scheme: dark)') ?? null;
 
-  constructor() {
-    effect(() => this.apply(this.theme()));
+  // Trạng thái OS-dark là SIGNAL: computed nào đọc resolved() sẽ tự re-evaluate khi OS đổi (#74)
+  private readonly osDark = signal(this.media?.matches ?? false);
 
-    // Hệ điều hành đổi sáng/tối lúc đang mở app — chỉ ăn khi user chọn 'auto'
-    this.media?.addEventListener('change', () => {
-      if (this.theme() === 'auto') {
-        this.apply('auto');
-      }
-    });
+  constructor() {
+    effect(() => this.apply());
+
+    // Hệ điều hành đổi sáng/tối lúc đang mở app — effect apply() tự chạy lại qua signal osDark
+    this.media?.addEventListener('change', (event) => this.osDark.set(event.matches));
   }
 
   setTheme(theme: Theme): void {
@@ -34,14 +33,14 @@ export class ThemePreference {
     }
   }
 
-  /** 'auto' quy về light/dark thật theo hệ điều hành tại thời điểm gọi. */
+  /** 'auto' quy về light/dark thật theo hệ điều hành — reactive (đọc signal osDark). */
   resolved(): 'light' | 'dark' {
     const theme = this.theme();
     if (theme !== 'auto') return theme;
-    return this.media?.matches ? 'dark' : 'light';
+    return this.osDark() ? 'dark' : 'light';
   }
 
-  private apply(_theme: Theme): void {
+  private apply(): void {
     document.documentElement.dataset['theme'] = this.resolved();
   }
 }
