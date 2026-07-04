@@ -46,7 +46,10 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 // Chống open-proxy: backend không auth mà đứng trước Open-Meteo — spam geocode chuỗi ngẫu nhiên
 // (mỗi q một cache miss) có thể làm IP Render bị upstream chặn, hại TOÀN BỘ user.
-// 100 req/phút/IP là rất rộng cho app này (mỗi lần đổi city ~3 call).
+// Ngưỡng đọc từ config (mặc định 100 req/phút/IP — rất rộng, mỗi lần đổi city ~3 call);
+// integration test hạ xuống nhỏ để burst không phải đua với cửa sổ 60s thật (#83).
+var rateLimitPermit = builder.Configuration.GetValue("RateLimit:PermitLimit", 100);
+var rateLimitWindow = TimeSpan.FromSeconds(builder.Configuration.GetValue("RateLimit:WindowSeconds", 60));
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -55,8 +58,8 @@ builder.Services.AddRateLimiter(options =>
             httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
             _ => new FixedWindowRateLimiterOptions
             {
-                PermitLimit = 100,
-                Window = TimeSpan.FromMinutes(1),
+                PermitLimit = rateLimitPermit,
+                Window = rateLimitWindow,
             }));
 });
 
