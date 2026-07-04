@@ -3,6 +3,7 @@ import { GeocodeResult, WeatherApi, formatCityLabel } from '../../core/weather-a
 import { CompareList, MAX_COMPARE } from '../../core/compare';
 import { RecentLocations } from '../../core/recent-locations';
 import { CompareCard } from './compare-card';
+import { I18n } from '../../core/i18n';
 
 @Component({
   selector: 'app-compare-panel',
@@ -15,6 +16,7 @@ export class ComparePanel {
   protected readonly api = inject(WeatherApi);
   protected readonly compare = inject(CompareList);
   private readonly recent = inject(RecentLocations);
+  protected readonly i18n = inject(I18n);
 
   readonly expanded = signal(false);
   protected readonly maxCompare = MAX_COMPARE;

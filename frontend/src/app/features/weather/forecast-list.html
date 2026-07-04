@@ -1,5 +1,5 @@
 <section class="panel">
-  <h3>Dự báo {{ displayDays().length }} ngày <span class="hint-inline">— bấm vào ngày để xem chi tiết</span></h3>
+  <h3>{{ i18n.t('daily.title') }} {{ displayDays().length }} {{ i18n.t('daily.days') }} <span class="hint-inline">{{ i18n.t('daily.hint') }}</span></h3>
   <ul class="days">
     @for (day of displayDays(); track day.date) {
       <li>
@@ -21,10 +21,10 @@
     <div class="day-detail">
       <h4>{{ d.title }}</h4>
       <div class="facts">
-        <span>🌅 Mọc {{ d.sunrise }}</span>
-        <span>🌇 Lặn {{ d.sunset }}</span>
+        <span>🌅 {{ i18n.t('daily.sunrise') }} {{ d.sunrise }}</span>
+        <span>🌇 {{ i18n.t('daily.sunset') }} {{ d.sunset }}</span>
         <span>☀️ UV {{ d.uv }} — {{ d.uvLabel }}</span>
-        <span>🌧️ Mưa {{ d.precipitation }} mm ({{ d.precipitationProbability }}%)</span>
+        <span>🌧️ {{ i18n.t('daily.rain') }} {{ d.precipitation }} mm ({{ d.precipitationProbability }}%)</span>
       </div>
       @if (d.dayHours.length > 0) {
         <ul class="strip">

@@ -3,15 +3,23 @@
 
   <aside class="panel">
     <header>
-      <h2>⚙️ Cài đặt</h2>
-      <button type="button" class="close" (click)="closed.emit()" aria-label="Đóng menu">✕</button>
+      <h2>{{ i18n.t('sidebar.title') }}</h2>
+      <button type="button" class="close" (click)="closed.emit()" [attr.aria-label]="i18n.t('sidebar.close')">✕</button>
     </header>
 
     <section>
-      <h3>Đơn vị nhiệt độ</h3>
+      <h3>{{ i18n.t('sidebar.unit') }}</h3>
       <div class="segmented">
         <button type="button" [class.active]="pref.unit() === 'C'" (click)="setUnit('C')">°C</button>
         <button type="button" [class.active]="pref.unit() === 'F'" (click)="setUnit('F')">°F</button>
+      </div>
+    </section>
+
+    <section>
+      <h3>{{ i18n.t('sidebar.language') }}</h3>
+      <div class="segmented">
+        <button type="button" [class.active]="i18n.lang() === 'vi'" (click)="setLang('vi')">🇻🇳 Tiếng Việt</button>
+        <button type="button" [class.active]="i18n.lang() === 'en'" (click)="setLang('en')">🇬🇧 English</button>
       </div>
     </section>
 
@@ -19,11 +27,11 @@
       <!-- Section đích (#current/#hourly/#daily) chỉ tồn tại khi forecast đã có dữ liệu -->
       @if (api.forecast.hasValue()) {
         <section>
-          <h3>{{ city.name }} thời tiết</h3>
+          <h3>{{ city.name }} {{ i18n.t('sidebar.weatherOf') }}</h3>
           <ul class="links">
-            <li><button type="button" (click)="goTo('current')">☀️ Hiện tại</button></li>
-            <li><button type="button" (click)="goTo('hourly')">🕒 Theo giờ</button></li>
-            <li><button type="button" (click)="goTo('daily')">📅 7 ngày</button></li>
+            <li><button type="button" (click)="goTo('current')">{{ i18n.t('sidebar.current') }}</button></li>
+            <li><button type="button" (click)="goTo('hourly')">{{ i18n.t('sidebar.hourly') }}</button></li>
+            <li><button type="button" (click)="goTo('daily')">{{ i18n.t('sidebar.daily') }}</button></li>
           </ul>
         </section>
       }
@@ -31,13 +39,13 @@
 
     @if (recent.locations().length > 0) {
       <section>
-        <h3>Địa điểm gần đây</h3>
+        <h3>{{ i18n.t('recent.title') }}</h3>
         <ul class="links">
           @for (city of recent.locations(); track city.latitude + ',' + city.longitude) {
             <li><button type="button" (click)="choose(city)">📍 {{ label(city) }}</button></li>
           }
         </ul>
-        <button type="button" class="clear" (click)="recent.clear()">Xóa lịch sử</button>
+        <button type="button" class="clear" (click)="recent.clear()">{{ i18n.t('sidebar.clear') }}</button>
       </section>
     }
   </aside>

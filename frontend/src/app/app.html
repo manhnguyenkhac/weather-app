@@ -2,20 +2,24 @@
   <div class="topbar-inner">
     <h1 class="logo">⛅ weather-app</h1>
     <app-city-search class="search-slot" />
+    <button type="button" class="unit-toggle" (click)="i18n.toggle()"
+      [attr.aria-label]="i18n.t('sidebar.language')">
+      {{ i18n.lang() === 'vi' ? 'VI' : 'EN' }}
+    </button>
     <button type="button" class="unit-toggle" (click)="pref.toggle()"
-      [attr.aria-label]="'Chuyển sang °' + (pref.unit() === 'C' ? 'F' : 'C')">
+      [attr.aria-label]="'°' + (pref.unit() === 'C' ? 'F' : 'C')">
       °{{ pref.unit() }}
     </button>
-    <button type="button" class="menu" (click)="sidebarOpen.set(true)" aria-label="Mở menu">☰</button>
+    <button type="button" class="menu" (click)="sidebarOpen.set(true)" [attr.aria-label]="i18n.t('sidebar.open')">☰</button>
   </div>
 </header>
 
 <main>
   @if (api.selectedCity(); as city) {
     @if (api.forecast.isLoading()) {
-      <p class="hint">Đang tải dự báo…</p>
+      <p class="hint">{{ i18n.t('forecast.loading') }}</p>
     } @else if (api.forecast.error()) {
-      <p class="error">Không lấy được dữ liệu thời tiết — thử lại sau.</p>
+      <p class="error">{{ i18n.t('forecast.error') }}</p>
     } @else if (api.forecast.hasValue()) {
       <app-weather-alerts />
       <app-weather-card id="current" [city]="city" [current]="api.forecast.value().current" />
@@ -27,12 +31,12 @@
   } @else {
     <div class="empty">
       <p class="empty-emoji">🌤️</p>
-      <p>Tìm một thành phố để xem thời tiết hiện tại, dự báo theo giờ và 7 ngày tới.</p>
+      <p>{{ i18n.t('home.empty') }}</p>
       <button type="button" class="my-location" (click)="api.useMyLocation()" [disabled]="api.locating()">
-        {{ api.locating() ? '📡 Đang định vị…' : '📍 Thời tiết chỗ tôi' }}
+        {{ api.locating() ? i18n.t('home.locating') : i18n.t('home.myLocation') }}
       </button>
       @if (api.locationError(); as err) {
-        <p class="error">{{ err }}</p>
+        <p class="error">{{ i18n.t(err) }}</p>
       }
     </div>
     <app-recent-location-list />

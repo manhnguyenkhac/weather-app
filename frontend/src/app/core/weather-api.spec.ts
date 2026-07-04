@@ -120,7 +120,7 @@ describe('WeatherApi', () => {
     });
   });
 
-  it('useMyLocation bị từ chối quyền: báo lỗi tiếng Việt, không chọn city', () => {
+  it('useMyLocation bị từ chối quyền: lưu key i18n geo.denied, không chọn city', () => {
     const api = createService();
     mockGeolocation({
       getCurrentPosition: (_success, errorCb) =>
@@ -130,7 +130,7 @@ describe('WeatherApi', () => {
     api.useMyLocation();
 
     expect(api.locating()).toBe(false);
-    expect(api.locationError()).toContain('từ chối quyền định vị');
+    expect(api.locationError()).toBe('geo.denied');
     expect(api.selectedCity()).toBeUndefined();
   });
 });

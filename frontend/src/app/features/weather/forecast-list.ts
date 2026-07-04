@@ -10,6 +10,7 @@ import {
   weekdayLabel,
 } from '../../core/weather-api';
 import { UnitPreference, convertTemp } from '../../core/unit-preference';
+import { I18n } from '../../core/i18n';
 
 @Component({
   selector: 'app-forecast-list',
@@ -23,6 +24,7 @@ export class ForecastList {
   readonly hours = input<HourlyForecast[]>([]);
 
   private readonly pref = inject(UnitPreference);
+  protected readonly i18n = inject(I18n);
 
   // Ngày đang xổ chi tiết — bấm lại thì gập, bấm ngày khác thì chuyển
   readonly expandedDate = signal<string | null>(null);
@@ -34,12 +36,13 @@ export class ForecastList {
   // Card theo ngày đã quy đổi đơn vị + nhãn thứ — computed từ (days, unit), đổi unit render lại tức thì
   protected readonly displayDays = computed(() => {
     const unit = this.pref.unit();
+    const lang = this.i18n.lang();
     return this.days().map((day) => ({
       date: day.date,
-      weekday: weekdayLabel(day.date),
+      weekday: weekdayLabel(day.date, lang),
       dateShort: shortDate(day.date),
       emoji: weatherCodeEmoji(day.weatherCode),
-      condition: weatherCodeText(day.weatherCode),
+      condition: weatherCodeText(day.weatherCode, lang),
       tempMax: convertTemp(day.tempMax, unit),
       tempMin: convertTemp(day.tempMin, unit),
     }));
@@ -53,6 +56,7 @@ export class ForecastList {
     if (!day) return null;
 
     const unit = this.pref.unit();
+    const lang = this.i18n.lang();
     const dayHours = this.hours()
       .filter((h) => h.time.startsWith(date))
       .map((h) => ({
@@ -62,11 +66,11 @@ export class ForecastList {
       }));
 
     return {
-      title: `${weekdayLabel(date)} ${shortDate(date)} — ${weatherCodeText(day.weatherCode)}`,
+      title: `${weekdayLabel(date, lang)} ${shortDate(date)} — ${weatherCodeText(day.weatherCode, lang)}`,
       sunrise: timeOfDay(day.sunrise),
       sunset: timeOfDay(day.sunset),
       uv: day.uvIndexMax,
-      uvLabel: uvLabel(day.uvIndexMax),
+      uvLabel: uvLabel(day.uvIndexMax, lang),
       precipitation: day.precipitationSum,
       precipitationProbability: day.precipitationProbabilityMax,
       dayHours,

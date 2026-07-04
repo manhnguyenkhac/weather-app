@@ -1,7 +1,7 @@
 <section class="hero">
   <div class="hero-head">
     <h2>{{ cityLabel() }}</h2>
-    <span class="now">Hiện tại</span>
+    <span class="now">{{ i18n.t('hero.now') }}</span>
   </div>
 
   <div class="hero-main">
@@ -14,7 +14,7 @@
   </div>
 
   <div class="hero-details">
-    <span>💨 Gió {{ current().windSpeed }} km/h</span>
-    <span>💧 Độ ẩm {{ current().humidity }}%</span>
+    <span>💨 {{ i18n.t('hero.wind') }} {{ current().windSpeed }} km/h</span>
+    <span>💧 {{ i18n.t('hero.humidity') }} {{ current().humidity }}%</span>
   </div>
 </section>

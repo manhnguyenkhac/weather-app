@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, signal } f
 import { DailyForecast, HourlyForecast, hourLabel, weekdayLabel } from '../../core/weather-api';
 import { ChartFrame, areaPath, linePath, linePoints, niceDomain, scaleLinear } from '../../core/chart';
 import { UnitPreference, convertTemp } from '../../core/unit-preference';
+import { I18n } from '../../core/i18n';
 
 const LINE_FRAME: ChartFrame = { width: 560, height: 170, padLeft: 34, padRight: 14, padTop: 16, padBottom: 24 };
 const RANGE_FRAME: ChartFrame = { width: 560, height: 150, padLeft: 10, padRight: 10, padTop: 22, padBottom: 24 };
@@ -17,6 +18,7 @@ export class TemperatureChart {
   readonly days = input.required<DailyForecast[]>();
 
   protected readonly pref = inject(UnitPreference);
+  protected readonly i18n = inject(I18n);
   protected readonly lineFrame = LINE_FRAME;
   protected readonly rangeFrame = RANGE_FRAME;
 
@@ -101,7 +103,7 @@ export class TemperatureChart {
       const x = Math.round((RANGE_FRAME.padLeft + slot * i + slot / 2) * 10) / 10;
       return {
         date: day.date,
-        weekday: weekdayLabel(day.date),
+        weekday: weekdayLabel(day.date, this.i18n.lang()),
         x,
         yMax: yFor(max),
         yMin: yFor(min),

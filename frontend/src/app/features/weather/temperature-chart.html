@@ -1,11 +1,11 @@
 <section class="panel">
-  <h3>Biểu đồ nhiệt độ (°{{ pref.unit() }})</h3>
+  <h3>{{ i18n.t('chart.title') }} (°{{ pref.unit() }})</h3>
 
   @if (line(); as l) {
-    <h4 class="sub">24 giờ tới</h4>
+    <h4 class="sub">{{ i18n.t('chart.next24h') }}</h4>
     <div class="chart-wrap">
       <svg [attr.viewBox]="'0 0 ' + lineFrame.width + ' ' + lineFrame.height" class="line-chart"
-        role="img" aria-label="Biểu đồ nhiệt độ 24 giờ tới"
+        role="img" [attr.aria-label]="i18n.t('chart.title') + ' — ' + i18n.t('chart.next24h')"
         (mousemove)="onLineMove($event)" (mouseleave)="hoverIndex.set(null)">
         @for (tick of l.yTicks; track tick.value) {
           <line [attr.x1]="lineFrame.padLeft" [attr.x2]="lineFrame.width - lineFrame.padRight"
@@ -36,9 +36,9 @@
   }
 
   @if (rangeBars().length > 0) {
-    <h4 class="sub">Min–max theo ngày</h4>
+    <h4 class="sub">{{ i18n.t('chart.minmax') }}</h4>
     <svg [attr.viewBox]="'0 0 ' + rangeFrame.width + ' ' + rangeFrame.height" class="range-chart"
-      role="img" aria-label="Dải nhiệt độ min max theo ngày">
+      role="img" [attr.aria-label]="i18n.t('chart.title') + ' — ' + i18n.t('chart.minmax')">
       @for (bar of rangeBars(); track bar.date) {
         <text [attr.x]="bar.x" [attr.y]="bar.yMax - 8" class="val" text-anchor="middle">{{ bar.max }}°</text>
         <line [attr.x1]="bar.x" [attr.x2]="bar.x" [attr.y1]="bar.yMax" [attr.y2]="bar.yMin" class="range-bar" />

@@ -1,21 +1,21 @@
 <div class="search-box">
   <form (submit)="$event.preventDefault(); search()">
     <span class="icon">🔍</span>
-    <input [formField]="searchForm.city" placeholder="Tìm thành phố (vd: Hanoi, Da Nang…)" autocomplete="off" />
-    <button type="submit" [disabled]="searchForm().invalid()">Tìm</button>
+    <input [formField]="searchForm.city" [placeholder]="i18n.t('search.placeholder')" autocomplete="off" />
+    <button type="submit" [disabled]="searchForm().invalid()">{{ i18n.t('search.button') }}</button>
   </form>
 
   <!-- Dropdown suy ra từ state chung: MỌI đường chọn city (dropdown, recent list, sidebar) đều đóng nó,
        search() reset selectedCity nên tìm mới lại mở ra -->
   @if (!api.selectedCity()) {
     @if (api.cities.isLoading()) {
-      <div class="dropdown"><p class="hint">Đang tìm…</p></div>
+      <div class="dropdown"><p class="hint">{{ i18n.t('search.searching') }}</p></div>
     } @else if (api.cities.error()) {
-      <div class="dropdown"><p class="error">Không tìm được thành phố — thử lại sau.</p></div>
+      <div class="dropdown"><p class="error">{{ i18n.t('search.error') }}</p></div>
     } @else if (api.cities.hasValue()) {
       <div class="dropdown">
         @if (api.cities.value().length === 0) {
-          <p class="hint">Không có kết quả nào khớp.</p>
+          <p class="hint">{{ i18n.t('search.empty') }}</p>
         } @else {
           <ul class="results">
             @for (city of api.cities.value(); track city.latitude + ',' + city.longitude) {

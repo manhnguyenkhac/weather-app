@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { WeatherApi } from './core/weather-api';
 import { UnitPreference } from './core/unit-preference';
+import { I18n } from './core/i18n';
 import { CitySearch } from './features/weather/city-search';
 import { WeatherCard } from './features/weather/weather-card';
 import { WeatherAlerts } from './features/weather/weather-alerts';
@@ -23,6 +24,7 @@ import { Sidebar } from './features/shell/sidebar';
 export class App {
   protected readonly api = inject(WeatherApi);
   protected readonly pref = inject(UnitPreference);
+  protected readonly i18n = inject(I18n);
   protected readonly title = signal('weather-app');
   protected readonly sidebarOpen = signal(false);
 }
