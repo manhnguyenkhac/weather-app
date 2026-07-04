@@ -1,12 +1,35 @@
 /* Global styles */
+
+/* Design token (#64) — MỌI màu/bo góc/bóng/padding panel lấy từ đây, không hardcode trong component */
+:root {
+  --color-bg: #f2f4f7;
+  --color-surface: #fff;
+  --color-text: #26272b;
+  --color-muted: #5b616e;
+  --color-muted-light: #8b919d;
+  --color-border: #eceef1;
+  --color-accent: #f05514;
+  --color-accent-dark: #d3490f;
+  --color-error: #c62828;
+  --color-disabled: #c8ccd4;
+
+  --radius-panel: 10px;
+  --radius-pill: 999px;
+  --shadow-panel: 0 1px 3px rgb(0 0 0 / 0.08);
+
+  /* Panel trắng nào cũng cùng một padding + khoảng cách dọc */
+  --panel-pad: 1.1rem 1.25rem 1.25rem;
+  --section-gap: 1rem;
+}
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  background: #f2f4f7;
-  color: #26272b;
+  background: var(--color-bg);
+  color: var(--color-text);
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 

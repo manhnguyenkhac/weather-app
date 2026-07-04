@@ -36,6 +36,8 @@ Thứ tự ưu tiên từ trên xuống. Mỗi mục: mô tả + tiêu chí xong
 
 - [x] Backend chống lỗi upstream (#61, user chốt từ đề xuất sau vụ 502 production 2026-07-04) — retry có backoff (3 lần, chỉ lỗi transient: timeout/network/5xx/429), serve-stale 2 tầng (TTL tươi như cũ + stale horizon geocode 24h, forecast/AQI 6h): upstream chết mà còn bản cũ thì trả 200 + header `X-Data-Stale: true`, 502 chỉ khi không còn gì; TimeProvider built-in, không thêm package (65 test backend).
 
+- [x] Tổng rà soát UI (#64, user yêu cầu từ screenshot production) — design token trong `styles.css` (màu/bo góc/bóng/padding panel, 14 file CSS dùng `var()`), card địa điểm & so sánh đều kích thước (host `height:100%` + min-height, tên 1 dòng ellipsis + tooltip, dòng country luôn chiếm chỗ), pill VI/°C cùng size, h3 section đồng nhịp, media query mobile đầu tiên (topbar, hero, padding).
+
 ### Vận hành
 
 - [x] CI chạy test (#21) — DoD: pipeline chạy `dotnet test` + `ng test` trên mọi PR vào `develop` (GitHub Actions, 2 job song song), PR fail test không merge được (required status checks backend + frontend trên branch protection của `develop`).

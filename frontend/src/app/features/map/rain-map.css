@@ -1,9 +1,9 @@
 .panel {
   margin-top: 1rem;
-  padding: 1.1rem 1.35rem 1.25rem;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+  padding: var(--panel-pad);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-panel);
 }
 
 .head {
@@ -20,7 +20,7 @@
 }
 
 .head:focus-visible {
-  outline: 2px solid #f05514;
+  outline: 2px solid var(--color-accent);
   outline-offset: 4px;
   border-radius: 4px;
 }
@@ -31,23 +31,23 @@ h3 {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #5b616e;
+  color: var(--color-muted);
 }
 
 .summary { margin-left: auto; }
-.mini-hint { font-size: 0.82rem; color: #5b616e; }
+.mini-hint { font-size: 0.82rem; color: var(--color-muted); }
 
-.chevron { color: #5b616e; font-size: 0.9rem; transition: transform 0.18s ease; }
+.chevron { color: var(--color-muted); font-size: 0.9rem; transition: transform 0.18s ease; }
 .chevron.open { transform: rotate(180deg); }
 .head[aria-expanded="true"] { margin-bottom: 0.9rem; }
 
-.error { color: #c62828; margin: 0 0 0.6rem; }
+.error { color: var(--color-error); margin: 0 0 0.6rem; }
 
 .map-host {
   height: 380px;
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid #eceef1;
+  border: 1px solid var(--color-border);
 }
 
 .timeline {
@@ -62,24 +62,24 @@ h3 {
   height: 2.2rem;
   border: none;
   border-radius: 50%;
-  background: #f05514;
+  background: var(--color-accent);
   color: #fff;
   font-size: 0.95rem;
   cursor: pointer;
   flex-shrink: 0;
 }
 
-.play:hover { background: #d3490f; }
+.play:hover { background: var(--color-accent-dark); }
 
 input[type='range'] {
   flex: 1;
-  accent-color: #f05514;
+  accent-color: var(--color-accent);
 }
 
 .stamp {
   font-variant-numeric: tabular-nums;
   font-weight: 700;
-  color: #26272b;
+  color: var(--color-text);
   min-width: 5.5rem;
   text-align: right;
 }
@@ -88,12 +88,12 @@ input[type='range'] {
   font-style: normal;
   font-size: 0.72rem;
   font-weight: 600;
-  color: #f05514;
+  color: var(--color-accent);
   margin-left: 0.3rem;
 }
 
 .tip {
   margin: 0.6rem 0 0;
   font-size: 0.82rem;
-  color: #5b616e;
+  color: var(--color-muted);
 }

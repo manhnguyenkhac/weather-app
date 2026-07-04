@@ -1,32 +1,47 @@
+/* Host lấp đầy ô grid — mọi card trong hàng cao bằng nhau bất kể nội dung */
+:host {
+  display: block;
+  height: 100%;
+}
+
 .card {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.15rem;
   width: 100%;
+  height: 100%;
+  min-height: 8.25rem;
   padding: 0.9rem 1rem;
-  border: 1px solid #eceef1;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-panel);
   cursor: pointer;
   text-align: left;
   font: inherit;
 }
 
 .card:hover {
-  border-color: #f05514;
+  border-color: var(--color-accent);
 }
 
+/* Tên luôn đúng 1 dòng — dài thì cắt ellipsis (tooltip title xem đủ), card không bị giãn cao */
 .name {
+  max-width: 100%;
   font-size: 1.05rem;
   font-weight: 700;
-  color: #26272b;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Dòng country luôn chiếm chỗ kể cả rỗng ("Vị trí của tôi", điểm bản đồ) — card nào cũng cùng nhịp dọc */
 .country {
+  min-height: 1.2em;
   font-size: 0.8rem;
-  color: #5b616e;
+  color: var(--color-muted);
 }
 
 .row {
@@ -43,7 +58,7 @@
 .temp {
   font-size: 1.6rem;
   font-weight: 700;
-  color: #f05514;
+  color: var(--color-accent);
 }
 
 .temp small {
@@ -53,5 +68,5 @@
 
 .realfeel {
   font-size: 0.8rem;
-  color: #5b616e;
+  color: var(--color-muted);
 }

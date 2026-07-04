@@ -1,10 +1,10 @@
 .hero {
   margin-top: 1rem;
   padding: 1.25rem 1.5rem;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
-  border-top: 4px solid #f05514;
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-panel);
+  border-top: 4px solid var(--color-accent);
 }
 
 .hero-head {
@@ -16,7 +16,7 @@
 .hero-head h2 {
   margin: 0;
   font-size: 1.15rem;
-  color: #26272b;
+  color: var(--color-text);
 }
 
 .now {
@@ -24,7 +24,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #5b616e;
+  color: var(--color-muted);
 }
 
 .hero-main {
@@ -43,7 +43,7 @@
   font-size: 4rem;
   font-weight: 700;
   line-height: 1;
-  color: #f05514;
+  color: var(--color-accent);
 }
 
 .temperature small {
@@ -60,20 +60,36 @@
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
-  color: #26272b;
+  color: var(--color-text);
 }
 
 .realfeel {
   margin: 0.25rem 0 0;
-  color: #5b616e;
+  color: var(--color-muted);
 }
 
 .hero-details {
   display: flex;
-  gap: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
   margin-top: 1rem;
   padding-top: 0.75rem;
-  border-top: 1px solid #eceef1;
-  color: #5b616e;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-muted);
   font-size: 0.95rem;
+}
+
+/* ===== Mobile: hạ cỡ số nhiệt độ hero cho vừa màn hẹp ===== */
+@media (max-width: 640px) {
+  .emoji {
+    font-size: 2.6rem;
+  }
+
+  .temperature {
+    font-size: 3rem;
+  }
+
+  .temperature small {
+    font-size: 1.15rem;
+  }
 }
