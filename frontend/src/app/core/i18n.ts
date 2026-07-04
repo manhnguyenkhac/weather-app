@@ -72,6 +72,19 @@ const DICT: Record<string, Record<Lang, string>> = {
   'compare.remove': { vi: 'Bỏ {name} khỏi so sánh', en: 'Remove {name} from comparison' },
   'common.loading': { vi: 'Đang tải…', en: 'Loading…' },
 
+  // Xu hướng & lịch sử
+  'history.title': { vi: 'Xu hướng & lịch sử', en: 'Trends & history' },
+  'history.tagline': { vi: '30 ngày qua + so với trung bình 10 năm', en: 'Past 30 days + 10-year normal' },
+  'history.loading': { vi: 'Đang tải dữ liệu lịch sử…', en: 'Loading history…' },
+  'history.error': { vi: 'Không tải được dữ liệu lịch sử — thử lại sau.', en: 'Could not load history — try again later.' },
+  'history.hotter': { vi: 'Hôm nay {today}° — nóng hơn trung bình 10 năm (~{normal}°) khoảng {x}°', en: 'Today {today}° — about {x}° hotter than the 10-year normal (~{normal}°)' },
+  'history.colder': { vi: 'Hôm nay {today}° — lạnh hơn trung bình 10 năm (~{normal}°) khoảng {x}°', en: 'Today {today}° — about {x}° colder than the 10-year normal (~{normal}°)' },
+  'history.similar': { vi: 'Hôm nay {today}° — xấp xỉ trung bình 10 năm (~{normal}°)', en: 'Today {today}° — close to the 10-year normal (~{normal}°)' },
+  'history.chart30': { vi: 'Nhiệt độ 30 ngày qua', en: 'Temperature, past 30 days' },
+  'history.max': { vi: 'Cao nhất ngày', en: 'Daily high' },
+  'history.min': { vi: 'Thấp nhất ngày', en: 'Daily low' },
+  'history.rain30': { vi: 'Tổng mưa 30 ngày qua', en: 'Total rain, past 30 days' },
+
   // Recent + sidebar
   'recent.title': { vi: 'Địa điểm gần đây', en: 'Recent locations' },
   'sidebar.title': { vi: '⚙️ Cài đặt', en: '⚙️ Settings' },

@@ -1,6 +1,6 @@
 # API Reference — weather-app backend
 
-Backend .NET 10 Minimal API chạy tại `http://localhost:5155`. Frontend gọi qua đường dẫn tương đối `/api/*` (dev proxy qua `proxy.conf.json`). Backend chỉ có đúng 3 endpoint dưới đây.
+Backend .NET 10 Minimal API chạy tại `http://localhost:5155`. Frontend gọi qua đường dẫn tương đối `/api/*` (dev proxy qua `proxy.conf.json`). Backend chỉ có đúng 4 endpoint dưới đây.
 
 > **BẮT BUỘC:** file này phải được cập nhật trong **cùng commit** với mọi thay đổi endpoint (thêm/sửa param, đổi shape response, đổi mã lỗi). Skill `dotnet10-endpoint` sẽ nhắc điều này.
 
@@ -11,11 +11,12 @@ Backend .NET 10 Minimal API chạy tại `http://localhost:5155`. Frontend gọi
 | GET | `/api/weather` | Forecast thời tiết theo tọa độ (current + hourly + daily) |
 | GET | `/api/geocode` | Tìm tọa độ địa điểm theo tên |
 | GET | `/api/air-quality` | Chỉ số chất lượng không khí US AQI + chi tiết theo chất |
+| GET | `/api/history` | Lịch sử 30 ngày qua + trung bình nhiệt độ 10 năm cùng thời điểm |
 
-### Chống lỗi upstream (áp dụng cho cả 3 endpoint)
+### Chống lỗi upstream (áp dụng cho cả 4 endpoint)
 
 - **Retry có backoff**: mỗi lời gọi Open-Meteo thử tối đa 3 lần (delay ~250ms/750ms) khi gặp lỗi transient (timeout, network, 5xx, 429). Upstream trả 4xx hoặc body rác thì fail ngay, không retry.
-- **Serve-stale**: response thành công được cache 2 tầng — TTL tươi (geocode 1h, forecast 10', AQI 30') và stale horizon (geocode 24h, forecast/AQI 6h). Hết TTL tươi mà upstream chết (sau retry) → trả **200 với bản cache cũ** kèm header **`X-Data-Stale: true`**.
+- **Serve-stale**: response thành công được cache 2 tầng — TTL tươi (geocode 1h, forecast 10', AQI 30', history 12h) và stale horizon (geocode 24h, forecast/AQI 6h, history 48h). Hết TTL tươi mà upstream chết (sau retry) → trả **200 với bản cache cũ** kèm header **`X-Data-Stale: true`**.
 - **502 chỉ trả khi** upstream lỗi **và** không còn bản cache nào trong stale horizon.
 
 ## GET /api/weather
@@ -160,3 +161,36 @@ Chỉ số chất lượng không khí hiện tại (US AQI + nồng độ từn
 | 200 | Thành công |
 | 400 | Param sai/thiếu (`lat`/`lon` thiếu, không parse được, ngoài khoảng, NaN) |
 | 502 | Open-Meteo upstream lỗi (sau retry) và không còn cache trong stale horizon — nếu còn thì trả 200 + header `X-Data-Stale: true`; hoặc body 200 nhưng thiếu `us_aqi` hiện tại |
+
+## GET /api/history
+
+Lịch sử thời tiết: 30 ngày gần nhất có dữ liệu (max/min/mưa theo ngày) + trung bình nhiệt độ 10 năm cùng thời điểm (cửa sổ ±7 ngày quanh hôm nay). Backend gọi Open-Meteo Archive `https://archive-api.open-meteo.com/v1/archive` (1 lời gọi lấy 10 năm daily, cache 12h).
+
+### Query params
+
+| Tên | Kiểu | Bắt buộc | Mặc định | Mô tả |
+|------|--------|----------|----------|-------|
+| `lat` | double | Có | — | Vĩ độ, khoảng -90..90 |
+| `lon` | double | Có | — | Kinh độ, khoảng -180..180 |
+
+### Response 200 (mẫu)
+
+```json
+{
+  "days": [
+    { "date": "2026-06-04", "tempMax": 34.1, "tempMin": 26.2, "precipitation": 3.4 }
+  ],
+  "normal": { "tempMax": 33.2, "tempMin": 26.6 }
+}
+```
+
+- `days`: 30 ngày gần nhất **có dữ liệu nhiệt độ** (archive trễ ~2-5 ngày, ngày null bị loại); `precipitation` (mm) thiếu thì trả `0`.
+- `normal`: trung bình `tempMax`/`tempMin` của các ngày có day-of-year cách hôm nay ≤ ±7 trên toàn bộ 10 năm (xử lý wrap qua năm); không đủ dữ liệu thì `null` (không phải lỗi).
+
+### Mã lỗi
+
+| Status | Khi nào |
+|--------|---------|
+| 200 | Thành công |
+| 400 | Param sai/thiếu (`lat`/`lon` thiếu, không parse được, ngoài khoảng, NaN) |
+| 502 | Open-Meteo Archive lỗi (sau retry) và không còn cache trong stale horizon — nếu còn thì trả 200 + header `X-Data-Stale: true`; hoặc body 200 nhưng không có ngày nào đủ nhiệt độ |

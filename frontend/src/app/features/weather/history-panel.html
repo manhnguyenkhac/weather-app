@@ -1,0 +1,46 @@
+<section class="panel">
+  <button type="button" class="head" (click)="expanded.set(!expanded())" [attr.aria-expanded]="expanded()">
+    <h3>{{ i18n.t('history.title') }}</h3>
+    <span class="summary">
+      <span class="mini-hint">{{ i18n.t('history.tagline') }}</span>
+    </span>
+    <span class="chevron" [class.open]="expanded()" aria-hidden="true">▾</span>
+  </button>
+
+  @if (expanded()) {
+    @if (history.isLoading()) {
+      <p class="hint">{{ i18n.t('history.loading') }}</p>
+    } @else if (history.error()) {
+      <p class="error">{{ i18n.t('history.error') }}</p>
+    } @else if (history.hasValue()) {
+      @if (verdict(); as v) {
+        <p class="verdict"><span class="v-emoji">{{ v.emoji }}</span> {{ v.text }}</p>
+      }
+
+      @if (chart(); as c) {
+        <h4 class="sub">{{ i18n.t('history.chart30') }} (°{{ pref.unit() }})</h4>
+        <svg [attr.viewBox]="'0 0 ' + frame.width + ' ' + frame.height" class="chart"
+          role="img" [attr.aria-label]="i18n.t('history.title') + ' — ' + i18n.t('history.chart30')">
+          @for (tick of c.yTicks; track tick.value) {
+            <line [attr.x1]="frame.padLeft" [attr.x2]="frame.width - frame.padRight"
+              [attr.y1]="tick.y" [attr.y2]="tick.y" class="grid" />
+            <text [attr.x]="frame.padLeft - 6" [attr.y]="tick.y + 3" class="axis" text-anchor="end">{{ tick.value }}°</text>
+          }
+          @for (tick of c.xTicks; track tick.x) {
+            <text [attr.x]="tick.x" [attr.y]="frame.height - 6" class="axis" text-anchor="middle">{{ tick.label }}</text>
+          }
+          <path [attr.d]="c.maxPath" class="line max" />
+          <path [attr.d]="c.minPath" class="line min" />
+        </svg>
+        <div class="legend">
+          <span><i class="max"></i>{{ i18n.t('history.max') }}</span>
+          <span><i class="min"></i>{{ i18n.t('history.min') }}</span>
+        </div>
+      }
+
+      @if (totalRain() !== null) {
+        <p class="rain">🌧️ {{ i18n.t('history.rain30') }}: <b>{{ totalRain() }} mm</b></p>
+      }
+    }
+  }
+</section>

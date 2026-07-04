@@ -11,6 +11,7 @@ flowchart LR
     BE -- "GET /v1/forecast" --> OM1["Open-Meteo Forecast API"]
     BE -- "GET /v1/search" --> OM2["Open-Meteo Geocoding API"]
     BE -- "GET /v1/air-quality" --> OM3["Open-Meteo Air Quality API"]
+    BE -- "GET /v1/archive" --> OM4["Open-Meteo Archive API"]
 ```
 
 - Browser chỉ nói chuyện với SPA và (qua proxy dev) với backend — **không bao giờ** gọi thẳng Open-Meteo (xem ADR-001).
@@ -27,10 +28,11 @@ flowchart LR
 
 ### Backend — `/backend` (.NET 10 Minimal API)
 
-- Endpoint gom theo domain bằng `MapGroup`: group `/api/weather`, `/api/geocode` và `/api/air-quality` — 3 endpoint (chi tiết trong [docs/API.md](API.md)):
+- Endpoint gom theo domain bằng `MapGroup`: group `/api/weather`, `/api/geocode`, `/api/air-quality` và `/api/history` — 4 endpoint (chi tiết trong [docs/API.md](API.md)):
   - `GET /api/weather?lat={double}&lon={double}&days={int, mặc định 7}`
   - `GET /api/geocode?q={string}&count={int, mặc định 5}`
   - `GET /api/air-quality?lat={double}&lon={double}`
+  - `GET /api/history?lat={double}&lon={double}`
 - Gọi Open-Meteo qua **typed HttpClient** (`OpenMeteoClient`) đăng ký bằng `IHttpClientFactory`; URL Open-Meteo đặt trong `appsettings.json`, không hardcode trong code.
 - DTO là `record`. Khi format số (lat/lon) vào URL upstream, luôn dùng `CultureInfo.InvariantCulture`.
 - Mã lỗi: `400` khi param sai/thiếu, `502` khi Open-Meteo upstream lỗi.
@@ -41,6 +43,7 @@ flowchart LR
 - Forecast: `https://api.open-meteo.com/v1/forecast`
 - Geocoding: `https://geocoding-api.open-meteo.com/v1/search`
 - Air Quality: `https://air-quality-api.open-meteo.com/v1/air-quality`
+- Archive (lịch sử): `https://archive-api.open-meteo.com/v1/archive`
 - Miễn phí, không cần API key. Chỉ backend gọi các URL này.
 
 ## ADR-001 — Proxy qua backend thay vì gọi Open-Meteo thẳng từ browser

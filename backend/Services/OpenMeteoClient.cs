@@ -29,6 +29,9 @@ public class OpenMeteoClient(
     private static readonly TimeSpan ForecastStaleTtl = TimeSpan.FromHours(6);
     private static readonly TimeSpan AirQualityFreshTtl = TimeSpan.FromMinutes(30);
     private static readonly TimeSpan AirQualityStaleTtl = TimeSpan.FromHours(6);
+    // Archive chỉ nhích thêm 1 ngày dữ liệu mỗi ngày — tươi lâu, stale rất lâu
+    private static readonly TimeSpan HistoryFreshTtl = TimeSpan.FromHours(12);
+    private static readonly TimeSpan HistoryStaleTtl = TimeSpan.FromHours(48);
 
     private static readonly TimeSpan[] DefaultRetryDelays =
         [TimeSpan.FromMilliseconds(250), TimeSpan.FromMilliseconds(750)];
@@ -71,6 +74,23 @@ public class OpenMeteoClient(
             $"&hourly=us_aqi&forecast_hours=24&timezone=auto");
 
         return GetJsonCachedAsync<OpenMeteoAirQualityResponseDto>(url, AirQualityFreshTtl, AirQualityStaleTtl, ct);
+    }
+
+    public Task<UpstreamResult<OpenMeteoArchiveResponseDto>> GetHistoryAsync(double lat, double lon, CancellationToken ct = default)
+    {
+        // 10 năm dữ liệu ngày cho MỘT lời gọi: vừa vẽ 30 ngày gần nhất, vừa tính trung bình 10 năm
+        // cùng thời điểm. Archive trễ vài ngày — end = hôm qua, phần tử null bị endpoint bỏ qua.
+        var today = clock.GetUtcNow().UtcDateTime.Date;
+        var start = today.AddYears(-10).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        var end = today.AddDays(-1).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+        // InvariantCulture bắt buộc: lat/lon là double, culture vi-VN sẽ sinh dấu phẩy thập phân làm hỏng URL
+        var url = string.Create(CultureInfo.InvariantCulture,
+            $"{config["OpenMeteo:ArchiveUrl"]}?latitude={lat}&longitude={lon}" +
+            $"&daily=temperature_2m_max,temperature_2m_min,precipitation_sum" +
+            $"&start_date={start}&end_date={end}&timezone=auto");
+
+        return GetJsonCachedAsync<OpenMeteoArchiveResponseDto>(url, HistoryFreshTtl, HistoryStaleTtl, ct);
     }
 
     private async Task<UpstreamResult<T>> GetJsonCachedAsync<T>(string url, TimeSpan freshTtl, TimeSpan staleTtl, CancellationToken ct) where T : class
