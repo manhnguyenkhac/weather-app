@@ -1,8 +1,16 @@
+/* Host lấp đầy ô grid — các card so sánh cao bằng nhau kể cả khi đang tải/lỗi */
+:host {
+  display: block;
+  height: 100%;
+}
+
 .card {
-  border: 1px solid #eceef1;
-  border-radius: 10px;
+  height: 100%;
+  min-height: 10rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
   padding: 0.8rem 0.95rem;
-  background: #fff;
+  background: var(--color-surface);
 }
 
 .card-head {
@@ -12,18 +20,25 @@
   gap: 0.4rem;
 }
 
-.name { color: #26272b; font-size: 0.95rem; }
+/* Tên 1 dòng ellipsis — city dài không làm lệch hàng card */
+.name {
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: 0.95rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 
 .remove {
   border: none;
   background: transparent;
-  color: #8b919d;
+  color: var(--color-muted-light);
   cursor: pointer;
   font-size: 0.9rem;
   padding: 0.1rem 0.3rem;
 }
 
-.remove:hover { color: #c62828; }
+.remove:hover { color: var(--color-error); }
 
 .now {
   display: flex;
@@ -37,7 +52,7 @@
 .temp {
   font-size: 1.9rem;
   font-weight: 800;
-  color: #f05514;
+  color: var(--color-accent);
   font-variant-numeric: tabular-nums;
 }
 
@@ -45,16 +60,16 @@
 
 .facts { margin: 0; display: flex; flex-direction: column; gap: 0.3rem; }
 .facts div { display: flex; justify-content: space-between; gap: 0.5rem; }
-.facts dt { color: #5b616e; font-size: 0.82rem; }
-.facts dd { margin: 0; color: #26272b; font-weight: 600; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+.facts dt { color: var(--color-muted); font-size: 0.82rem; }
+.facts dd { margin: 0; color: var(--color-text); font-weight: 600; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
 
 .aqi-chip {
   color: #fff;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 0.08rem 0.5rem;
   font-weight: 700;
   font-size: 0.78rem;
 }
 
-.loading, .err { margin: 0.4rem 0 0; font-size: 0.85rem; color: #5b616e; }
-.err { color: #c62828; }
+.loading, .err { margin: 0.4rem 0 0; font-size: 0.85rem; color: var(--color-muted); }
+.err { color: var(--color-error); }

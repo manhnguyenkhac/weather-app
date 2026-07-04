@@ -7,8 +7,8 @@ form {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: #fff;
-  border-radius: 999px;
+  background: var(--color-surface);
+  border-radius: var(--radius-pill);
   padding: 0.25rem 0.35rem 0.25rem 0.9rem;
 }
 
@@ -23,14 +23,14 @@ input {
   font-size: 0.95rem;
   padding: 0.4rem 0;
   background: transparent;
-  color: #26272b;
+  color: var(--color-text);
 }
 
 button[type='submit'] {
   padding: 0.4rem 1.1rem;
   border: none;
-  border-radius: 999px;
-  background: #f05514;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
   color: #fff;
   font-size: 0.9rem;
   font-weight: 600;
@@ -38,7 +38,7 @@ button[type='submit'] {
 }
 
 button[type='submit']:disabled {
-  background: #c8ccd4;
+  background: var(--color-disabled);
   cursor: not-allowed;
 }
 
@@ -48,8 +48,8 @@ button[type='submit']:disabled {
   left: 0;
   right: 0;
   z-index: 10;
-  background: #fff;
-  border-radius: 10px;
+  background: var(--color-surface);
+  border-radius: var(--radius-panel);
   box-shadow: 0 6px 20px rgb(0 0 0 / 0.18);
   padding: 0.4rem;
 }
@@ -68,24 +68,24 @@ button[type='submit']:disabled {
   border: none;
   border-radius: 6px;
   background: transparent;
-  color: #26272b;
+  color: var(--color-text);
   font-size: 0.95rem;
   cursor: pointer;
 }
 
 .results button:hover {
-  background: #f2f4f7;
-  color: #f05514;
+  background: var(--color-bg);
+  color: var(--color-accent);
 }
 
 .hint {
   margin: 0;
   padding: 0.55rem 0.75rem;
-  color: #5b616e;
+  color: var(--color-muted);
 }
 
 .error {
   margin: 0;
   padding: 0.55rem 0.75rem;
-  color: #c62828;
+  color: var(--color-error);
 }

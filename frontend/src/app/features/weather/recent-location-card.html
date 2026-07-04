@@ -1,5 +1,5 @@
 @if (city(); as c) {
-  <button type="button" class="card" (click)="chosen.emit(c)">
+  <button type="button" class="card" (click)="chosen.emit(c)" [title]="c.name">
     <span class="name">{{ c.name }}</span>
     <span class="country">{{ c.country }}</span>
     @if (temp() !== null) {

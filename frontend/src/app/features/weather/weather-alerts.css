@@ -10,18 +10,18 @@
   align-items: flex-start;
   gap: 0.65rem;
   padding: 0.7rem 1rem;
-  border-radius: 10px;
+  border-radius: var(--radius-panel);
   background: #fdf3e7;
   border-left: 4px solid #d8891c;
 }
 
 .alert.danger {
   background: #fdecea;
-  border-left-color: #c62828;
+  border-left-color: var(--color-error);
 }
 
 .emoji { font-size: 1.25rem; line-height: 1.3; }
 
 .body { display: flex; flex-direction: column; gap: 0.1rem; }
-.body b { color: #26272b; font-size: 0.95rem; }
-.detail { color: #5b616e; font-size: 0.85rem; }
+.body b { color: var(--color-text); font-size: 0.95rem; }
+.detail { color: var(--color-muted); font-size: 0.85rem; }

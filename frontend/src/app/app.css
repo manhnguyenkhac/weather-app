@@ -5,7 +5,7 @@
 
 /* ===== Header tối kiểu AccuWeather ===== */
 .topbar {
-  background: #26272b;
+  background: var(--color-text);
   padding: 0.6rem 1rem;
   position: sticky;
   top: 0;
@@ -33,20 +33,23 @@
   min-width: 0;
 }
 
+/* Pill VI + °C: cố định min-width và căn giữa để 2 nút luôn cùng kích thước */
 .unit-toggle {
+  min-width: 3.6rem;
   padding: 0.35rem 0.9rem;
-  border: 1px solid #f05514;
-  border-radius: 999px;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-pill);
   background: transparent;
-  color: #f05514;
+  color: var(--color-accent);
   font-size: 1rem;
   font-weight: 700;
+  text-align: center;
   cursor: pointer;
   white-space: nowrap;
 }
 
 .unit-toggle:hover {
-  background: #f05514;
+  background: var(--color-accent);
   color: #fff;
 }
 
@@ -61,7 +64,7 @@
 }
 
 .menu:hover {
-  color: #f05514;
+  color: var(--color-accent);
 }
 
 /* ===== Nội dung ===== */
@@ -72,18 +75,18 @@ main {
 }
 
 .hint {
-  color: #5b616e;
+  color: var(--color-muted);
   margin-top: 1rem;
 }
 
 .error {
-  color: #c62828;
+  color: var(--color-error);
   margin-top: 1rem;
 }
 
 .empty {
   text-align: center;
-  color: #5b616e;
+  color: var(--color-muted);
   margin-top: 4rem;
 }
 
@@ -96,8 +99,8 @@ main {
   margin-top: 1rem;
   padding: 0.6rem 1.5rem;
   border: none;
-  border-radius: 999px;
-  background: #f05514;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
   color: #fff;
   font-size: 1rem;
   font-weight: 700;
@@ -105,10 +108,31 @@ main {
 }
 
 .my-location:hover:not(:disabled) {
-  background: #d3490f;
+  background: var(--color-accent-dark);
 }
 
 .my-location:disabled {
-  background: #c8ccd4;
+  background: var(--color-disabled);
   cursor: wait;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 640px) {
+  .topbar-inner {
+    gap: 0.5rem;
+  }
+
+  .logo {
+    font-size: 1rem;
+  }
+
+  .unit-toggle {
+    min-width: 3rem;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  main {
+    padding: 0.5rem 0.75rem 2.5rem;
+  }
 }

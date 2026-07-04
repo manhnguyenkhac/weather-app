@@ -1,9 +1,9 @@
 .panel {
-  margin-top: 1rem;
-  padding: 1.1rem 1.35rem 1.25rem;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+  margin-top: var(--section-gap);
+  padding: var(--panel-pad);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-panel);
 }
 
 .head {
@@ -20,7 +20,7 @@
 }
 
 .head:focus-visible {
-  outline: 2px solid #f05514;
+  outline: 2px solid var(--color-accent);
   outline-offset: 4px;
   border-radius: 4px;
 }
@@ -31,13 +31,13 @@ h3 {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #5b616e;
+  color: var(--color-muted);
 }
 
 .summary { margin-left: auto; }
-.mini-hint { font-size: 0.82rem; color: #5b616e; font-variant-numeric: tabular-nums; }
+.mini-hint { font-size: 0.82rem; color: var(--color-muted); font-variant-numeric: tabular-nums; }
 
-.chevron { color: #5b616e; font-size: 0.9rem; transition: transform 0.18s ease; }
+.chevron { color: var(--color-muted); font-size: 0.9rem; transition: transform 0.18s ease; }
 .chevron.open { transform: rotate(180deg); }
 .head[aria-expanded="true"] { margin-bottom: 0.9rem; }
 
@@ -50,30 +50,30 @@ h3 {
 
 .add-current, .suggest {
   padding: 0.35rem 0.9rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 0.85rem;
   cursor: pointer;
 }
 
 .add-current {
   border: none;
-  background: #f05514;
+  background: var(--color-accent);
   color: #fff;
   font-weight: 700;
 }
 
-.add-current:disabled { background: #c8ccd4; cursor: not-allowed; }
+.add-current:disabled { background: var(--color-disabled); cursor: not-allowed; }
 
 .suggest {
-  border: 1px solid #f05514;
-  background: #fff;
-  color: #f05514;
+  border: 1px solid var(--color-accent);
+  background: var(--color-surface);
+  color: var(--color-accent);
 }
 
 .suggest:hover:not(:disabled) { background: #fef3ee; }
-.suggest:disabled { border-color: #c8ccd4; color: #c8ccd4; cursor: not-allowed; }
+.suggest:disabled { border-color: var(--color-disabled); color: var(--color-disabled); cursor: not-allowed; }
 
-.hint { margin: 0; color: #5b616e; font-size: 0.9rem; }
+.hint { margin: 0; color: var(--color-muted); font-size: 0.9rem; }
 
 .grid {
   display: grid;
