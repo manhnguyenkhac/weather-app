@@ -70,7 +70,7 @@ h3 {
   color: var(--color-accent);
 }
 
-.suggest:hover:not(:disabled) { background: #fef3ee; }
+.suggest:hover:not(:disabled) { background: var(--color-accent-tint); }
 .suggest:disabled { border-color: var(--color-disabled); color: var(--color-disabled); cursor: not-allowed; }
 
 .hint { margin: 0; color: var(--color-muted); font-size: 0.9rem; }

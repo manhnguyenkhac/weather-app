@@ -33,17 +33,17 @@ svg { display: block; width: 100%; height: auto; }
 
 .area { fill: rgb(240 85 20 / 0.08); stroke: none; }
 .line { fill: none; stroke: var(--color-accent); stroke-width: 2; stroke-linejoin: round; }
-.dot { fill: var(--color-accent); stroke: #fff; stroke-width: 1.5; }
+.dot { fill: var(--color-accent); stroke: var(--color-surface); stroke-width: 1.5; }
 .extreme { fill: var(--color-text); font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
 
 .crosshair { stroke: var(--color-disabled); stroke-width: 1; stroke-dasharray: 3 3; }
-.hover-dot { fill: var(--color-accent); stroke: #fff; stroke-width: 2; }
+.hover-dot { fill: var(--color-accent); stroke: var(--color-surface); stroke-width: 2; }
 
 .tooltip {
   position: absolute;
   top: 0;
   transform: translateX(-50%);
-  background: var(--color-text);
+  background: var(--color-topbar);
   color: #fff;
   font-size: 0.75rem;
   padding: 0.25rem 0.55rem;

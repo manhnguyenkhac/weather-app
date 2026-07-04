@@ -38,6 +38,12 @@ Thứ tự ưu tiên từ trên xuống. Mỗi mục: mô tả + tiêu chí xong
 
 - [x] Tổng rà soát UI (#64, user yêu cầu từ screenshot production) — design token trong `styles.css` (màu/bo góc/bóng/padding panel, 14 file CSS dùng `var()`), card địa điểm & so sánh đều kích thước (host `height:100%` + min-height, tên 1 dòng ellipsis + tooltip, dòng country luôn chiếm chỗ), pill VI/°C cùng size, h3 section đồng nhịp, media query mobile đầu tiên (topbar, hero, padding).
 
+- [x] Dark mode (#67, user chốt từ đề xuất) — service `ThemePreference` (signal theme light/dark/auto, mặc định auto theo prefers-color-scheme, localStorage `weather-app.theme`, effect gắn `data-theme` lên `<html>`); bộ dark token override trong `styles.css` (nhờ #64 chỉ 1 chỗ); segmented Giao diện ☀️/🌙/🖥️ trong sidebar (i18n); script inline trong index.html chống chớp nền sáng (106 test frontend).
+
+- [x] URL theo thành phố (#69, user chốt từ đề xuất) — `/city/<tên>[,<nước>]@<lat>,<lon>`: deep link mở đúng city, share được, back/forward hoạt động, `document.title` theo city; dùng `Location` (không cần Router/outlet — app một view); vercel.json thêm SPA fallback → index.html (113 test frontend).
+
+- [x] Lịch sử & xu hướng (#71, user chốt từ đề xuất) — endpoint `GET /api/history` gọi Open-Meteo Archive (1 lời gọi 10 năm daily, cache 12h/stale 48h, ngày null bị loại, TimeProvider test tua được): 30 ngày gần nhất + trung bình 10 năm cùng thời điểm (±7 ngày, wrap qua năm); panel 'Xu hướng & lịch sử' thu gọn, fetch lazy khi mở: verdict nóng/lạnh hơn trung bình, chart SVG 2 line max/min, tổng mưa 30 ngày, i18n + °C/°F (72 test backend + 117 frontend; smoke sống: Hà Nội normal 33.2°/26.6°, cache hit 4ms).
+
 ### Vận hành
 
 - [x] CI chạy test (#21) — DoD: pipeline chạy `dotnet test` + `ng test` trên mọi PR vào `develop` (GitHub Actions, 2 job song song), PR fail test không merge được (required status checks backend + frontend trên branch protection của `develop`).

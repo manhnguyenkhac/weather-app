@@ -63,6 +63,23 @@ export interface AirQualityResponse {
   hourly: AirQualityHour[];
 }
 
+export interface HistoryDay {
+  date: string;
+  tempMax: number;
+  tempMin: number;
+  precipitation: number;
+}
+
+export interface HistoryNormal {
+  tempMax: number;
+  tempMin: number;
+}
+
+export interface HistoryResponse {
+  days: HistoryDay[];
+  normal: HistoryNormal | null;
+}
+
 // ===== URL helpers thuần — tách riêng để unit test không cần HTTP =====
 
 export function geocodeUrl(q: string, count = 5): string {
@@ -75,6 +92,10 @@ export function weatherUrl(lat: number, lon: number, days = 7): string {
 
 export function airQualityUrl(lat: number, lon: number): string {
   return `/api/air-quality?lat=${lat}&lon=${lon}`;
+}
+
+export function historyUrl(lat: number, lon: number): string {
+  return `/api/history?lat=${lat}&lon=${lon}`;
 }
 
 /** Tên city ảo cho vị trí hiện tại (Open-Meteo không có reverse geocoding). */

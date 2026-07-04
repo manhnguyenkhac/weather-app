@@ -15,6 +15,7 @@ public static class TestOpenMeteo
     public const string GeocodingUrl = "https://geo.test/v1/search";
     public const string ForecastUrl = "https://forecast.test/v1/forecast";
     public const string AirQualityUrl = "https://air.test/v1/air-quality";
+    public const string ArchiveUrl = "https://archive.test/v1/archive";
 
     public static OpenMeteoClient CreateClient(
         HttpMessageHandler handler,
@@ -27,6 +28,7 @@ public static class TestOpenMeteo
                 ["OpenMeteo:GeocodingUrl"] = GeocodingUrl,
                 ["OpenMeteo:ForecastUrl"] = ForecastUrl,
                 ["OpenMeteo:AirQualityUrl"] = AirQualityUrl,
+                ["OpenMeteo:ArchiveUrl"] = ArchiveUrl,
             })
             .Build();
 
