@@ -1,0 +1,23 @@
+# Giữ backend Render free không ngủ: ping /api/health mỗi 10 phút.
+# Render free ngủ sau 15' không có traffic — ping định kỳ giữ instance thức
+# (750 instance-hours/tháng của free tier đủ cho 1 service thức 24/7).
+# Lưu ý: GitHub tự tắt scheduled workflow nếu repo không có commit 60 ngày.
+name: Keep-alive
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend health
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 90 \
+            https://weather-app-api-55c4.onrender.com/api/health)
+          echo "health -> $code"
+          # 200 = thức sẵn; lần đầu sau khi ngủ có thể timeout/5xx — không fail workflow,
+          # vì chính request này đã kích Render dậy cho lần ping sau
+          exit 0
