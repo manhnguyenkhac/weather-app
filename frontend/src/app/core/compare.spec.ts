@@ -23,12 +23,15 @@ describe('CompareList', () => {
     expect(list.cities()).toHaveLength(3);
   });
 
-  it('trùng nhãn không thêm lại', () => {
+  it('trùng nhãn: KHÔNG thêm dòng mới nhưng CẬP NHẬT tọa độ (#74 — "Vị trí của tôi" di chuyển)', () => {
     const list = TestBed.inject(CompareList);
     list.add(hanoi);
 
-    expect(list.add({ ...hanoi, latitude: 21.03 })).toBe(false);
-    expect(list.cities()).toHaveLength(1);
+    expect(list.add({ ...hanoi, latitude: 21.03 })).toBe(true); // danh sách có đổi (tọa độ mới)
+    expect(list.cities()).toHaveLength(1); // vẫn 1 dòng — thay chứ không thêm
+    expect(list.cities()[0].latitude).toBe(21.03);
+
+    expect(list.add({ ...hanoi, latitude: 21.03 })).toBe(false); // trùng hệt — không đổi gì
   });
 
   it('remove và persist qua localStorage', () => {

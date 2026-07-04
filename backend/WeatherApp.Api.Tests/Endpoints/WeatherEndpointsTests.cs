@@ -11,7 +11,7 @@ public class WeatherEndpointsTests
 {
     private const string ValidBody = """
         {
-          "current": { "temperature_2m": 27.4, "apparent_temperature": 32.1, "relative_humidity_2m": 78, "wind_speed_10m": 11.2, "weather_code": 3 },
+          "current": { "time": "2026-07-03T14:15", "temperature_2m": 27.4, "apparent_temperature": 32.1, "relative_humidity_2m": 78, "wind_speed_10m": 11.2, "weather_code": 3 },
           "hourly": {
             "time": ["2026-07-03T14:00", "2026-07-03T15:00"],
             "temperature_2m": [30.0, 29.5],
@@ -118,7 +118,8 @@ public class WeatherEndpointsTests
 
         var ok = Assert.IsType<Ok<WeatherResponseDto>>(result);
         var response = ok.Value!;
-        Assert.Equal(new CurrentWeatherDto(27.4, 32.1, 78, 11.2, 3), response.Current);
+        // current.time (#74): frontend cần biết "bây giờ" nằm đâu trong hourly (mảng bắt đầu từ 00:00)
+        Assert.Equal(new CurrentWeatherDto(27.4, 32.1, 78, 11.2, 3, "2026-07-03T14:15"), response.Current);
         Assert.Equal(2, response.Hourly.Count);
         Assert.Equal(new HourlyForecastDto("2026-07-03T14:00", 30.0, 3), response.Hourly[0]);
         Assert.Equal(2, response.Daily.Count);

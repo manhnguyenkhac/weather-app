@@ -10,9 +10,19 @@ import { GeocodeResult, WeatherApi } from './weather-api';
 
 /** GeocodeResult → path. Khoảng trắng trong tên thành '-' cho URL dễ đọc. */
 export function cityToPath(city: GeocodeResult): string {
-  const name = encodeURIComponent(city.name.trim().replace(/\s+/g, '-'));
-  const country = city.country ? `,${encodeURIComponent(city.country.trim().replace(/\s+/g, '-'))}` : '';
+  const name = encodeSegment(city.name);
+  const country = city.country ? `,${encodeSegment(city.country)}` : '';
   return `/city/${name}${country}@${city.latitude},${city.longitude}`;
+}
+
+// Dash THẬT trong tên (Baden-Baden) encode thành %2D trước, rồi %20 (space) mới thành '-' —
+// parse ngược không phá dash gốc (#74)
+function encodeSegment(s: string): string {
+  return encodeURIComponent(s.trim()).replace(/-/g, '%2D').replace(/%20/g, '-');
+}
+
+function decodeSegment(s: string): string {
+  return decodeURIComponent(s.replace(/-/g, '%20')).trim();
 }
 
 /** Path → GeocodeResult; không khớp dạng hoặc tọa độ sai → null. */
@@ -32,9 +42,8 @@ export function pathToCity(path: string): GeocodeResult | null {
   let name: string;
   let country: string;
   try {
-    const decode = (s: string) => decodeURIComponent(s).replace(/-/g, ' ').trim();
-    name = decode(rawName);
-    country = decode(rawCountry);
+    name = decodeSegment(rawName);
+    country = decodeSegment(rawCountry);
   } catch {
     return null;
   }
@@ -70,7 +79,14 @@ export class CityUrl {
     // City đổi (search, recent, bản đồ, so sánh…) → đẩy URL + title; URL đã đúng thì thôi (chặn vòng lặp)
     effect(() => {
       const city = this.api.selectedCity();
-      if (!city) return;
+      if (!city) {
+        // Về trang chủ (search mới / back) — URL và title không được kẹt ở city cũ (#74)
+        if (pathToCity(this.location.path())) {
+          this.location.go('/');
+        }
+        document.title = 'weather-app';
+        return;
+      }
       const path = cityToPath(city);
       if (this.location.path() !== path) {
         this.location.go(path);

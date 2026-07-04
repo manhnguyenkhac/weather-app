@@ -16,8 +16,16 @@ jobs:
       - name: Ping backend health
         run: |
           code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 90 \
-            https://weather-app-api-55c4.onrender.com/api/health)
+            https://weather-app-api-55c4.onrender.com/api/health || echo 000)
           echo "health -> $code"
-          # 200 = thức sẵn; lần đầu sau khi ngủ có thể timeout/5xx — không fail workflow,
-          # vì chính request này đã kích Render dậy cho lần ping sau
-          exit 0
+          # 200 = thức sẵn. Timeout/000/5xx thoáng qua (đang cold start) — tha lần đầu,
+          # nhưng thử lại sau 30s mà vẫn lỗi THẬT (4xx/5xx) thì fail để có tín hiệu outage,
+          # không im lặng che sự cố (#74)
+          if [ "$code" = "200" ]; then exit 0; fi
+          sleep 30
+          code2=$(curl -s -o /dev/null -w "%{http_code}" --max-time 90 \
+            https://weather-app-api-55c4.onrender.com/api/health || echo 000)
+          echo "retry -> $code2"
+          if [ "$code2" = "200" ] || [ "$code2" = "000" ]; then exit 0; fi
+          echo "Backend tra loi that ($code2) hai lan lien tiep"
+          exit 1

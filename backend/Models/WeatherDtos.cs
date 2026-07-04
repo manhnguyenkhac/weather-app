@@ -9,7 +9,8 @@ public record CurrentWeatherDto(
     double ApparentTemperature,
     int Humidity,
     double WindSpeed,
-    int WeatherCode);
+    int WeatherCode,
+    string Time);
 
 public record HourlyForecastDto(string Time, double Temperature, int WeatherCode);
 
@@ -43,7 +44,10 @@ public record OpenMeteoCurrentDto(
     [property: JsonPropertyName("apparent_temperature")] double ApparentTemperature,
     [property: JsonPropertyName("relative_humidity_2m")] int Humidity,
     [property: JsonPropertyName("wind_speed_10m")] double WindSpeed,
-    [property: JsonPropertyName("weather_code")] int WeatherCode);
+    [property: JsonPropertyName("weather_code")] int WeatherCode,
+    // Open-Meteo luôn kèm "time" (ISO local của city) trong block current — frontend cần để
+    // biết "bây giờ" nằm đâu trong mảng hourly (hourly bắt đầu từ 00:00, không phải từ giờ hiện tại)
+    [property: JsonPropertyName("time")] string? Time = null);
 
 public record OpenMeteoHourlyDto(
     [property: JsonPropertyName("time")] IReadOnlyList<string>? Time,

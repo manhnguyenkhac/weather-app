@@ -21,6 +21,9 @@
           <dd>
             @if (aqi(); as a) {
               <span class="aqi-chip" [style.background]="a.color">{{ a.value }}</span>
+            } @else if (air.error()) {
+              <!-- Điểm không có dữ liệu AQI (giữa biển…) — không treo "…" như đang tải mãi -->
+              <span class="aqi-none">—</span>
             } @else {
               …
             }

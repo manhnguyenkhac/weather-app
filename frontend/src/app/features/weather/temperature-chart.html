@@ -6,7 +6,7 @@
     <div class="chart-wrap">
       <svg [attr.viewBox]="'0 0 ' + lineFrame.width + ' ' + lineFrame.height" class="line-chart"
         role="img" [attr.aria-label]="i18n.t('chart.title') + ' — ' + i18n.t('chart.next24h')"
-        (mousemove)="onLineMove($event)" (mouseleave)="hoverIndex.set(null)">
+        (pointermove)="onLineMove($event)" (pointerleave)="hoverIndex.set(null)">
         @for (tick of l.yTicks; track tick.value) {
           <line [attr.x1]="lineFrame.padLeft" [attr.x2]="lineFrame.width - lineFrame.padRight"
             [attr.y1]="tick.y" [attr.y2]="tick.y" class="grid" />

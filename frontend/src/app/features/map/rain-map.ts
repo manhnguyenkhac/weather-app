@@ -60,6 +60,7 @@ export class RainMap {
   private radarLayer: L.TileLayer | null = null;
   private marker: L.Marker | null = null;
   private playTimer: ReturnType<typeof setInterval> | null = null;
+  private skipNextPan = false;
 
   constructor() {
     // Khởi tạo map khi panel mở và div đã render
@@ -83,12 +84,16 @@ export class RainMap {
       }
     });
 
-    // City đổi → bay tới + cắm marker
+    // City đổi → bay tới + cắm marker (trừ khi nguồn thay đổi là chính click trên bản đồ —
+    // pan về dưới con trỏ gây giật view #74)
     effect(() => {
       const city = this.api.selectedCity();
       if (!this.map || !city) return;
       const pos: L.LatLngTuple = [city.latitude, city.longitude];
-      this.map.setView(pos, this.map.getZoom());
+      if (!this.skipNextPan) {
+        this.map.setView(pos, this.map.getZoom());
+      }
+      this.skipNextPan = false;
       this.setMarker(pos);
     });
 
@@ -112,16 +117,18 @@ export class RainMap {
       this.setMarker(center);
     }
 
-    // Click bản đồ → xem thời tiết + AQI tại điểm đó (tái dùng cơ chế city ảo như "Vị trí của tôi")
+    // Click bản đồ → xem thời tiết + AQI tại điểm đó (tái dùng cơ chế city ảo như "Vị trí của tôi").
+    // addToRecent=false: điểm tò mò trên bản đồ không được đẩy city thật khỏi lịch sử (#74)
     this.map.on('click', (e: L.LeafletMouseEvent) => {
       const lat = Math.round(e.latlng.lat * 10000) / 10000;
       const lon = Math.round(e.latlng.lng * 10000) / 10000;
+      this.skipNextPan = true;
       this.api.selectCity({
         name: `${this.i18n.t('map.point')} ${lat.toFixed(2)}, ${lon.toFixed(2)}`,
         country: '',
         latitude: lat,
         longitude: lon,
-      });
+      }, false);
     });
   }
 

@@ -85,7 +85,8 @@ public static class WeatherEndpoints
             upstream.Current.ApparentTemperature,
             upstream.Current.Humidity,
             upstream.Current.WindSpeed,
-            upstream.Current.WeatherCode);
+            upstream.Current.WeatherCode,
+            upstream.Current.Time ?? "");
 
         return StaleOk.Ok(new WeatherResponseDto(current, hours, forecast), result.IsStale);
     }

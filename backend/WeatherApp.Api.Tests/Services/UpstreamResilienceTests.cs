@@ -63,8 +63,9 @@ public class UpstreamResilienceTests
     }
 
     [Fact]
-    public async Task Retry_429DuocCoiLaTransient_VaThuLai()
+    public async Task Retry_429KhongRetry_DiThangServeStale()
     {
+        // Rate-limit tính theo phút/giờ — đập thêm trong 1s vô ích và làm quota xấu hơn (#74)
         var handler = new SequenceHttpMessageHandler(
             (HttpStatusCode.TooManyRequests, "slow down"),
             (HttpStatusCode.OK, GeocodeBody));
@@ -72,8 +73,8 @@ public class UpstreamResilienceTests
 
         var result = await client.SearchLocationsAsync("Hanoi", 5);
 
-        Assert.Equal(2, handler.RequestCount);
-        Assert.NotNull(result.Data);
+        Assert.Equal(1, handler.RequestCount); // không có lần thử thứ 2
+        Assert.Null(result.Data); // cache trống nên fail — có cache thì đã serve-stale
     }
 
     // ---------- Serve-stale ----------
@@ -146,6 +147,45 @@ public class UpstreamResilienceTests
 
         Assert.Equal(1, handler.RequestCount);
         Assert.False(result.IsStale);
+    }
+
+    [Fact]
+    public async Task ServeStale_History_SongQuaNuaDemUtc_KeyKhongXoayTheoNgay()
+    {
+        // Bài học vụ 502 production: URL /history chứa start/end date, 00:00 UTC là URL đổi.
+        // Cache key phải ổn định để bản cũ vẫn dùng được khi upstream chết sau nửa đêm (#74).
+        const string archiveBody = """
+            { "daily": { "time": ["2026-07-03"], "temperature_2m_max": [30], "temperature_2m_min": [24], "precipitation_sum": [0] } }
+            """;
+        var handler = new SequenceHttpMessageHandler(
+            (HttpStatusCode.OK, archiveBody),
+            (HttpStatusCode.InternalServerError, "boom"));
+        var time = new FakeTimeProvider(T0);
+        var client = TestOpenMeteo.CreateClient(handler, time);
+
+        var fresh = await client.GetHistoryAsync(21.03, 105.83);
+        time.Advance(TimeSpan.FromHours(26)); // qua nửa đêm UTC — end_date trong URL đã nhích 1 ngày
+        var stale = await client.GetHistoryAsync(21.03, 105.83);
+
+        Assert.False(fresh.IsStale);
+        Assert.True(stale.IsStale); // vẫn còn bản cũ dù URL mới — key không xoay theo ngày
+        Assert.Equal(fresh.Data, stale.Data);
+    }
+
+    [Fact]
+    public async Task SingleFlight_NhieuRequestCungMiss_ChiGoiUpstream1Lan()
+    {
+        var handler = new SequenceHttpMessageHandler((HttpStatusCode.OK, GeocodeBody))
+        {
+            Delay = TimeSpan.FromMilliseconds(120), // giữ response để 5 request kịp chồng nhau
+        };
+        var client = TestOpenMeteo.CreateClient(handler);
+
+        var results = await Task.WhenAll(Enumerable.Range(0, 5)
+            .Select(_ => client.SearchLocationsAsync("Hanoi", 5)));
+
+        Assert.Equal(1, handler.RequestCount); // 4 request sau chờ gate rồi đọc cache
+        Assert.All(results, r => Assert.NotNull(r.Data));
     }
 
     // ---------- Endpoint: header X-Data-Stale ----------

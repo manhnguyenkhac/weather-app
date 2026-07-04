@@ -24,11 +24,13 @@
       <app-weather-alerts />
       <app-weather-card id="current" [city]="city" [current]="api.forecast.value().current" />
       <app-hourly-strip id="hourly" [hours]="api.forecast.value().hourly" />
-      <app-temperature-chart id="chart" [hours]="api.forecast.value().hourly" [days]="api.forecast.value().daily" />
+      <app-temperature-chart id="chart" [hours]="api.forecast.value().hourly" [days]="api.forecast.value().daily" [current]="api.forecast.value().current" />
       <app-forecast-list id="daily" [days]="api.forecast.value().daily" [hours]="api.forecast.value().hourly" />
-      <app-history-panel id="history" />
-      <app-air-quality-panel id="air-quality" />
     }
+    <!-- 2 panel này chỉ cần selectedCity — nằm NGOÀI chuỗi if của forecast để không bị destroy
+         (mất trạng thái mở + refetch) mỗi lần đổi city làm forecast quay về loading (#74) -->
+    <app-history-panel id="history" />
+    <app-air-quality-panel id="air-quality" />
   } @else {
     <div class="empty">
       <p class="empty-emoji">🌤️</p>

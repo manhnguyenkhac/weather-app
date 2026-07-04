@@ -16,4 +16,6 @@ COPY --from=build /app .
 # Render cấp cổng qua biến PORT lúc runtime — bind 0.0.0.0:$PORT (fallback 8080 khi chạy local)
 ENV ASPNETCORE_ENVIRONMENT=Production
 EXPOSE 8080
+# Không chạy root: user 'app' có sẵn trong image aspnet, PORT của Render (10000) > 1024 nên bind được
+USER app
 ENTRYPOINT ["/bin/sh", "-c", "ASPNETCORE_HTTP_PORTS=${PORT:-8080} exec dotnet WeatherApp.Api.dll"]

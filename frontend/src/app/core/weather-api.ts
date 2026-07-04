@@ -17,6 +17,8 @@ export interface CurrentWeather {
   humidity: number;
   windSpeed: number;
   weatherCode: number;
+  /** ISO local của city (vd "2026-07-04T21:15") — mốc "bây giờ" trong mảng hourly. */
+  time: string;
 }
 
 export interface HourlyForecast {
@@ -96,6 +98,18 @@ export function airQualityUrl(lat: number, lon: number): string {
 
 export function historyUrl(lat: number, lon: number): string {
   return `/api/history?lat=${lat}&lon=${lon}`;
+}
+
+/**
+ * Vị trí của "bây giờ" trong mảng hourly. Backend trả hourly từ 00:00 giờ địa phương của CITY
+ * (không phải từ giờ hiện tại) nên mọi cửa sổ "24h tới" phải slice từ index này.
+ * Không xác định được (time rỗng/không khớp) thì fallback 0 — hành vi cũ.
+ */
+export function currentHourIndex(current: CurrentWeather, hourly: HourlyForecast[]): number {
+  const hourKey = (current.time ?? '').slice(0, 13); // "2026-07-04T21"
+  if (hourKey.length < 13) return 0;
+  const index = hourly.findIndex((h) => h.time.slice(0, 13) === hourKey);
+  return index >= 0 ? index : 0;
 }
 
 /** Tên city ảo cho vị trí hiện tại (Open-Meteo không có reverse geocoding). */
@@ -196,14 +210,23 @@ export class WeatherApi {
   readonly locating = signal(false);
   readonly locationError = signal<string | undefined>(undefined);
 
+  // Token vô hiệu hóa callback định vị muộn: user đã chọn city khác thì kết quả
+  // getCurrentPosition về sau không được ghi đè lựa chọn mới (#74)
+  private locateToken = 0;
+
   search(query: string): void {
+    this.locateToken++;
     this.selectedCity.set(undefined); // tìm mới thì bỏ chọn city cũ
     this.submittedQuery.set(query.trim());
   }
 
-  selectCity(city: GeocodeResult): void {
+  /** addToRecent=false cho city ảo từ click bản đồ — không làm rác lịch sử (#74). */
+  selectCity(city: GeocodeResult, addToRecent = true): void {
+    this.locateToken++;
     this.selectedCity.set(city);
-    this.recent.add(city);
+    if (addToRecent) {
+      this.recent.add(city);
+    }
   }
 
   /** Lấy vị trí hiện tại từ browser → chọn city ảo "Vị trí của tôi" (forecast + AQI tự chạy theo). */
@@ -216,11 +239,16 @@ export class WeatherApi {
     }
 
     this.locating.set(true);
+    const token = ++this.locateToken;
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        this.locating.set(false);
+        // Callback muộn: user đã chọn city khác trong lúc chờ quyền/GPS — không ghi đè
+        if (token !== this.locateToken) {
+          return;
+        }
         // Làm tròn 4 số lẻ (~11m): đủ chính xác cho thời tiết, ổn định cho cache + lịch sử
         const round4 = (n: number) => Math.round(n * 10000) / 10000;
-        this.locating.set(false);
         this.selectCity({
           name: MY_LOCATION_NAME,
           country: '',
