@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://weather-app-api.onrender.com/api/:path*"
+      "destination": "https://weather-app-api-55c4.onrender.com/api/:path*"
     }
   ]
 }

@@ -9,7 +9,7 @@ Mọi config đã nằm sẵn trong repo: [`render.yaml`](../render.yaml) (Bluep
 
 1. Đăng ký https://render.com (đăng nhập bằng GitHub, authorize repo `weather-app`).
 2. **New +** → **Blueprint** → chọn repo `manhnguyenkhac/weather-app` → Render tự đọc `render.yaml` → **Apply**.
-3. Chờ build xong (~3-5 phút lần đầu). Kiểm tra: mở `https://weather-app-api.onrender.com/api/health` → `{"status":"ok"}`.
+3. Chờ build xong (~3-5 phút lần đầu). Kiểm tra: mở `https://weather-app-api-55c4.onrender.com/api/health` → `{"status":"ok"}`.
 
 > ⚠️ Nếu tên `weather-app-api` đã bị người khác chiếm, Render sẽ gán tên khác (vd `weather-app-api-xxxx`).
 > Khi đó sửa `destination` trong `frontend/vercel.json` theo URL thật rồi commit theo flow thường.
