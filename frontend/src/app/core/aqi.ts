@@ -24,31 +24,53 @@ export function aqiLevel(aqi: number): AqiLevel {
   return 6;
 }
 
-export function aqiLevelName(level: AqiLevel): string {
-  return ['Tốt', 'Trung bình', 'Kém (nhóm nhạy cảm)', 'Xấu', 'Rất xấu', 'Nguy hại'][level - 1];
+export function aqiLevelName(level: AqiLevel, lang: 'vi' | 'en' = 'vi'): string {
+  const names = lang === 'vi'
+    ? ['Tốt', 'Trung bình', 'Kém (nhóm nhạy cảm)', 'Xấu', 'Rất xấu', 'Nguy hại']
+    : ['Good', 'Moderate', 'Unhealthy (sensitive)', 'Unhealthy', 'Very unhealthy', 'Hazardous'];
+  return names[level - 1];
 }
 
 /** Headline hành động — nói người dùng NÊN LÀM GÌ, không chỉ mô tả. */
-export function aqiHeadline(level: AqiLevel): string {
-  return [
-    'Không khí sạch — thoải mái hoạt động ngoài trời',
-    'Chấp nhận được — nhóm quá nhạy cảm nên để ý triệu chứng',
-    'Nhóm nhạy cảm nên giảm hoạt động ngoài trời',
-    'Mọi người nên hạn chế hoạt động gắng sức ngoài trời',
-    'Tránh ra ngoài — không khí ảnh hưởng sức khỏe mọi người',
-    'Nguy hiểm — ở trong nhà, đóng kín cửa, dùng lọc không khí',
-  ][level - 1];
+export function aqiHeadline(level: AqiLevel, lang: 'vi' | 'en' = 'vi'): string {
+  const headlines = lang === 'vi'
+    ? [
+        'Không khí sạch — thoải mái hoạt động ngoài trời',
+        'Chấp nhận được — nhóm quá nhạy cảm nên để ý triệu chứng',
+        'Nhóm nhạy cảm nên giảm hoạt động ngoài trời',
+        'Mọi người nên hạn chế hoạt động gắng sức ngoài trời',
+        'Tránh ra ngoài — không khí ảnh hưởng sức khỏe mọi người',
+        'Nguy hiểm — ở trong nhà, đóng kín cửa, dùng lọc không khí',
+      ]
+    : [
+        'Clean air — enjoy outdoor activities',
+        'Acceptable — highly sensitive people should watch for symptoms',
+        'Sensitive groups should reduce outdoor activity',
+        'Everyone should limit strenuous outdoor activity',
+        'Avoid going outside — air affects everyone’s health',
+        'Dangerous — stay indoors, close windows, use an air purifier',
+      ];
+  return headlines[level - 1];
 }
 
-export function aqiAdvice(level: AqiLevel): string[] {
-  const byLevel: string[][] = [
-    ['🏃 Thời điểm tốt cho chạy bộ, đạp xe ngoài trời', '🪟 Mở cửa sổ thông gió thoải mái'],
-    ['😌 Hoạt động ngoài trời bình thường', '👶 Trẻ nhỏ/người hen suyễn để ý nếu thấy khó chịu'],
-    ['😷 Nên đeo khẩu trang đạt chuẩn khi ra đường lâu', '🪟 Người hen suyễn, trẻ nhỏ, người già: hạn chế mở cửa sổ giờ cao điểm'],
-    ['😷 Đeo khẩu trang đạt chuẩn khi ra đường', '🏠 Cân nhắc tập luyện trong nhà thay vì ngoài trời'],
-    ['🚫 Hoãn hoạt động ngoài trời nếu có thể', '🌬️ Đóng cửa sổ, bật lọc không khí nếu có'],
-    ['🏠 Ở trong nhà, đóng kín cửa', '🩺 Có triệu chứng khó thở/đau ngực: liên hệ y tế'],
-  ];
+export function aqiAdvice(level: AqiLevel, lang: 'vi' | 'en' = 'vi'): string[] {
+  const byLevel: string[][] = lang === 'vi'
+    ? [
+        ['🏃 Thời điểm tốt cho chạy bộ, đạp xe ngoài trời', '🪟 Mở cửa sổ thông gió thoải mái'],
+        ['😌 Hoạt động ngoài trời bình thường', '👶 Trẻ nhỏ/người hen suyễn để ý nếu thấy khó chịu'],
+        ['😷 Nên đeo khẩu trang đạt chuẩn khi ra đường lâu', '🪟 Người hen suyễn, trẻ nhỏ, người già: hạn chế mở cửa sổ giờ cao điểm'],
+        ['😷 Đeo khẩu trang đạt chuẩn khi ra đường', '🏠 Cân nhắc tập luyện trong nhà thay vì ngoài trời'],
+        ['🚫 Hoãn hoạt động ngoài trời nếu có thể', '🌬️ Đóng cửa sổ, bật lọc không khí nếu có'],
+        ['🏠 Ở trong nhà, đóng kín cửa', '🩺 Có triệu chứng khó thở/đau ngực: liên hệ y tế'],
+      ]
+    : [
+        ['🏃 Great time for running or cycling outdoors', '🪟 Open windows and ventilate freely'],
+        ['😌 Outdoor activities as usual', '👶 Kids/asthmatics: watch for any discomfort'],
+        ['😷 Wear a certified mask for long time outdoors', '🪟 Asthmatics, kids, elderly: limit opening windows at peak hours'],
+        ['😷 Wear a certified mask outdoors', '🏠 Consider indoor workouts instead'],
+        ['🚫 Postpone outdoor activities if possible', '🌬️ Close windows, run an air purifier if available'],
+        ['🏠 Stay indoors, keep doors and windows shut', '🩺 Breathing trouble or chest pain: seek medical help'],
+      ];
   return byLevel[level - 1];
 }
 

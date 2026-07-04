@@ -11,6 +11,7 @@ import {
 } from '../../core/weather-api';
 import { AQI_COLORS, aqiLevel } from '../../core/aqi';
 import { UnitPreference, convertTemp } from '../../core/unit-preference';
+import { I18n } from '../../core/i18n';
 
 @Component({
   selector: 'app-compare-card',
@@ -24,6 +25,7 @@ export class CompareCard {
   readonly removed = output<GeocodeResult>();
 
   protected readonly pref = inject(UnitPreference);
+  protected readonly i18n = inject(I18n);
 
   protected readonly weather = httpResource<WeatherResponse>(() => {
     const c = this.city();

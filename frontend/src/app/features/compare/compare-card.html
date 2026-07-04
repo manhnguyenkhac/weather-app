@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-head">
       <b class="name">{{ label() }}</b>
-      <button type="button" class="remove" (click)="removed.emit(c)" [attr.aria-label]="'Bỏ ' + c.name + ' khỏi so sánh'">✕</button>
+      <button type="button" class="remove" (click)="removed.emit(c)" [attr.aria-label]="i18n.t('compare.remove', { name: c.name })">✕</button>
     </div>
 
     @if (data(); as d) {
@@ -13,9 +13,9 @@
       <dl class="facts">
         <div><dt>RealFeel®</dt><dd>{{ d.realFeel }}°</dd></div>
         @if (d.max !== null) {
-          <div><dt>Cao / thấp</dt><dd>{{ d.max }}° / {{ d.min }}°</dd></div>
+          <div><dt>{{ i18n.t('compare.highLow') }}</dt><dd>{{ d.max }}° / {{ d.min }}°</dd></div>
         }
-        <div><dt>Mưa hôm nay</dt><dd>{{ d.rain }} mm</dd></div>
+        <div><dt>{{ i18n.t('compare.rainToday') }}</dt><dd>{{ d.rain }} mm</dd></div>
         <div>
           <dt>AQI</dt>
           <dd>
@@ -28,9 +28,9 @@
         </div>
       </dl>
     } @else if (weather.error()) {
-      <p class="err">Không tải được dữ liệu</p>
+      <p class="err">{{ i18n.t('compare.loadError') }}</p>
     } @else {
-      <p class="loading">Đang tải…</p>
+      <p class="loading">{{ i18n.t('common.loading') }}</p>
     }
   </div>
 }

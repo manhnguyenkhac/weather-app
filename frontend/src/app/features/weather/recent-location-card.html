@@ -9,9 +9,9 @@
       </span>
       <span class="realfeel">RealFeel® {{ realFeel() }}°</span>
     } @else if (weather.error()) {
-      <span class="realfeel">Không tải được dữ liệu</span>
+      <span class="realfeel">{{ i18n.t('compare.loadError') }}</span>
     } @else {
-      <span class="realfeel">Đang tải…</span>
+      <span class="realfeel">{{ i18n.t('common.loading') }}</span>
     }
   </button>
 }
