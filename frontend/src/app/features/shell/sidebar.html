@@ -23,6 +23,15 @@
       </div>
     </section>
 
+    <section>
+      <h3>{{ i18n.t('sidebar.theme') }}</h3>
+      <div class="segmented">
+        <button type="button" [class.active]="themePref.theme() === 'light'" (click)="setTheme('light')">{{ i18n.t('theme.light') }}</button>
+        <button type="button" [class.active]="themePref.theme() === 'dark'" (click)="setTheme('dark')">{{ i18n.t('theme.dark') }}</button>
+        <button type="button" [class.active]="themePref.theme() === 'auto'" (click)="setTheme('auto')">{{ i18n.t('theme.auto') }}</button>
+      </div>
+    </section>
+
     @if (api.selectedCity(); as city) {
       <!-- Section đích (#current/#hourly/#daily) chỉ tồn tại khi forecast đã có dữ liệu -->
       @if (api.forecast.hasValue()) {

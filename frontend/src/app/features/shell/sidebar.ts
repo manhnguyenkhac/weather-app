@@ -3,6 +3,7 @@ import { GeocodeResult, WeatherApi, formatCityLabel } from '../../core/weather-a
 import { RecentLocations } from '../../core/recent-locations';
 import { TemperatureUnit, UnitPreference } from '../../core/unit-preference';
 import { I18n, Lang } from '../../core/i18n';
+import { Theme, ThemePreference } from '../../core/theme';
 
 @Component({
   selector: 'app-sidebar',
@@ -18,6 +19,7 @@ export class Sidebar {
   protected readonly api = inject(WeatherApi);
   protected readonly recent = inject(RecentLocations);
   protected readonly i18n = inject(I18n);
+  protected readonly themePref = inject(ThemePreference);
 
   protected readonly label = formatCityLabel;
 
@@ -27,6 +29,10 @@ export class Sidebar {
 
   setLang(lang: Lang): void {
     this.i18n.setLang(lang);
+  }
+
+  setTheme(theme: Theme): void {
+    this.themePref.setTheme(theme);
   }
 
   goTo(sectionId: string): void {

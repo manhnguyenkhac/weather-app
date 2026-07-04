@@ -17,13 +17,48 @@
   --radius-pill: 999px;
   --shadow-panel: 0 1px 3px rgb(0 0 0 / 0.08);
 
+  /* Màu nhấn phụ: nền tint, cảnh báo, bề mặt phụ, topbar */
+  --color-topbar: #26272b;
+  --color-accent-tint: #fef3ee;
+  --color-warning-bg: #fdf3e7;
+  --color-warning-border: #d8891c;
+  --color-danger-bg: #fdecea;
+  --color-surface-alt: #f8f9fb;
+  --color-surface-dim: #eef0f4;
+
   /* Panel trắng nào cũng cùng một padding + khoảng cách dọc */
   --panel-pad: 1.1rem 1.25rem 1.25rem;
   --section-gap: 1rem;
 }
 
+/* ===== Dark mode (#67) — data-theme do ThemePreference gắn lên <html> ===== */
+:root[data-theme='dark'] {
+  --color-bg: #14161a;
+  --color-surface: #1e2127;
+  --color-text: #e8eaef;
+  --color-muted: #9aa1ac;
+  --color-muted-light: #707784;
+  --color-border: #2d323b;
+  --color-accent: #f56b2a;
+  --color-accent-dark: #ff7f42;
+  --color-error: #ef6b62;
+  --color-disabled: #4a505b;
+
+  --color-topbar: #101216;
+  --color-accent-tint: #33251d;
+  --color-warning-bg: #2e2416;
+  --color-warning-border: #b97517;
+  --color-danger-bg: #321d1c;
+  --color-surface-alt: #23262d;
+  --color-surface-dim: #2a2e36;
+}
+
 * {
   box-sizing: border-box;
+}
+
+html {
+  background: var(--color-bg);
 }
 
 body {
