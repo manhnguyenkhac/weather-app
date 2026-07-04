@@ -1,0 +1,41 @@
+<section class="panel">
+  <button type="button" class="head" (click)="expanded.set(!expanded())" [attr.aria-expanded]="expanded()">
+    <h3>{{ i18n.t('compare.title') }}</h3>
+    <span class="summary">
+      <span class="mini-hint">
+        @if (compare.cities().length > 0) {
+          {{ compare.cities().length }}/{{ maxCompare }} {{ i18n.t('compare.capacity') }}
+        } @else {
+          {{ i18n.t('compare.tagline', { n: maxCompare }) }}
+        }
+      </span>
+    </span>
+    <span class="chevron" [class.open]="expanded()" aria-hidden="true">▾</span>
+  </button>
+
+  @if (expanded()) {
+    <div class="actions">
+      @if (api.selectedCity(); as city) {
+        <button type="button" class="add-current" (click)="addCurrent()" [disabled]="!canAddCurrent()">
+          {{ i18n.t('compare.addCurrent') }} {{ label(city) }}
+        </button>
+      }
+      @for (city of suggestions(); track city.name + city.country) {
+        <button type="button" class="suggest" (click)="add(city)"
+          [disabled]="compare.cities().length >= maxCompare">
+          {{ i18n.t('compare.addCurrent') }} {{ label(city) }}
+        </button>
+      }
+    </div>
+
+    @if (compare.cities().length === 0) {
+      <p class="hint">{{ i18n.t('compare.hint') }}</p>
+    } @else {
+      <div class="grid">
+        @for (city of compare.cities(); track city.name + city.country) {
+          <app-compare-card [city]="city" (removed)="compare.remove($event)" />
+        }
+      </div>
+    }
+  }
+</section>

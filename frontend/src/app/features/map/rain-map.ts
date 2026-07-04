@@ -12,6 +12,7 @@ import {
 import { httpResource } from '@angular/common/http';
 import * as L from 'leaflet';
 import { WeatherApi } from '../../core/weather-api';
+import { I18n } from '../../core/i18n';
 import {
   RAINVIEWER_FRAMES_URL,
   RadarFrame,
@@ -31,6 +32,7 @@ const HANOI: L.LatLngTuple = [21.0278, 105.8342];
 })
 export class RainMap {
   protected readonly api = inject(WeatherApi);
+  protected readonly i18n = inject(I18n);
   private readonly destroyRef = inject(DestroyRef);
 
   // Thu gọn mặc định — Leaflet chỉ khởi tạo khi mở lần đầu (tiết kiệm tile + tránh lỗi size khi ẩn)
@@ -115,7 +117,7 @@ export class RainMap {
       const lat = Math.round(e.latlng.lat * 10000) / 10000;
       const lon = Math.round(e.latlng.lng * 10000) / 10000;
       this.api.selectCity({
-        name: `Tọa độ ${lat.toFixed(2)}, ${lon.toFixed(2)}`,
+        name: `${this.i18n.t('map.point')} ${lat.toFixed(2)}, ${lon.toFixed(2)}`,
         country: '',
         latitude: lat,
         longitude: lon,

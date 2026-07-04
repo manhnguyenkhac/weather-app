@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, output } f
 import { httpResource } from '@angular/common/http';
 import { GeocodeResult, WeatherResponse, weatherCodeEmoji, weatherUrl } from '../../core/weather-api';
 import { UnitPreference, convertTemp } from '../../core/unit-preference';
+import { I18n } from '../../core/i18n';
 
 @Component({
   selector: 'app-recent-location-card',
@@ -15,6 +16,7 @@ export class RecentLocationCard {
   readonly chosen = output<GeocodeResult>();
 
   protected readonly pref = inject(UnitPreference);
+  protected readonly i18n = inject(I18n);
 
   // Mỗi card tự fetch thời tiết hiện tại của nó — request trùng đã có cache backend đỡ
   protected readonly weather = httpResource<WeatherResponse>(() => {

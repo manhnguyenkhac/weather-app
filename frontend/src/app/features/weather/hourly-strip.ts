@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { HourlyForecast, hourLabel, weatherCodeEmoji } from '../../core/weather-api';
 import { UnitPreference, convertTemp } from '../../core/unit-preference';
+import { I18n } from '../../core/i18n';
 
 @Component({
   selector: 'app-hourly-strip',
@@ -14,6 +15,7 @@ export class HourlyStrip {
   readonly limit = input(24);
 
   private readonly pref = inject(UnitPreference);
+  protected readonly i18n = inject(I18n);
 
   // Danh sách đã quy đổi đơn vị + nhãn giờ — computed từ (hours, unit)
   protected readonly displayHours = computed(() => {

@@ -99,41 +99,50 @@ export function timeOfDay(isoTime: string): string {
 }
 
 /** Nhãn mức UV theo thang WHO. */
-export function uvLabel(uv: number): string {
-  if (uv < 3) return 'Thấp';
-  if (uv < 6) return 'Trung bình';
-  if (uv < 8) return 'Cao';
-  if (uv < 11) return 'Rất cao';
-  return 'Cực đoan';
+export function uvLabel(uv: number, lang: 'vi' | 'en' = 'vi'): string {
+  const labels = lang === 'vi'
+    ? ['Thấp', 'Trung bình', 'Cao', 'Rất cao', 'Cực đoan']
+    : ['Low', 'Moderate', 'High', 'Very high', 'Extreme'];
+  if (uv < 3) return labels[0];
+  if (uv < 6) return labels[1];
+  if (uv < 8) return labels[2];
+  if (uv < 11) return labels[3];
+  return labels[4];
 }
 
-/** "2026-07-03" → "T6" / "CN" — nhãn thứ trong tuần cho card daily. */
-export function weekdayLabel(isoDate: string): string {
+/** "2026-07-03" → "T6" / "CN" (vi) hoặc "Fri" / "Sun" (en). */
+export function weekdayLabel(isoDate: string, lang: 'vi' | 'en' = 'vi'): string {
   const day = new Date(`${isoDate}T00:00:00`).getDay();
-  return ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'][day] ?? isoDate;
+  const names = lang === 'vi'
+    ? ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+    : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  return names[day] ?? isoDate;
 }
 
-/** Phần emoji của nhãn thời tiết — dùng làm icon lớn trên card. */
+/** Phần emoji của nhãn thời tiết — dùng làm icon lớn trên card (không phụ thuộc ngôn ngữ). */
 export function weatherCodeEmoji(code: number): string {
   return weatherCodeLabel(code).split(' ')[0];
 }
 
 /** Phần chữ của nhãn thời tiết (bỏ emoji). */
-export function weatherCodeText(code: number): string {
-  return weatherCodeLabel(code).split(' ').slice(1).join(' ');
+export function weatherCodeText(code: number, lang: 'vi' | 'en' = 'vi'): string {
+  return weatherCodeLabel(code, lang).split(' ').slice(1).join(' ');
 }
 
 /** Map WMO weather code (Open-Meteo) sang nhãn hiển thị. */
-export function weatherCodeLabel(code: number): string {
-  if (code === 0) return '☀️ Trời quang';
-  if (code <= 3) return '⛅ Có mây';
-  if (code === 45 || code === 48) return '🌫️ Sương mù';
-  if (code <= 57) return '🌦️ Mưa phùn';
-  if (code <= 67) return '🌧️ Mưa';
-  if (code <= 77) return '🌨️ Tuyết';
-  if (code <= 82) return '🌧️ Mưa rào';
-  if (code <= 86) return '🌨️ Tuyết rào';
-  return '⛈️ Dông';
+export function weatherCodeLabel(code: number, lang: 'vi' | 'en' = 'vi'): string {
+  const texts = lang === 'vi'
+    ? ['Trời quang', 'Có mây', 'Sương mù', 'Mưa phùn', 'Mưa', 'Tuyết', 'Mưa rào', 'Tuyết rào', 'Dông']
+    : ['Clear', 'Cloudy', 'Fog', 'Drizzle', 'Rain', 'Snow', 'Showers', 'Snow showers', 'Thunderstorm'];
+  if (code === 0) return `☀️ ${texts[0]}`;
+  if (code <= 3) return `⛅ ${texts[1]}`;
+  if (code === 45 || code === 48) return `🌫️ ${texts[2]}`;
+  if (code <= 57) return `🌦️ ${texts[3]}`;
+  if (code <= 67) return `🌧️ ${texts[4]}`;
+  if (code <= 77) return `🌨️ ${texts[5]}`;
+  if (code <= 82) return `🌧️ ${texts[6]}`;
+  if (code <= 86) return `🌨️ ${texts[7]}`;
+  return `⛈️ ${texts[8]}`;
 }
 
 /**
@@ -181,7 +190,7 @@ export class WeatherApi {
     this.locationError.set(undefined);
 
     if (!('geolocation' in navigator)) {
-      this.locationError.set('Trình duyệt này không hỗ trợ định vị.');
+      this.locationError.set('geo.unsupported');
       return;
     }
 
@@ -200,12 +209,9 @@ export class WeatherApi {
       },
       (error) => {
         this.locating.set(false);
-        const messages: Record<number, string> = {
-          1: 'Bạn đã từ chối quyền định vị — cấp lại trong cài đặt trình duyệt rồi thử lại.',
-          2: 'Không xác định được vị trí — thử lại hoặc tìm theo tên thành phố.',
-          3: 'Định vị quá lâu không phản hồi — thử lại nhé.',
-        };
-        this.locationError.set(messages[error.code] ?? 'Không định vị được — thử tìm theo tên thành phố.');
+        // Lưu KEY i18n — component dịch lúc render nên đổi ngôn ngữ là message đổi theo
+        const keys: Record<number, string> = { 1: 'geo.denied', 2: 'geo.unavailable', 3: 'geo.timeout' };
+        this.locationError.set(keys[error.code] ?? 'geo.generic');
       },
       { timeout: 10000, maximumAge: 300000 },
     );

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { WeatherApi } from '../../core/weather-api';
+import { I18n } from '../../core/i18n';
 import {
   AQI_BOUNDS,
   AQI_COLORS,
@@ -41,6 +42,7 @@ interface HourBar {
 })
 export class AirQualityPanel {
   protected readonly api = inject(WeatherApi);
+  protected readonly i18n = inject(I18n);
 
   // Mặc định thu gọn — bấm header mới xổ chi tiết (feedback user #38)
   readonly expanded = signal(false);
@@ -49,11 +51,12 @@ export class AirQualityPanel {
   protected readonly gauge = GAUGE;
   protected readonly segments = gaugeSegments();
 
-  protected readonly legend = ([1, 2, 3, 4, 5, 6] as const).map((l) => ({
-    color: AQI_COLORS[l],
-    range: l === 6 ? '301–500+' : `${AQI_BOUNDS[l - 1] + (l > 1 ? 1 : 0)}–${AQI_BOUNDS[l]}`,
-    name: aqiLevelName(l),
-  }));
+  protected readonly legend = computed(() =>
+    ([1, 2, 3, 4, 5, 6] as const).map((l) => ({
+      color: AQI_COLORS[l],
+      range: l === 6 ? '301–500+' : `${AQI_BOUNDS[l - 1] + (l > 1 ? 1 : 0)}–${AQI_BOUNDS[l]}`,
+      name: aqiLevelName(l, this.i18n.lang()),
+    })));
 
   private readonly data = computed(() =>
     this.api.airQuality.hasValue() ? this.api.airQuality.value() : undefined);
@@ -61,9 +64,9 @@ export class AirQualityPanel {
   protected readonly aqi = computed(() => this.data()?.current.usAqi ?? null);
   protected readonly level = computed<AqiLevel>(() => aqiLevel(this.aqi() ?? 0));
   protected readonly levelColor = computed(() => AQI_COLORS[this.level()]);
-  protected readonly levelName = computed(() => aqiLevelName(this.level()));
-  protected readonly headline = computed(() => aqiHeadline(this.level()));
-  protected readonly advice = computed(() => aqiAdvice(this.level()));
+  protected readonly levelName = computed(() => aqiLevelName(this.level(), this.i18n.lang()));
+  protected readonly headline = computed(() => aqiHeadline(this.level(), this.i18n.lang()));
+  protected readonly advice = computed(() => aqiAdvice(this.level(), this.i18n.lang()));
 
   // Cung "đã đi qua" + vị trí kim
   protected readonly doneArc = computed(() =>

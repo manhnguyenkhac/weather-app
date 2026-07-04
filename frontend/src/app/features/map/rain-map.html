@@ -1,11 +1,11 @@
 <section class="panel">
   <button type="button" class="head" (click)="toggle()" [attr.aria-expanded]="expanded()">
-    <h3>Bản đồ radar mưa</h3>
+    <h3>{{ i18n.t('map.title') }}</h3>
     <span class="summary">
       @if (!expanded()) {
-        <span class="mini-hint">Mưa thật theo radar + dự báo 30 phút</span>
+        <span class="mini-hint">{{ i18n.t('map.tagline') }}</span>
       } @else if (currentFrame(); as f) {
-        <span class="mini-hint">{{ f.label }}{{ f.nowcast ? ' · dự báo' : '' }}</span>
+        <span class="mini-hint">{{ f.label }}{{ f.nowcast ? ' · ' + i18n.t('map.nowcast') : '' }}</span>
       }
     </span>
     <span class="chevron" [class.open]="expanded()" aria-hidden="true">▾</span>
@@ -13,24 +13,24 @@
 
   @if (expanded()) {
     @if (maps.error()) {
-      <p class="error">Không tải được dữ liệu radar — thử lại sau.</p>
+      <p class="error">{{ i18n.t('map.error') }}</p>
     }
 
-    <div #mapHost class="map-host" [attr.aria-label]="'Bản đồ radar mưa'"></div>
+    <div #mapHost class="map-host" [attr.aria-label]="i18n.t('map.title')"></div>
 
     @if (frames().length > 0 && currentFrame(); as f) {
       <div class="timeline">
         <button type="button" class="play" (click)="togglePlay()"
-          [attr.aria-label]="playing() ? 'Dừng' : 'Chạy tua thời gian'">
+          [attr.aria-label]="playing() ? i18n.t('map.pause') : i18n.t('map.play')">
           {{ playing() ? '⏸' : '▶' }}
         </button>
         <input type="range" min="0" [max]="frames().length - 1" [value]="frameIndex()"
-          (input)="onSlider($event)" aria-label="Chọn thời điểm radar" />
+          (input)="onSlider($event)" [attr.aria-label]="i18n.t('map.slider')" />
         <span class="stamp" [class.nowcast]="f.nowcast">
-          {{ f.label }}@if (f.nowcast) { <em>dự báo</em> }
+          {{ f.label }}@if (f.nowcast) { <em>{{ i18n.t('map.nowcast') }}</em> }
         </span>
       </div>
-      <p class="tip">💡 Bấm vào bất kỳ đâu trên bản đồ để xem thời tiết + AQI tại điểm đó.</p>
+      <p class="tip">{{ i18n.t('map.tip') }}</p>
     }
   }
 </section>

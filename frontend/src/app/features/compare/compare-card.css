@@ -1,0 +1,60 @@
+.card {
+  border: 1px solid #eceef1;
+  border-radius: 10px;
+  padding: 0.8rem 0.95rem;
+  background: #fff;
+}
+
+.card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.name { color: #26272b; font-size: 0.95rem; }
+
+.remove {
+  border: none;
+  background: transparent;
+  color: #8b919d;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.1rem 0.3rem;
+}
+
+.remove:hover { color: #c62828; }
+
+.now {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.45rem 0 0.55rem;
+}
+
+.emoji { font-size: 1.6rem; }
+
+.temp {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #f05514;
+  font-variant-numeric: tabular-nums;
+}
+
+.temp small { font-size: 0.85rem; vertical-align: super; }
+
+.facts { margin: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+.facts div { display: flex; justify-content: space-between; gap: 0.5rem; }
+.facts dt { color: #5b616e; font-size: 0.82rem; }
+.facts dd { margin: 0; color: #26272b; font-weight: 600; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+
+.aqi-chip {
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.08rem 0.5rem;
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+
+.loading, .err { margin: 0.4rem 0 0; font-size: 0.85rem; color: #5b616e; }
+.err { color: #c62828; }

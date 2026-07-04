@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormField, form, minLength, required } from '@angular/forms/signals';
 import { GeocodeResult, WeatherApi } from '../../core/weather-api';
+import { I18n } from '../../core/i18n';
 
 @Component({
   selector: 'app-city-search',
@@ -11,6 +12,7 @@ import { GeocodeResult, WeatherApi } from '../../core/weather-api';
 })
 export class CitySearch {
   protected readonly api = inject(WeatherApi);
+  protected readonly i18n = inject(I18n);
 
   readonly model = signal({ city: '' });
 

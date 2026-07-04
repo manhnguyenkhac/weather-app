@@ -1,12 +1,12 @@
 <section class="panel">
   <button type="button" class="head" (click)="expanded.set(!expanded())"
     [attr.aria-expanded]="expanded()">
-    <h3>Chất lượng không khí</h3>
+    <h3>{{ i18n.t('aqi.title') }}</h3>
     <span class="summary">
       @if (api.airQuality.isLoading()) {
-        <span class="mini-hint">Đang tải…</span>
+        <span class="mini-hint">{{ i18n.t('common.loading') }}</span>
       } @else if (api.airQuality.error()) {
-        <span class="mini-hint">Không có dữ liệu</span>
+        <span class="mini-hint">{{ i18n.t('aqi.noData') }}</span>
       } @else if (aqi() !== null) {
         <span class="mini-chip" [style.background]="levelColor()">AQI {{ aqi() }}</span>
         <span class="mini-name">{{ levelName() }}</span>
@@ -17,9 +17,9 @@
 
   @if (expanded()) {
     @if (api.airQuality.isLoading()) {
-      <p class="hint">Đang tải chỉ số không khí…</p>
+      <p class="hint">{{ i18n.t('aqi.loading') }}</p>
     } @else if (api.airQuality.error()) {
-      <p class="error">Không lấy được chỉ số không khí — thử lại sau.</p>
+      <p class="error">{{ i18n.t('aqi.error') }}</p>
     } @else if (aqi() !== null) {
       <div class="aqi-hero">
         <div class="gauge-wrap">
@@ -47,9 +47,9 @@
           <h2>{{ headline() }}</h2>
           @if (mainTile(); as main) {
             <p class="dominant">
-              Chất ô nhiễm chính: <b>{{ main.label }} — {{ main.value }} µg/m³</b>
+              {{ i18n.t('aqi.dominant') }} <b>{{ main.label }} — {{ main.value }} µg/m³</b>
               @if (mainTimes() >= 1) {
-                (gấp {{ mainTimes() }}× ngưỡng WHO)
+                ({{ i18n.t('aqi.whoTimes', { x: mainTimes() }) }})
               }
             </p>
           }
@@ -66,7 +66,7 @@
           <div class="pol" [class.main]="tile.main">
             <div class="name">
               {{ tile.label }}
-              @if (tile.main) { <span class="tag">chính</span> }
+              @if (tile.main) { <span class="tag">{{ i18n.t('aqi.main') }}</span> }
             </div>
             <div class="val">{{ tile.value }} <small>µg/m³</small></div>
             <div class="bar">
@@ -77,7 +77,7 @@
       </div>
 
       @if (hourBars().length > 0) {
-        <h4 class="sub">AQI theo giờ — 24 giờ tới</h4>
+        <h4 class="sub">{{ i18n.t('aqi.hourly') }}</h4>
         <div class="hourly">
           @for (bar of hourBars(); track $index) {
             <div class="col" [title]="bar.title">
@@ -88,7 +88,7 @@
       }
 
       <div class="legend">
-        @for (item of legend; track item.name) {
+        @for (item of legend(); track item.name) {
           <span><i [style.background]="item.color"></i><b>{{ item.range }}</b> {{ item.name }}</span>
         }
       </div>
