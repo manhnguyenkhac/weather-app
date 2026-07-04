@@ -27,6 +27,15 @@ describe('App', () => {
     expect(compiled.querySelector('app-city-search input')).toBeTruthy();
   });
 
+  it('trang chủ có nút Thời tiết chỗ tôi', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const button = (fixture.nativeElement as HTMLElement).querySelector('button.my-location');
+
+    expect(button).toBeTruthy();
+    expect(button!.textContent).toContain('Thời tiết chỗ tôi');
+  });
+
   it('nút ☰ mở sidebar Cài đặt', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();

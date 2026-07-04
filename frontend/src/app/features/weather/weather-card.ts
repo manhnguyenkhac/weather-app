@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
-import { CurrentWeather, GeocodeResult, weatherCodeEmoji, weatherCodeText } from '../../core/weather-api';
+import { CurrentWeather, GeocodeResult, formatCityLabel, weatherCodeEmoji, weatherCodeText } from '../../core/weather-api';
 import { UnitPreference, convertTemp } from '../../core/unit-preference';
 
 @Component({
@@ -13,6 +13,8 @@ export class WeatherCard {
   readonly current = input.required<CurrentWeather>();
 
   protected readonly pref = inject(UnitPreference);
+
+  protected readonly cityLabel = computed(() => formatCityLabel(this.city()));
 
   protected readonly emoji = computed(() => weatherCodeEmoji(this.current().weatherCode));
   protected readonly conditionText = computed(() => weatherCodeText(this.current().weatherCode));
