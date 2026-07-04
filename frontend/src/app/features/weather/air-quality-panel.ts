@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { WeatherApi } from '../../core/weather-api';
 import {
   AQI_BOUNDS,
@@ -41,6 +41,9 @@ interface HourBar {
 })
 export class AirQualityPanel {
   protected readonly api = inject(WeatherApi);
+
+  // Mặc định thu gọn — bấm header mới xổ chi tiết (feedback user #38)
+  readonly expanded = signal(false);
 
   // Hình học gauge — hằng số dùng trong template
   protected readonly gauge = GAUGE;
