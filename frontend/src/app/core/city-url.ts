@@ -28,11 +28,19 @@ export function pathToCity(path: string): GeocodeResult | null {
   }
 
   const [rawName, rawCountry = ''] = match[1].split(',', 2);
-  const decode = (s: string) => decodeURIComponent(s).replace(/-/g, ' ').trim();
-  const name = decode(rawName);
+  // decodeURIComponent ném URIError với chuỗi % hỏng — URL rác không được làm app chết
+  let name: string;
+  let country: string;
+  try {
+    const decode = (s: string) => decodeURIComponent(s).replace(/-/g, ' ').trim();
+    name = decode(rawName);
+    country = decode(rawCountry);
+  } catch {
+    return null;
+  }
   if (!name) return null;
 
-  return { name, country: decode(rawCountry), latitude: lat, longitude: lon };
+  return { name, country, latitude: lat, longitude: lon };
 }
 
 @Injectable({ providedIn: 'root' })

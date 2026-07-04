@@ -27,6 +27,10 @@ describe('cityToPath / pathToCity', () => {
     expect(pathToCity('/city/X@21,181')).toBeNull();
     expect(pathToCity('/city/@21,105')).toBeNull();
   });
+
+  it('chuỗi % hỏng → null, không ném URIError (app không được chết vì URL rác)', () => {
+    expect(pathToCity('/city/%E0%A@21,105')).toBeNull();
+  });
 });
 
 describe('CityUrl service', () => {
