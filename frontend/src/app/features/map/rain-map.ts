@@ -90,7 +90,10 @@ export class RainMap {
       this.setMarker(pos);
     });
 
-    this.destroyRef.onDestroy(() => this.stopPlaying());
+    this.destroyRef.onDestroy(() => {
+      this.stopPlaying();
+      this.destroyMap();
+    });
   }
 
   private initMap(host: HTMLDivElement): void {
@@ -135,7 +138,17 @@ export class RainMap {
     this.expanded.update((v) => !v);
     if (!this.expanded()) {
       this.stopPlaying();
+      // @if gỡ div bản đồ khỏi DOM khi đóng — phải hủy map để lần mở sau init lại trên div mới,
+      // nếu không this.map trỏ vào div đã chết → panel trắng
+      this.destroyMap();
     }
+  }
+
+  private destroyMap(): void {
+    this.map?.remove();
+    this.map = null;
+    this.radarLayer = null;
+    this.marker = null;
   }
 
   togglePlay(): void {
