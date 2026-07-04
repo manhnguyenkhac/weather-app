@@ -17,6 +17,7 @@
     } @else if (api.forecast.error()) {
       <p class="error">Không lấy được dữ liệu thời tiết — thử lại sau.</p>
     } @else if (api.forecast.hasValue()) {
+      <app-weather-alerts />
       <app-weather-card id="current" [city]="city" [current]="api.forecast.value().current" />
       <app-hourly-strip id="hourly" [hours]="api.forecast.value().hourly" />
       <app-temperature-chart id="chart" [hours]="api.forecast.value().hourly" [days]="api.forecast.value().daily" />

@@ -1,0 +1,27 @@
+.alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  background: #fdf3e7;
+  border-left: 4px solid #d8891c;
+}
+
+.alert.danger {
+  background: #fdecea;
+  border-left-color: #c62828;
+}
+
+.emoji { font-size: 1.25rem; line-height: 1.3; }
+
+.body { display: flex; flex-direction: column; gap: 0.1rem; }
+.body b { color: #26272b; font-size: 0.95rem; }
+.detail { color: #5b616e; font-size: 0.85rem; }

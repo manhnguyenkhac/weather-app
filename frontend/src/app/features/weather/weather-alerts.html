@@ -1,0 +1,13 @@
+@if (alerts().length > 0) {
+  <div class="alerts" role="alert">
+    @for (alert of alerts(); track alert.title) {
+      <div class="alert" [class.danger]="alert.severity === 'danger'">
+        <span class="emoji">{{ alert.emoji }}</span>
+        <div class="body">
+          <b>{{ alert.title }}</b>
+          <span class="detail">{{ alert.detail }}</span>
+        </div>
+      </div>
+    }
+  </div>
+}
