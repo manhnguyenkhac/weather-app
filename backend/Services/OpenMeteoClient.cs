@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Net;
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Memory;
 using WeatherApp.Api.Models;
@@ -7,26 +8,47 @@ namespace WeatherApp.Api.Services;
 
 /// <summary>
 /// Typed client gọi Open-Meteo. URL đọc từ appsettings.json (section OpenMeteo, đã validate lúc boot).
-/// Trả null khi upstream lỗi (non-2xx, timeout, body không parse được) — endpoint map thành 502.
-/// Response thành công được cache in-memory theo key = URL upstream (chứa đủ mọi query param).
+/// Chống lỗi upstream 2 lớp (#61):
+/// - Retry có backoff cho lỗi transient (timeout, network, 5xx/429) — 4xx không retry.
+/// - Serve-stale: cache entry kèm FetchedAt, giữ tới stale horizon; hết TTL tươi mà upstream
+///   chết (sau retry) thì trả bản cũ với IsStale=true thay vì fail. Chỉ khi không còn bản cũ
+///   nào mới trả Data=null — endpoint map thành 502.
 /// </summary>
-public class OpenMeteoClient(HttpClient http, IConfiguration config, IMemoryCache cache)
+public class OpenMeteoClient(
+    HttpClient http,
+    IConfiguration config,
+    IMemoryCache cache,
+    TimeProvider? time = null,
+    IReadOnlyList<TimeSpan>? retryDelays = null)
 {
-    // Tọa độ city gần như bất biến — cache dài; forecast đổi theo giờ — cache ngắn;
-    // AQI cập nhật theo giờ — cache trung bình
-    private static readonly TimeSpan GeocodeTtl = TimeSpan.FromHours(1);
-    private static readonly TimeSpan ForecastTtl = TimeSpan.FromMinutes(10);
-    private static readonly TimeSpan AirQualityTtl = TimeSpan.FromMinutes(30);
+    // Tọa độ city gần như bất biến — tươi lâu, stale rất lâu; forecast/AQI đổi theo giờ — tươi ngắn,
+    // stale đủ dài để sống qua một đợt upstream chặn IP (như vụ 502 production 2026-07-04)
+    private static readonly TimeSpan GeocodeFreshTtl = TimeSpan.FromHours(1);
+    private static readonly TimeSpan GeocodeStaleTtl = TimeSpan.FromHours(24);
+    private static readonly TimeSpan ForecastFreshTtl = TimeSpan.FromMinutes(10);
+    private static readonly TimeSpan ForecastStaleTtl = TimeSpan.FromHours(6);
+    private static readonly TimeSpan AirQualityFreshTtl = TimeSpan.FromMinutes(30);
+    private static readonly TimeSpan AirQualityStaleTtl = TimeSpan.FromHours(6);
 
-    public Task<OpenMeteoGeocodeResponse?> SearchLocationsAsync(string query, int count, CancellationToken ct = default)
+    private static readonly TimeSpan[] DefaultRetryDelays =
+        [TimeSpan.FromMilliseconds(250), TimeSpan.FromMilliseconds(750)];
+
+    private readonly TimeProvider clock = time ?? TimeProvider.System;
+    private readonly IReadOnlyList<TimeSpan> delays = retryDelays ?? DefaultRetryDelays;
+
+    // Entry cache giữ nguyên thời điểm fetch — độ tươi tính trong code (không dựa expiry của
+    // MemoryCache) để kiểm soát được bằng TimeProvider trong test
+    private sealed record Entry<T>(T Data, DateTimeOffset FetchedAt);
+
+    public Task<UpstreamResult<OpenMeteoGeocodeResponse>> SearchLocationsAsync(string query, int count, CancellationToken ct = default)
     {
         var url = string.Create(CultureInfo.InvariantCulture,
             $"{config["OpenMeteo:GeocodingUrl"]}?name={Uri.EscapeDataString(query)}&count={count}&language=en&format=json");
 
-        return GetJsonCachedAsync<OpenMeteoGeocodeResponse>(url, GeocodeTtl, ct);
+        return GetJsonCachedAsync<OpenMeteoGeocodeResponse>(url, GeocodeFreshTtl, GeocodeStaleTtl, ct);
     }
 
-    public Task<OpenMeteoForecastResponseDto?> GetForecastAsync(double lat, double lon, int days, CancellationToken ct = default)
+    public Task<UpstreamResult<OpenMeteoForecastResponseDto>> GetForecastAsync(double lat, double lon, int days, CancellationToken ct = default)
     {
         // InvariantCulture bắt buộc: lat/lon là double, culture vi-VN sẽ sinh dấu phẩy thập phân làm hỏng URL
         // hourly KHÔNG giới hạn forecast_hours: trả 24×days entries để UI xem hourly của từng ngày
@@ -37,10 +59,10 @@ public class OpenMeteoClient(HttpClient http, IConfiguration config, IMemoryCach
             $"&daily=temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,uv_index_max,precipitation_sum,precipitation_probability_max" +
             $"&forecast_days={days}&timezone=auto");
 
-        return GetJsonCachedAsync<OpenMeteoForecastResponseDto>(url, ForecastTtl, ct);
+        return GetJsonCachedAsync<OpenMeteoForecastResponseDto>(url, ForecastFreshTtl, ForecastStaleTtl, ct);
     }
 
-    public Task<OpenMeteoAirQualityResponseDto?> GetAirQualityAsync(double lat, double lon, CancellationToken ct = default)
+    public Task<UpstreamResult<OpenMeteoAirQualityResponseDto>> GetAirQualityAsync(double lat, double lon, CancellationToken ct = default)
     {
         // InvariantCulture bắt buộc: lat/lon là double, culture vi-VN sẽ sinh dấu phẩy thập phân làm hỏng URL
         var url = string.Create(CultureInfo.InvariantCulture,
@@ -48,57 +70,91 @@ public class OpenMeteoClient(HttpClient http, IConfiguration config, IMemoryCach
             $"&current=us_aqi,pm2_5,pm10,ozone,nitrogen_dioxide,sulphur_dioxide,carbon_monoxide" +
             $"&hourly=us_aqi&forecast_hours=24&timezone=auto");
 
-        return GetJsonCachedAsync<OpenMeteoAirQualityResponseDto>(url, AirQualityTtl, ct);
+        return GetJsonCachedAsync<OpenMeteoAirQualityResponseDto>(url, AirQualityFreshTtl, AirQualityStaleTtl, ct);
     }
 
-    // CHỈ cache response thành công — upstream lỗi (null) không cache để request sau thử lại ngay
-    private async Task<T?> GetJsonCachedAsync<T>(string url, TimeSpan ttl, CancellationToken ct) where T : class
+    private async Task<UpstreamResult<T>> GetJsonCachedAsync<T>(string url, TimeSpan freshTtl, TimeSpan staleTtl, CancellationToken ct) where T : class
     {
-        if (cache.TryGetValue(url, out T? cached))
+        var now = clock.GetUtcNow();
+        cache.TryGetValue(url, out Entry<T>? entry);
+
+        if (entry is not null && now - entry.FetchedAt < freshTtl)
         {
-            return cached;
+            return UpstreamResult<T>.Fresh(entry.Data);
         }
 
-        var result = await GetJsonOrNullAsync<T>(url, ct);
-        if (result is not null)
+        var fetched = await GetJsonWithRetryAsync<T>(url, ct);
+        if (fetched is not null)
         {
-            cache.Set(url, result, ttl);
+            cache.Set(url, new Entry<T>(fetched, now), staleTtl);
+            return UpstreamResult<T>.Fresh(fetched);
         }
 
-        return result;
+        // Upstream chết sau retry — còn bản cũ trong stale horizon thì dùng đỡ (check tuổi bằng
+        // TimeProvider của mình, không tin expiry của MemoryCache)
+        if (entry is not null && now - entry.FetchedAt <= staleTtl)
+        {
+            return UpstreamResult<T>.Stale(entry.Data);
+        }
+
+        return UpstreamResult<T>.Failed();
+    }
+
+    // Retry chỉ cho lỗi transient; lỗi vĩnh viễn (4xx, body rác) thì thử lại vô ích — fail ngay
+    private async Task<T?> GetJsonWithRetryAsync<T>(string url, CancellationToken ct) where T : class
+    {
+        for (var attempt = 0; ; attempt++)
+        {
+            var (data, transient) = await GetJsonOrNullAsync<T>(url, ct);
+            if (data is not null)
+            {
+                return data;
+            }
+
+            if (!transient || attempt >= delays.Count)
+            {
+                return null;
+            }
+
+            await Task.Delay(delays[attempt], ct);
+        }
     }
 
     // Chính sách chung "upstream lỗi => null" cho MỌI lời gọi Open-Meteo (geocode, forecast...):
     // non-2xx, timeout, body không phải JSON hoặc Content-Type lạ đều là upstream lỗi — một nguồn duy nhất.
-    private async Task<T?> GetJsonOrNullAsync<T>(string url, CancellationToken ct) where T : class
+    // Cờ transient quyết định có đáng retry không.
+    private async Task<(T? Data, bool Transient)> GetJsonOrNullAsync<T>(string url, CancellationToken ct) where T : class
     {
         try
         {
             using var resp = await http.GetAsync(url, ct);
             if (!resp.IsSuccessStatusCode)
             {
-                return null;
+                // 5xx/429/408 là sự cố tạm thời phía upstream; 4xx còn lại là request sai — không retry
+                var transient = (int)resp.StatusCode >= 500
+                    || resp.StatusCode is HttpStatusCode.TooManyRequests or HttpStatusCode.RequestTimeout;
+                return (null, transient);
             }
 
-            return await resp.Content.ReadFromJsonAsync<T>(ct);
+            return (await resp.Content.ReadFromJsonAsync<T>(ct), false);
         }
         catch (HttpRequestException)
         {
-            return null;
+            return (null, true);
         }
         catch (JsonException)
         {
-            return null;
+            return (null, false);
         }
         catch (NotSupportedException)
         {
             // 200 nhưng Content-Type không phải JSON (vd trang lỗi HTML từ proxy/CDN)
-            return null;
+            return (null, false);
         }
         catch (TaskCanceledException) when (!ct.IsCancellationRequested)
         {
             // Timeout của HttpClient (không phải client hủy request) cũng là upstream lỗi
-            return null;
+            return (null, true);
         }
     }
 }

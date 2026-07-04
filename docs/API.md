@@ -12,6 +12,12 @@ Backend .NET 10 Minimal API chạy tại `http://localhost:5155`. Frontend gọi
 | GET | `/api/geocode` | Tìm tọa độ địa điểm theo tên |
 | GET | `/api/air-quality` | Chỉ số chất lượng không khí US AQI + chi tiết theo chất |
 
+### Chống lỗi upstream (áp dụng cho cả 3 endpoint)
+
+- **Retry có backoff**: mỗi lời gọi Open-Meteo thử tối đa 3 lần (delay ~250ms/750ms) khi gặp lỗi transient (timeout, network, 5xx, 429). Upstream trả 4xx hoặc body rác thì fail ngay, không retry.
+- **Serve-stale**: response thành công được cache 2 tầng — TTL tươi (geocode 1h, forecast 10', AQI 30') và stale horizon (geocode 24h, forecast/AQI 6h). Hết TTL tươi mà upstream chết (sau retry) → trả **200 với bản cache cũ** kèm header **`X-Data-Stale: true`**.
+- **502 chỉ trả khi** upstream lỗi **và** không còn bản cache nào trong stale horizon.
+
 ## GET /api/weather
 
 Lấy thời tiết hiện tại, dự báo theo giờ (24h tới) và dự báo theo ngày cho một tọa độ. Backend gọi Open-Meteo `https://api.open-meteo.com/v1/forecast`.
@@ -59,7 +65,7 @@ Lấy thời tiết hiện tại, dự báo theo giờ (24h tới) và dự báo
 |--------|---------|
 | 200 | Thành công |
 | 400 | Param sai/thiếu (`lat`/`lon` thiếu, không parse được, ngoài khoảng; `days` không phải int trong khoảng 1..16) |
-| 502 | Open-Meteo upstream lỗi (không phản hồi hoặc trả non-2xx) |
+| 502 | Open-Meteo upstream lỗi (không phản hồi hoặc trả non-2xx, sau retry) **và** không còn cache trong stale horizon — nếu còn thì trả 200 + header `X-Data-Stale: true` |
 
 Body lỗi theo dạng ProblemDetails, ví dụ 400:
 
@@ -100,7 +106,7 @@ Không tìm thấy kết quả nào vẫn trả 200 với mảng rỗng `[]`.
 |--------|---------|
 | 200 | Thành công (kể cả mảng rỗng) |
 | 400 | Param sai/thiếu (`q` thiếu/rỗng; `count` không phải int trong khoảng 1..100) |
-| 502 | Open-Meteo upstream lỗi (không phản hồi hoặc trả non-2xx) |
+| 502 | Open-Meteo upstream lỗi (không phản hồi hoặc trả non-2xx, sau retry) **và** không còn cache trong stale horizon — nếu còn thì trả 200 + header `X-Data-Stale: true` |
 
 Body lỗi theo dạng ProblemDetails, ví dụ 502:
 
@@ -153,4 +159,4 @@ Chỉ số chất lượng không khí hiện tại (US AQI + nồng độ từn
 |--------|---------|
 | 200 | Thành công |
 | 400 | Param sai/thiếu (`lat`/`lon` thiếu, không parse được, ngoài khoảng, NaN) |
-| 502 | Open-Meteo upstream lỗi, hoặc body 200 nhưng thiếu `us_aqi` hiện tại |
+| 502 | Open-Meteo upstream lỗi (sau retry) và không còn cache trong stale horizon — nếu còn thì trả 200 + header `X-Data-Stale: true`; hoặc body 200 nhưng thiếu `us_aqi` hiện tại |

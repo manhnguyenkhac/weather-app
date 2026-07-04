@@ -53,8 +53,9 @@ public class OpenMeteoClientTests
 
         var result = await client.SearchLocationsAsync("Hanoi", 5);
 
-        Assert.NotNull(result);
-        var item = Assert.Single(result!.Results!);
+        Assert.NotNull(result.Data);
+        Assert.False(result.IsStale);
+        var item = Assert.Single(result.Data!.Results!);
         Assert.Equal("Hanoi", item.Name);
         Assert.Equal("Vietnam", item.Country);
         Assert.Equal(21.0245, item.Latitude);
@@ -68,7 +69,7 @@ public class OpenMeteoClientTests
 
         var result = await client.SearchLocationsAsync("Hanoi", 5);
 
-        Assert.Null(result);
+        Assert.Null(result.Data);
     }
 
     [Fact]
@@ -78,7 +79,7 @@ public class OpenMeteoClientTests
 
         var result = await client.SearchLocationsAsync("Hanoi", 5);
 
-        Assert.Null(result);
+        Assert.Null(result.Data);
     }
 
     [Fact]
@@ -89,7 +90,7 @@ public class OpenMeteoClientTests
 
         var result = await client.SearchLocationsAsync("Hanoi", 5);
 
-        Assert.Null(result);
+        Assert.Null(result.Data);
     }
 
     [Fact]
@@ -243,15 +244,16 @@ public class OpenMeteoClientTests
 
         var result = await client.GetForecastAsync(21.0278, 105.8342, 1);
 
-        Assert.NotNull(result);
-        Assert.Equal(27.4, result!.Current!.Temperature);
-        Assert.Equal(32.1, result.Current.ApparentTemperature);
-        Assert.Equal(78, result.Current.Humidity);
-        Assert.Equal(11.2, result.Current.WindSpeed);
-        Assert.Equal(3, result.Current.WeatherCode);
-        Assert.Equal("2026-07-03T14:00", Assert.Single(result.Hourly!.Time!));
-        Assert.Equal(30.0, Assert.Single(result.Hourly.Temperature!));
-        Assert.Equal("2026-07-03", Assert.Single(result.Daily!.Time!));
-        Assert.Equal(33.1, Assert.Single(result.Daily.TempMax!));
+        var data = result.Data;
+        Assert.NotNull(data);
+        Assert.Equal(27.4, data!.Current!.Temperature);
+        Assert.Equal(32.1, data.Current.ApparentTemperature);
+        Assert.Equal(78, data.Current.Humidity);
+        Assert.Equal(11.2, data.Current.WindSpeed);
+        Assert.Equal(3, data.Current.WeatherCode);
+        Assert.Equal("2026-07-03T14:00", Assert.Single(data.Hourly!.Time!));
+        Assert.Equal(30.0, Assert.Single(data.Hourly.Temperature!));
+        Assert.Equal("2026-07-03", Assert.Single(data.Daily!.Time!));
+        Assert.Equal(33.1, Assert.Single(data.Daily.TempMax!));
     }
 }
