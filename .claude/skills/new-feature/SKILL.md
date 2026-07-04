@@ -12,7 +12,7 @@ description: Pipeline chuẩn thêm feature/tính năng mới end-to-end cho wea
 Đọc đủ 3 file trước khi đề xuất bất cứ gì:
 
 - `docs/ARCHITECTURE.md` — kiến trúc, quy ước 2 phía
-- `docs/API.md` — các endpoint hiện có (hiện chỉ có `GET /api/weather` và `GET /api/geocode`)
+- `docs/API.md` — các endpoint hiện có (hiện có `GET /api/weather`, `GET /api/geocode` và `GET /api/air-quality`)
 - `docs/ROADMAP.md` — feature đã lên kế hoạch, tránh trùng/lệch hướng
 
 ## Bước 2 — Đề xuất plan ngắn

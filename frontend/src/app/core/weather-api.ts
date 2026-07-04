@@ -38,6 +38,26 @@ export interface WeatherResponse {
   daily: DailyForecast[];
 }
 
+export interface AirQualityCurrent {
+  usAqi: number;
+  pm25: number;
+  pm10: number;
+  ozone: number;
+  nitrogenDioxide: number;
+  sulphurDioxide: number;
+  carbonMonoxide: number;
+}
+
+export interface AirQualityHour {
+  time: string;
+  usAqi: number;
+}
+
+export interface AirQualityResponse {
+  current: AirQualityCurrent;
+  hourly: AirQualityHour[];
+}
+
 // ===== URL helpers thuần — tách riêng để unit test không cần HTTP =====
 
 export function geocodeUrl(q: string, count = 5): string {
@@ -46,6 +66,10 @@ export function geocodeUrl(q: string, count = 5): string {
 
 export function weatherUrl(lat: number, lon: number, days = 7): string {
   return `/api/weather?lat=${lat}&lon=${lon}&days=${days}`;
+}
+
+export function airQualityUrl(lat: number, lon: number): string {
+  return `/api/air-quality?lat=${lat}&lon=${lon}`;
 }
 
 /** "2026-07-03T14:00" → "14h" — nhãn giờ cho dải hourly. */
@@ -103,6 +127,11 @@ export class WeatherApi {
   readonly forecast = httpResource<WeatherResponse>(() => {
     const city = this.selectedCity();
     return city ? weatherUrl(city.latitude, city.longitude) : undefined;
+  });
+
+  readonly airQuality = httpResource<AirQualityResponse>(() => {
+    const city = this.selectedCity();
+    return city ? airQualityUrl(city.latitude, city.longitude) : undefined;
   });
 
   search(query: string): void {

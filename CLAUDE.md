@@ -8,7 +8,7 @@ Dữ liệu thời tiết lấy từ **Open-Meteo** (miễn phí, không cần A
 **Tech stack:**
 - Frontend: Angular 22 — standalone component, signals, httpResource, Signal Forms, `ChangeDetectionStrategy.OnPush` mặc định, zoneless.
 - Backend: .NET 10 Minimal API — MapGroup theo domain, DTO record, IHttpClientFactory.
-- Provider: Open-Meteo (forecast: `https://api.open-meteo.com/v1/forecast`, geocoding: `https://geocoding-api.open-meteo.com/v1/search`).
+- Provider: Open-Meteo (forecast: `https://api.open-meteo.com/v1/forecast`, geocoding: `https://geocoding-api.open-meteo.com/v1/search`, air quality: `https://air-quality-api.open-meteo.com/v1/air-quality`).
 
 ## Lệnh thường dùng
 
@@ -43,9 +43,10 @@ cd backend && dotnet test WeatherApp.Api.Tests
 - Gọi HTTP ra ngoài qua **IHttpClientFactory** (typed/named client), không `new HttpClient()`.
 - Format số vào URL (lat/lon) bắt buộc dùng `CultureInfo.InvariantCulture`.
 - URL ngoài (Open-Meteo) đặt trong `appsettings.json`, không hardcode trong code.
-- Chỉ có 2 endpoint:
+- Chỉ có 3 endpoint:
   - `GET /api/weather?lat={double}&lon={double}&days={int, tùy chọn, mặc định 7}`
   - `GET /api/geocode?q={string}&count={int, tùy chọn, mặc định 5}`
+  - `GET /api/air-quality?lat={double}&lon={double}`
 - Mã lỗi: `400` (param sai/thiếu), `502` (Open-Meteo upstream lỗi).
 
 ## Workflow
@@ -57,7 +58,7 @@ cd backend && dotnet test WeatherApp.Api.Tests
 
 Tài liệu tham chiếu:
 - `docs/ARCHITECTURE.md` — kiến trúc tổng thể, luồng dữ liệu.
-- `docs/API.md` — spec chi tiết 2 endpoint backend.
+- `docs/API.md` — spec chi tiết các endpoint backend.
 - `docs/CONVENTIONS.md` — coding convention frontend/backend, git.
 - `docs/ROADMAP.md` — kế hoạch feature.
 

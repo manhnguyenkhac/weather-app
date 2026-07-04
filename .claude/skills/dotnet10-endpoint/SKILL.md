@@ -7,7 +7,7 @@ description: Quy trình thêm/sửa endpoint API backend .NET 10 Minimal API c�
 
 Backend nằm ở `backend/` (.NET 10 Minimal API, C#). Chạy: `cd backend && dotnet run --urls http://localhost:5155`. Test: `cd backend && dotnet test WeatherApp.Api.Tests`.
 
-Backend hiện chỉ có 2 endpoint: `GET /api/weather?lat&lon&days` và `GET /api/geocode?q&count`. Mã lỗi chuẩn: **400** khi query param sai/thiếu, **502** khi Open-Meteo (upstream) lỗi. URL ngoài (Open-Meteo) đặt trong `appsettings.json`, KHÔNG hardcode trong code.
+Backend hiện có 3 endpoint: `GET /api/weather?lat&lon&days`, `GET /api/geocode?q&count` và `GET /api/air-quality?lat&lon`. Mã lỗi chuẩn: **400** khi query param sai/thiếu, **502** khi Open-Meteo (upstream) lỗi. URL ngoài (Open-Meteo) đặt trong `appsettings.json`, KHÔNG hardcode trong code.
 
 ## Quy trình 6 bước
 
