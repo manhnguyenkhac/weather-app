@@ -1,5 +1,5 @@
 .hero {
-  margin-top: 1rem;
+  margin-top: var(--section-gap);
   padding: 1.25rem 1.5rem;
   border-radius: var(--radius-panel);
   background: var(--color-surface);
