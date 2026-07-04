@@ -40,6 +40,8 @@ Thứ tự ưu tiên từ trên xuống. Mỗi mục: mô tả + tiêu chí xong
 
 - [x] Dark mode (#67, user chốt từ đề xuất) — service `ThemePreference` (signal theme light/dark/auto, mặc định auto theo prefers-color-scheme, localStorage `weather-app.theme`, effect gắn `data-theme` lên `<html>`); bộ dark token override trong `styles.css` (nhờ #64 chỉ 1 chỗ); segmented Giao diện ☀️/🌙/🖥️ trong sidebar (i18n); script inline trong index.html chống chớp nền sáng (106 test frontend).
 
+- [x] URL theo thành phố (#69, user chốt từ đề xuất) — `/city/<tên>[,<nước>]@<lat>,<lon>`: deep link mở đúng city, share được, back/forward hoạt động, `document.title` theo city; dùng `Location` (không cần Router/outlet — app một view); vercel.json thêm SPA fallback → index.html (113 test frontend).
+
 ### Vận hành
 
 - [x] CI chạy test (#21) — DoD: pipeline chạy `dotnet test` + `ng test` trên mọi PR vào `develop` (GitHub Actions, 2 job song song), PR fail test không merge được (required status checks backend + frontend trên branch protection của `develop`).
