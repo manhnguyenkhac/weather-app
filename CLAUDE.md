@@ -43,10 +43,11 @@ cd backend && dotnet test WeatherApp.Api.Tests
 - Gọi HTTP ra ngoài qua **IHttpClientFactory** (typed/named client), không `new HttpClient()`.
 - Format số vào URL (lat/lon) bắt buộc dùng `CultureInfo.InvariantCulture`.
 - URL ngoài (Open-Meteo) đặt trong `appsettings.json`, không hardcode trong code.
-- Chỉ có 3 endpoint:
+- Chỉ có 4 endpoint:
   - `GET /api/weather?lat={double}&lon={double}&days={int, tùy chọn, mặc định 7}`
   - `GET /api/geocode?q={string}&count={int, tùy chọn, mặc định 5}`
   - `GET /api/air-quality?lat={double}&lon={double}`
+  - `GET /api/history?lat={double}&lon={double}`
 - Mã lỗi: `400` (param sai/thiếu), `502` (Open-Meteo upstream lỗi).
 
 ## Workflow

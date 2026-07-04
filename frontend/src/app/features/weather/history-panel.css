@@ -1,0 +1,92 @@
+.panel {
+  margin-top: var(--section-gap);
+  padding: var(--panel-pad);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-panel);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+}
+
+.head:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+h3 {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+}
+
+.summary { margin-left: auto; }
+.mini-hint { font-size: 0.82rem; color: var(--color-muted); }
+
+.chevron { color: var(--color-muted); font-size: 0.9rem; transition: transform 0.18s ease; }
+.chevron.open { transform: rotate(180deg); }
+.head[aria-expanded="true"] { margin-bottom: 0.9rem; }
+
+.hint { color: var(--color-muted); margin: 0; }
+.error { color: var(--color-error); margin: 0; }
+
+.verdict {
+  margin: 0 0 0.9rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.v-emoji { margin-right: 0.25rem; }
+
+.sub {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted-light);
+}
+
+svg.chart { display: block; width: 100%; height: auto; }
+
+.grid { stroke: var(--color-border); stroke-width: 1; }
+.axis { fill: var(--color-muted-light); font-size: 10px; font-variant-numeric: tabular-nums; }
+
+.line { fill: none; stroke-width: 2; stroke-linejoin: round; }
+.line.max { stroke: var(--color-accent); }
+.line.min { stroke: #4a90d9; }
+
+.legend {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--color-muted);
+}
+
+.legend i { display: inline-block; width: 0.9rem; height: 3px; border-radius: 2px; margin-right: 0.3rem; vertical-align: middle; }
+.legend i.max { background: var(--color-accent); }
+.legend i.min { background: #4a90d9; }
+
+.rain {
+  margin: 0.9rem 0 0;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+}
+
+.rain b { color: var(--color-text); }
